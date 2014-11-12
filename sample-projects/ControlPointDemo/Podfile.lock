@@ -1,0 +1,15 @@
+PODS:
+  - upnpx (1.3.0)
+
+DEPENDENCIES:
+  - upnpx (from `https://github.com/fkuehne/upnpx.git`, commit `5228d90c4fcd5aa5a92cbd3ca7ad4a91cbcabc98`)
+
+EXTERNAL SOURCES:
+  upnpx:
+    :commit: 5228d90c4fcd5aa5a92cbd3ca7ad4a91cbcabc98
+    :git: https://github.com/fkuehne/upnpx.git
+
+SPEC CHECKSUMS:
+  upnpx: e9c5b4ca6fa09224fdf78b1a5e168a2637784506
+
+COCOAPODS: 0.34.4

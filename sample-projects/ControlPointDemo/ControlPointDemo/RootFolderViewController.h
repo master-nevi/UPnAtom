@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  RootFolderViewController.h
 //  ControlPointDemo
 //
 //  Created by David Robles on 11/12/14.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface RootFolderViewController : UIViewController
 
 @end
-

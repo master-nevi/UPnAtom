@@ -9,22 +9,14 @@
 /* Begin PBXBuildFile section */
 		633C992D1A13B9770059444C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C992C1A13B9770059444C /* main.m */; };
 		633C99301A13B9770059444C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C992F1A13B9770059444C /* AppDelegate.m */; };
-		633C99331A13B9770059444C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99321A13B9770059444C /* ViewController.m */; };
 		633C99361A13B9770059444C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 633C99341A13B9770059444C /* Main.storyboard */; };
 		633C99381A13B9770059444C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 633C99371A13B9770059444C /* Images.xcassets */; };
 		633C993B1A13B9770059444C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 633C99391A13B9770059444C /* LaunchScreen.xib */; };
-		633C99471A13B9770059444C /* ControlPointDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99461A13B9770059444C /* ControlPointDemoTests.m */; };
+		633C99521A13BD650059444C /* RootFolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99511A13BD650059444C /* RootFolderViewController.m */; };
+		633C99551A13BD8E0059444C /* FolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99541A13BD8E0059444C /* FolderViewController.m */; };
+		633C99581A13C8760059444C /* PlayBack.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99571A13C8760059444C /* PlayBack.m */; };
+		A9E7FB1EA244CA7E9EF3910B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA38D7BD03FE826E3BD0AD5A /* libPods.a */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		633C99411A13B9770059444C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 633C991F1A13B9770059444C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 633C99261A13B9770059444C;
-			remoteInfo = ControlPointDemo;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		633C99271A13B9770059444C /* ControlPointDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ControlPointDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -32,14 +24,20 @@
 		633C992C1A13B9770059444C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		633C992E1A13B9770059444C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		633C992F1A13B9770059444C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		633C99311A13B9770059444C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		633C99321A13B9770059444C /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		633C99351A13B9770059444C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		633C99371A13B9770059444C /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		633C993A1A13B9770059444C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		633C99401A13B9770059444C /* ControlPointDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ControlPointDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		633C99451A13B9770059444C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		633C99461A13B9770059444C /* ControlPointDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ControlPointDemoTests.m; sourceTree = "<group>"; };
+		633C99501A13BD650059444C /* RootFolderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootFolderViewController.h; sourceTree = "<group>"; };
+		633C99511A13BD650059444C /* RootFolderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootFolderViewController.m; sourceTree = "<group>"; };
+		633C99531A13BD8E0059444C /* FolderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FolderViewController.h; sourceTree = "<group>"; };
+		633C99541A13BD8E0059444C /* FolderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FolderViewController.m; sourceTree = "<group>"; };
+		633C99561A13C8750059444C /* PlayBack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayBack.h; sourceTree = "<group>"; };
+		633C99571A13C8760059444C /* PlayBack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayBack.m; sourceTree = "<group>"; };
+		6731BDB9ACEF097F0FD8F40C /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		92D8BE707C243DA8A0E35CC3 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		EA38D7BD03FE826E3BD0AD5A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,25 +45,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		633C993D1A13B9770059444C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				A9E7FB1EA244CA7E9EF3910B /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		484F20EFBF38325E492FC73D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EA38D7BD03FE826E3BD0AD5A /* libPods.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		603886B18FDA3521BECBBD9B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				6731BDB9ACEF097F0FD8F40C /* Pods.debug.xcconfig */,
+				92D8BE707C243DA8A0E35CC3 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		633C991E1A13B9770059444C = {
 			isa = PBXGroup;
 			children = (
 				633C99291A13B9770059444C /* ControlPointDemo */,
 				633C99431A13B9770059444C /* ControlPointDemoTests */,
 				633C99281A13B9770059444C /* Products */,
+				603886B18FDA3521BECBBD9B /* Pods */,
+				484F20EFBF38325E492FC73D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,7 +84,6 @@
 			isa = PBXGroup;
 			children = (
 				633C99271A13B9770059444C /* ControlPointDemo.app */,
-				633C99401A13B9770059444C /* ControlPointDemoTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -83,9 +93,13 @@
 			children = (
 				633C992E1A13B9770059444C /* AppDelegate.h */,
 				633C992F1A13B9770059444C /* AppDelegate.m */,
-				633C99311A13B9770059444C /* ViewController.h */,
-				633C99321A13B9770059444C /* ViewController.m */,
 				633C99341A13B9770059444C /* Main.storyboard */,
+				633C99501A13BD650059444C /* RootFolderViewController.h */,
+				633C99511A13BD650059444C /* RootFolderViewController.m */,
+				633C99531A13BD8E0059444C /* FolderViewController.h */,
+				633C99541A13BD8E0059444C /* FolderViewController.m */,
+				633C99561A13C8750059444C /* PlayBack.h */,
+				633C99571A13C8760059444C /* PlayBack.m */,
 				633C99371A13B9770059444C /* Images.xcassets */,
 				633C99391A13B9770059444C /* LaunchScreen.xib */,
 				633C992A1A13B9770059444C /* Supporting Files */,
@@ -126,9 +140,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 633C994A1A13B9770059444C /* Build configuration list for PBXNativeTarget "ControlPointDemo" */;
 			buildPhases = (
+				2A5B012B8B858587D9CCEE2F /* Check Pods Manifest.lock */,
 				633C99231A13B9770059444C /* Sources */,
 				633C99241A13B9770059444C /* Frameworks */,
 				633C99251A13B9770059444C /* Resources */,
+				072FAE9F862A65515C39C6B5 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -138,24 +154,6 @@
 			productName = ControlPointDemo;
 			productReference = 633C99271A13B9770059444C /* ControlPointDemo.app */;
 			productType = "com.apple.product-type.application";
-		};
-		633C993F1A13B9770059444C /* ControlPointDemoTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 633C994D1A13B9770059444C /* Build configuration list for PBXNativeTarget "ControlPointDemoTests" */;
-			buildPhases = (
-				633C993C1A13B9770059444C /* Sources */,
-				633C993D1A13B9770059444C /* Frameworks */,
-				633C993E1A13B9770059444C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				633C99421A13B9770059444C /* PBXTargetDependency */,
-			);
-			name = ControlPointDemoTests;
-			productName = ControlPointDemoTests;
-			productReference = 633C99401A13B9770059444C /* ControlPointDemoTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -168,10 +166,6 @@
 				TargetAttributes = {
 					633C99261A13B9770059444C = {
 						CreatedOnToolsVersion = 6.1;
-					};
-					633C993F1A13B9770059444C = {
-						CreatedOnToolsVersion = 6.1;
-						TestTargetID = 633C99261A13B9770059444C;
 					};
 				};
 			};
@@ -189,7 +183,6 @@
 			projectRoot = "";
 			targets = (
 				633C99261A13B9770059444C /* ControlPointDemo */,
-				633C993F1A13B9770059444C /* ControlPointDemoTests */,
 			);
 		};
 /* End PBXProject section */
@@ -205,43 +198,55 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		633C993E1A13B9770059444C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		072FAE9F862A65515C39C6B5 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
-/* End PBXResourcesBuildPhase section */
+		2A5B012B8B858587D9CCEE2F /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		633C99231A13B9770059444C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				633C99331A13B9770059444C /* ViewController.m in Sources */,
+				633C99551A13BD8E0059444C /* FolderViewController.m in Sources */,
+				633C99521A13BD650059444C /* RootFolderViewController.m in Sources */,
 				633C99301A13B9770059444C /* AppDelegate.m in Sources */,
 				633C992D1A13B9770059444C /* main.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		633C993C1A13B9770059444C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				633C99471A13B9770059444C /* ControlPointDemoTests.m in Sources */,
+				633C99581A13C8760059444C /* PlayBack.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		633C99421A13B9770059444C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 633C99261A13B9770059444C /* ControlPointDemo */;
-			targetProxy = 633C99411A13B9770059444C /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		633C99341A13B9770059444C /* Main.storyboard */ = {
@@ -297,7 +302,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -332,7 +337,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -341,8 +346,10 @@
 		};
 		633C994B1A13B9770059444C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6731BDB9ACEF097F0FD8F40C /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = ControlPointDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -351,45 +358,13 @@
 		};
 		633C994C1A13B9770059444C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92D8BE707C243DA8A0E35CC3 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = ControlPointDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		633C994E1A13B9770059444C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = ControlPointDemoTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ControlPointDemo.app/ControlPointDemo";
-			};
-			name = Debug;
-		};
-		633C994F1A13B9770059444C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = ControlPointDemoTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ControlPointDemo.app/ControlPointDemo";
 			};
 			name = Release;
 		};
@@ -412,14 +387,7 @@
 				633C994C1A13B9770059444C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-		};
-		633C994D1A13B9770059444C /* Build configuration list for PBXNativeTarget "ControlPointDemoTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				633C994E1A13B9770059444C /* Debug */,
-				633C994F1A13B9770059444C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
