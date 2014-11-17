@@ -1,0 +1,179 @@
+//
+//  BasicParser.swift
+//  upnpx
+//
+//  Created by David Robles on 11/12/14.
+//  Copyright (c) 2014 Bruno Keymolen. All rights reserved.
+//
+
+import Foundation
+
+enum ParserStatus: Int {
+    case Succeeded, Failed
+}
+
+// Subclassing NSObject in order to be a NSXMLParserDelegate
+class BasicParser_Swift: NSObject {
+    // public
+    
+    // private
+    private let _supportNamespaces: Bool
+    lazy private var _elementStack = [String]()
+    lazy private var _elementObservations = [BasicParserElementObservation_Swift]()
+    
+    init(supportNamespaces: Bool) {
+        _supportNamespaces = supportNamespaces
+    }
+    
+    convenience override init() {
+        self.init(supportNamespaces: false)
+    }
+    
+    func addElementObservation(elementObservation: BasicParserElementObservation_Swift) {
+        _elementObservations.append(elementObservation)
+    }
+    
+    func clearAllElementObservations() {
+        _elementObservations.removeAll(keepCapacity: false)
+    }
+    
+    func elementObservationForElementStack(elementStack: [String]) -> BasicParserElementObservation_Swift? {
+        for elementObservation in _elementObservations {
+            // Full compares go first
+            if elementObservation.elementPath == elementStack {
+                return elementObservation
+            }
+            else {
+                // * -> leafX -> leafY
+                // Maybe we have a wildchar, that means that the path after the wildchar must match
+                if elementObservation.elementPath.first == "*" {
+                    if elementStack.count >= elementObservation.elementPath.count {
+                        var tempElementStack = elementStack
+                        var tempObservationElementPath = elementObservation.elementPath
+                        
+                        // cut the * from our asset path
+                        tempObservationElementPath.removeAtIndex(0)
+                        
+                        // make our (copy of the) curents stack the same length
+                        let elementsToRemove: Int = tempElementStack.count - tempObservationElementPath.count
+                        var range = Range(start: 0, end: elementsToRemove)
+                        tempElementStack.removeRange(range)
+                        if tempObservationElementPath == tempElementStack {
+                            return elementObservation
+                        }
+                    }
+                }
+                
+                // leafX -> leafY -> *
+                if elementObservation.elementPath.last == "*" {
+                    if elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
+                        var tempElementStack = elementStack
+                        var tempObservationElementPath = elementObservation.elementPath
+                        // Cut the last entry (which is * in one array and <element> in the other
+                        tempElementStack.removeLast()
+                        tempObservationElementPath.removeLast()
+                        if tempElementStack == tempObservationElementPath {
+                            return elementObservation
+                        }
+                    }
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func parse(data: NSData) -> ParserStatus {
+        if let validData = validateForParsing(data) {
+            let parser = NSXMLParser(data: validData)
+            return startParser(parser)
+        }
+        
+        return .Failed
+    }
+    
+    func parseFrom(url: NSURL) -> ParserStatus {
+        if let data = NSData(contentsOfURL: url) {
+            if let validData = validateForParsing(data) {
+                let parser = NSXMLParser(data: validData)
+                return startParser(parser)
+            }
+        }
+        
+        return .Failed
+    }
+    
+    // MARK: - Internal lib
+    
+    private func startParser(parser: NSXMLParser) -> ParserStatus {
+        parser.shouldProcessNamespaces = _supportNamespaces
+        parser.delegate = self
+        
+        var parserStatus = ParserStatus.Failed
+        if parser.parse() {
+            parserStatus = .Succeeded
+        }
+        
+        parser.delegate = nil
+        
+        return parserStatus
+    }
+    
+    private func validateForParsing(data: NSData) -> NSData? {
+        let xmlStringOptional = NSString(data: data, encoding: NSUTF8StringEncoding)
+        var error: NSError?
+        let regexOptional = NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .AnchorsMatchLines, error: &error)
+        if xmlStringOptional != nil && regexOptional != nil {
+            let validXMLString = regexOptional!.stringByReplacingMatchesInString(xmlStringOptional!, options: NSMatchingOptions(0), range: NSMakeRange(0, xmlStringOptional!.length), withTemplate: "")
+            return validXMLString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+        }
+        
+        return nil
+    }
+}
+
+extension BasicParser_Swift: NSXMLParserDelegate {
+    func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
+        _elementStack += [elementName]
+        
+        if let elementObservation = elementObservationForElementStack(_elementStack) {
+            if let didStartParsingElement = elementObservation.didStartParsingElement {
+                didStartParsingElement(elementName: elementName, attributeDict: attributeDict)
+            }
+        }
+    }
+    
+    func parser(parser: NSXMLParser!, didEndElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!) {
+        if let elementObservation = elementObservationForElementStack(_elementStack) {
+            let foundInnerText = elementObservation.foundInnerText
+            let innerText = elementObservation.innerText
+            if foundInnerText != nil && innerText != nil {
+                foundInnerText!(elementName: elementName, text: elementObservation.innerText!)
+            }
+            
+            if let didEndParsingElement = elementObservation.didEndParsingElement {
+                didEndParsingElement(elementName: elementName)
+            }
+        }
+        
+        if elementName == _elementStack.last {
+            _elementStack.removeLast()
+        }
+        else {
+            println("XML badly formatted!")
+            parser.abortParsing()
+        }
+    }
+    
+    func parser(parser: NSXMLParser!, foundCharacters string: String!) {
+        // The parser object may send the delegate several parser:foundCharacters: messages to report the characters of an element. Because string may be only part of the total character content for the current element, you should append it to the current accumulation of characters until the element changes.
+        
+        if let elementObservation = elementObservationForElementStack(_elementStack) {
+            elementObservation.appendInnerText(string)
+        }
+    }
+    
+    func parser(parser: NSXMLParser!, parseErrorOccurred parseError: NSError!) {
+        println("Parser Error \(parseError.code), Description: \(parser.parserError?.localizedDescription), Line: \(parser.lineNumber), Column: \(parser.columnNumber)")
+    }
+}
