@@ -84,23 +84,29 @@ class BasicParser_Swift: NSObject {
     }
     
     func parse(data: NSData) -> ParserStatus {
-        if let validData = validateForParsing(data) {
-            let parser = NSXMLParser(data: validData)
-            return startParser(parser)
-        }
-        
-        return .Failed
-    }
-    
-    func parseFrom(url: NSURL) -> ParserStatus {
-        if let data = NSData(contentsOfURL: url) {
-            if let validData = validateForParsing(data) {
+        var parserStatus = ParserStatus.Failed
+        autoreleasepool { () -> () in
+            if let validData = self.validateForParsing(data) {
                 let parser = NSXMLParser(data: validData)
-                return startParser(parser)
+                parserStatus = self.startParser(parser)
             }
         }
         
-        return .Failed
+        return parserStatus
+    }
+    
+    func parseFrom(url: NSURL) -> ParserStatus {
+        var parserStatus = ParserStatus.Failed
+        autoreleasepool { () -> () in
+            if let data = NSData(contentsOfURL: url) {
+                if let validData = self.validateForParsing(data) {
+                    let parser = NSXMLParser(data: validData)
+                    parserStatus = self.startParser(parser)
+                }
+            }
+        }
+        
+        return parserStatus
     }
     
     // MARK: - Internal lib
