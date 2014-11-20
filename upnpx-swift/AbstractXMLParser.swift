@@ -13,13 +13,13 @@ enum ParserStatus: Int {
 }
 
 // Subclassing NSObject in order to be a NSXMLParserDelegate
-class BasicParser_Swift: NSObject {
+class AbstractXMLParser_Swift: NSObject {
     // public
     
     // private
     private let _supportNamespaces: Bool
     lazy private var _elementStack = [String]()
-    lazy private var _elementObservations = [BasicParserElementObservation_Swift]()
+    lazy private var _elementObservations = [XMLParserElementObservation_Swift]()
     
     init(supportNamespaces: Bool) {
         _supportNamespaces = supportNamespaces
@@ -29,7 +29,7 @@ class BasicParser_Swift: NSObject {
         self.init(supportNamespaces: false)
     }
     
-    func addElementObservation(elementObservation: BasicParserElementObservation_Swift) {
+    func addElementObservation(elementObservation: XMLParserElementObservation_Swift) {
         _elementObservations.append(elementObservation)
     }
     
@@ -37,7 +37,7 @@ class BasicParser_Swift: NSObject {
         _elementObservations.removeAll(keepCapacity: false)
     }
     
-    func elementObservationForElementStack(elementStack: [String]) -> BasicParserElementObservation_Swift? {
+    func elementObservationForElementStack(elementStack: [String]) -> XMLParserElementObservation_Swift? {
         for elementObservation in _elementObservations {
             // Full compares go first
             if elementObservation.elementPath == elementStack {
@@ -138,7 +138,7 @@ class BasicParser_Swift: NSObject {
     }
 }
 
-extension BasicParser_Swift: NSXMLParserDelegate {
+extension AbstractXMLParser_Swift: NSXMLParserDelegate {
     func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
         _elementStack += [elementName]
         

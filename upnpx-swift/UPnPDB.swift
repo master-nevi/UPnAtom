@@ -13,8 +13,8 @@ class UPnPDB_Swift {
     let UPnPDeviceWasAddedNotification = "UPnPDeviceWasAddedNotification"
     let UPnPDeviceWasRemovedNotification = "UPnPDeviceWasRemovedNotification"
     let UPnPDeviceKey = "UPnPDeviceKey"
-    var rootDevices: [BasicUPnPDevice_Swift] {
-        var rootDevices: [BasicUPnPDevice_Swift]!
+    var rootDevices: [AbstractUPnPDevice_Swift] {
+        var rootDevices: [AbstractUPnPDevice_Swift]!
         dispatch_sync(_concurrentDeviceQueue, { () -> Void in
             rootDevices = Array(self._rootDevices.values)
         })
@@ -24,7 +24,7 @@ class UPnPDB_Swift {
     
     // private
     private let _concurrentDeviceQueue = dispatch_queue_create("com.upnpx.swift.rootDeviceQueue", DISPATCH_QUEUE_CONCURRENT)
-    lazy private var _rootDevices = [String: BasicUPnPDevice_Swift]()
+    lazy private var _rootDevices = [String: AbstractUPnPDevice_Swift]()
     
     init(ssdpDB: SSDPDB_ObjC) {
         self.ssdpDB = ssdpDB
@@ -49,7 +49,7 @@ class UPnPDB_Swift {
         return services
     }
     
-    private func addRootDevice(device: BasicUPnPDevice_Swift) {
+    private func addRootDevice(device: AbstractUPnPDevice_Swift) {
         dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
             self._rootDevices[device.usn] = device
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -68,8 +68,8 @@ extension UPnPDB_Swift: SSDPDB_ObjC_Observer {
         let ssdpDevices = sender.SSDPObjCDevices
         dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
             let rootDevices = self._rootDevices
-            var devicesToAdd = [BasicUPnPDevice_Swift]()
-            var devicesToKeep = [BasicUPnPDevice_Swift]()
+            var devicesToAdd = [AbstractUPnPDevice_Swift]()
+            var devicesToKeep = [AbstractUPnPDevice_Swift]()
             for ssdpDevice in ssdpDevices {
                 if let ssdpDevice = ssdpDevice as? SSDPDBDevice_ObjC {
                     if ssdpDevice.isdevice {
@@ -77,10 +77,9 @@ extension UPnPDB_Swift: SSDPDB_ObjC_Observer {
                             devicesToKeep.append(foundRootDevice)
                         }
                         else {
-                            let ssdpDeviceToAdd = ssdpDevice
-                            let newDevice = BasicUPnPDevice_Swift() //from ssdpDeviceToAdd
-                            newDevice.loadDeviceDescriptionFromXML()
-                            devicesToAdd.append(newDevice)
+                            if let newRootDevice = UPnPDeviceFactory_Swift.createDeviceFrom(ssdpDevice) {
+                                devicesToAdd.append(newRootDevice)
+                            }
                         }
                     }
                 }

@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		63250FAD1A19D4B4003895BA /* UPnPDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63250FAC1A19D4B4003895BA /* UPnPDB.swift */; };
-		63250FAF1A1B21F7003895BA /* BasicUPnPDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63250FAE1A1B21F7003895BA /* BasicUPnPDevice.swift */; };
+		63250FAF1A1B21F7003895BA /* AbstractUPnPDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63250FAE1A1B21F7003895BA /* AbstractUPnPDevice.swift */; };
 		633C992D1A13B9770059444C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C992C1A13B9770059444C /* main.m */; };
 		633C99301A13B9770059444C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C992F1A13B9770059444C /* AppDelegate.m */; };
 		633C99361A13B9770059444C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 633C99341A13B9770059444C /* Main.storyboard */; };
@@ -17,15 +17,20 @@
 		633C99521A13BD650059444C /* RootFolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99511A13BD650059444C /* RootFolderViewController.m */; };
 		633C99551A13BD8E0059444C /* FolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99541A13BD8E0059444C /* FolderViewController.m */; };
 		633C99581A13C8760059444C /* PlayBack.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99571A13C8760059444C /* PlayBack.m */; };
-		633C995F1A150D090059444C /* BasicParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633C995D1A150D090059444C /* BasicParser.swift */; };
-		633C99601A150D090059444C /* BasicParserElementObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633C995E1A150D090059444C /* BasicParserElementObservation.swift */; };
+		633C995F1A150D090059444C /* AbstractXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633C995D1A150D090059444C /* AbstractXMLParser.swift */; };
+		633C99601A150D090059444C /* XMLParserElementObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633C995E1A150D090059444C /* XMLParserElementObservation.swift */; };
 		63E36B121A1B2E1F001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B111A1B2E1E001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m */; };
+		63E36B141A1DABCE001E15D1 /* AbstractUPnP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */; };
+		63E36B161A1DBBA9001E15D1 /* UPnPDeviceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B151A1DBBA9001E15D1 /* UPnPDeviceFactory.swift */; };
+		63E36B1A1A1DC076001E15D1 /* MediaRenderer1Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B191A1DC076001E15D1 /* MediaRenderer1Device.swift */; };
+		63E36B1C1A1DC086001E15D1 /* MediaServer1Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B1B1A1DC086001E15D1 /* MediaServer1Device.swift */; };
+		63E36B1F1A1DC200001E15D1 /* AbstractUPnPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B1E1A1DC200001E15D1 /* AbstractUPnPService.swift */; };
 		A9E7FB1EA244CA7E9EF3910B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA38D7BD03FE826E3BD0AD5A /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		63250FAC1A19D4B4003895BA /* UPnPDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPDB.swift; sourceTree = "<group>"; };
-		63250FAE1A1B21F7003895BA /* BasicUPnPDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicUPnPDevice.swift; sourceTree = "<group>"; };
+		63250FAE1A1B21F7003895BA /* AbstractUPnPDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnPDevice.swift; sourceTree = "<group>"; };
 		633C99271A13B9770059444C /* ControlPointDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ControlPointDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		633C992B1A13B9770059444C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		633C992C1A13B9770059444C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -41,10 +46,15 @@
 		633C99561A13C8750059444C /* PlayBack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayBack.h; sourceTree = "<group>"; };
 		633C99571A13C8760059444C /* PlayBack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayBack.m; sourceTree = "<group>"; };
 		633C995A1A150CCE0059444C /* ControlPointDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ControlPointDemo-Bridging-Header.h"; sourceTree = "<group>"; };
-		633C995D1A150D090059444C /* BasicParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicParser.swift; sourceTree = "<group>"; };
-		633C995E1A150D090059444C /* BasicParserElementObservation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicParserElementObservation.swift; sourceTree = "<group>"; };
+		633C995D1A150D090059444C /* AbstractXMLParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractXMLParser.swift; sourceTree = "<group>"; };
+		633C995E1A150D090059444C /* XMLParserElementObservation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XMLParserElementObservation.swift; sourceTree = "<group>"; };
 		63E36B101A1B2E1E001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SSDPDB_ObjC+SwiftCompatibility.h"; sourceTree = "<group>"; };
 		63E36B111A1B2E1E001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SSDPDB_ObjC+SwiftCompatibility.m"; sourceTree = "<group>"; };
+		63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnP.swift; sourceTree = "<group>"; };
+		63E36B151A1DBBA9001E15D1 /* UPnPDeviceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPDeviceFactory.swift; sourceTree = "<group>"; };
+		63E36B191A1DC076001E15D1 /* MediaRenderer1Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaRenderer1Device.swift; sourceTree = "<group>"; };
+		63E36B1B1A1DC086001E15D1 /* MediaServer1Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaServer1Device.swift; sourceTree = "<group>"; };
+		63E36B1E1A1DC200001E15D1 /* AbstractUPnPService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnPService.swift; sourceTree = "<group>"; };
 		6731BDB9ACEF097F0FD8F40C /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		92D8BE707C243DA8A0E35CC3 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		EA38D7BD03FE826E3BD0AD5A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,16 +139,61 @@
 		633C99591A150CB40059444C /* upnpx-swift */ = {
 			isa = PBXGroup;
 			children = (
-				633C995D1A150D090059444C /* BasicParser.swift */,
-				633C995E1A150D090059444C /* BasicParserElementObservation.swift */,
-				63250FAC1A19D4B4003895BA /* UPnPDB.swift */,
-				63250FAE1A1B21F7003895BA /* BasicUPnPDevice.swift */,
+				63E36B171A1DBFE9001E15D1 /* Parsers */,
+				63E36B1D1A1DC1B0001E15D1 /* Management */,
+				63E36B181A1DBFF6001E15D1 /* UPnP Objects */,
 				63E36B101A1B2E1E001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.h */,
 				63E36B111A1B2E1E001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m */,
 				633C995A1A150CCE0059444C /* ControlPointDemo-Bridging-Header.h */,
 			);
 			name = "upnpx-swift";
 			path = "../../upnpx-swift";
+			sourceTree = "<group>";
+		};
+		63E36B171A1DBFE9001E15D1 /* Parsers */ = {
+			isa = PBXGroup;
+			children = (
+				633C995D1A150D090059444C /* AbstractXMLParser.swift */,
+				633C995E1A150D090059444C /* XMLParserElementObservation.swift */,
+			);
+			name = Parsers;
+			sourceTree = "<group>";
+		};
+		63E36B181A1DBFF6001E15D1 /* UPnP Objects */ = {
+			isa = PBXGroup;
+			children = (
+				63E36B151A1DBBA9001E15D1 /* UPnPDeviceFactory.swift */,
+				63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */,
+				63E36B221A1DC2F0001E15D1 /* Services */,
+				63E36B211A1DC2E8001E15D1 /* Devices */,
+			);
+			name = "UPnP Objects";
+			sourceTree = "<group>";
+		};
+		63E36B1D1A1DC1B0001E15D1 /* Management */ = {
+			isa = PBXGroup;
+			children = (
+				63250FAC1A19D4B4003895BA /* UPnPDB.swift */,
+			);
+			name = Management;
+			sourceTree = "<group>";
+		};
+		63E36B211A1DC2E8001E15D1 /* Devices */ = {
+			isa = PBXGroup;
+			children = (
+				63250FAE1A1B21F7003895BA /* AbstractUPnPDevice.swift */,
+				63E36B191A1DC076001E15D1 /* MediaRenderer1Device.swift */,
+				63E36B1B1A1DC086001E15D1 /* MediaServer1Device.swift */,
+			);
+			name = Devices;
+			sourceTree = "<group>";
+		};
+		63E36B221A1DC2F0001E15D1 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				63E36B1E1A1DC200001E15D1 /* AbstractUPnPService.swift */,
+			);
+			name = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,15 +301,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63250FAF1A1B21F7003895BA /* BasicUPnPDevice.swift in Sources */,
+				63250FAF1A1B21F7003895BA /* AbstractUPnPDevice.swift in Sources */,
 				63250FAD1A19D4B4003895BA /* UPnPDB.swift in Sources */,
+				63E36B1A1A1DC076001E15D1 /* MediaRenderer1Device.swift in Sources */,
+				63E36B1C1A1DC086001E15D1 /* MediaServer1Device.swift in Sources */,
 				63E36B121A1B2E1F001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m in Sources */,
-				633C99601A150D090059444C /* BasicParserElementObservation.swift in Sources */,
+				633C99601A150D090059444C /* XMLParserElementObservation.swift in Sources */,
 				633C99551A13BD8E0059444C /* FolderViewController.m in Sources */,
 				633C99521A13BD650059444C /* RootFolderViewController.m in Sources */,
-				633C995F1A150D090059444C /* BasicParser.swift in Sources */,
+				633C995F1A150D090059444C /* AbstractXMLParser.swift in Sources */,
 				633C99301A13B9770059444C /* AppDelegate.m in Sources */,
+				63E36B141A1DABCE001E15D1 /* AbstractUPnP.swift in Sources */,
+				63E36B161A1DBBA9001E15D1 /* UPnPDeviceFactory.swift in Sources */,
 				633C992D1A13B9770059444C /* main.m in Sources */,
+				63E36B1F1A1DC200001E15D1 /* AbstractUPnPService.swift in Sources */,
 				633C99581A13C8760059444C /* PlayBack.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
