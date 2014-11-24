@@ -9,5 +9,11 @@
 import Foundation
 
 class MediaServer1Device_Swift: AbstractUPnPDevice_Swift {
-    
+    override var className: String { return "MediaServer1Device_Swift" }
+    override var description: String {
+        var properties = [String: String]()
+        properties[super.className] = super.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
+        
+        return objectDescription(properties)
+    }
 }

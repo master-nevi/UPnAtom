@@ -11,6 +11,7 @@
 #import <upnpx/UPnPManager.h>
 #import "PlayBack.h"
 #import "FolderViewController.h"
+#import "ControlPointDemo-Swift.h"
 
 @interface RootFolderViewController () <UITableViewDataSource, UITableViewDelegate, UPnPDBObserver>
 @property (nonatomic) IBOutlet UITableView *tableView;
@@ -24,6 +25,7 @@
     [super viewDidLoad];
 
     UPnPDB* db = [[UPnPManager GetInstance] DB];
+    UPnPDB_Swift* db2 = [[UPnPManager_Swift sharedInstance] upnpDB];
     [db addObserver:self];
     
     //Search for UPnP Devices
@@ -42,6 +44,21 @@
     self.toolbarItems = items;
     
     self.navigationController.toolbarHidden = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasAdded:) name:[UPnPDB_Swift UPnPDeviceWasAddedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPDB_Swift UPnPDeviceWasRemovedNotification] object:nil];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+}
+
+- (void)dealloc {
+    
 }
 
 #pragma mark - UITableViewDataSource methods
@@ -108,9 +125,9 @@
         [self performSSDPSearch];
     }
     
-    for (BasicUPnPDevice *device in [self devices]) {
-        NSLog(@"Device: %@", device.description);
-    }
+//    for (BasicUPnPDevice *device in [self devices]) {
+//        NSLog(@"Device: %@", device.description);
+//    }
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];
@@ -120,6 +137,20 @@
 - (void)performSSDPSearch {
     [[[UPnPManager GetInstance] SSDP] searchForContentDirectory];
     [[[UPnPManager GetInstance] SSDP] searchForMediaRenderer];
+}
+
+#pragma mark - NSNotification callbacks
+
+- (void)deviceWasAdded:(NSNotification *)notification {
+    if (notification.userInfo[[UPnPDB_Swift UPnPDeviceKey]]) {
+        NSLog(@"Added device: %@", ((AbstractUPnP_Swift *)notification.userInfo[[UPnPDB_Swift UPnPDeviceKey]]).description);
+    }
+}
+
+- (void)deviceWasRemoved:(NSNotification *)notification {
+    if (notification.userInfo[[UPnPDB_Swift UPnPDeviceKey]]) {
+        NSLog(@"Removed device: %@", notification.userInfo[[UPnPDB_Swift UPnPDeviceKey]]);
+    }
 }
 
 #pragma mark - Internal lib

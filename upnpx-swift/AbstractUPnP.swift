@@ -8,11 +8,21 @@
 
 import Foundation
 
-class AbstractUPnP_Swift {
+@objc class AbstractUPnP_Swift: ExtendedPrintable {
     let uuid: String!
     let urn: String!
     let usn: String!
     let xmlLocation: NSURL!
+    var className: String { return "AbstractUPnP_Swift" }
+    var description: String {
+        var properties = [String: String]()
+        properties["uuid"] = uuid
+        properties["urn"] = urn
+        properties["usn"] = usn
+        if let absoluteXMLLocation = xmlLocation.absoluteString { properties["xmlLocation"] = absoluteXMLLocation }
+        
+        return objectDescription(properties)
+    }
     
     init?(ssdpDevice: SSDPDBDevice_ObjC) {
         if let uuid = AbstractUPnP_Swift.returnIfUsable(ssdpDevice.uuid) {
