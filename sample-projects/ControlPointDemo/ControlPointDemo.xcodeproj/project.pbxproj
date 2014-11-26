@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		63114D191A23AA3500CCB2AA /* UPnPDeviceParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63114D181A23AA3500CCB2AA /* UPnPDeviceParser.swift */; };
 		63250FAD1A19D4B4003895BA /* UPnPDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63250FAC1A19D4B4003895BA /* UPnPDB.swift */; };
 		63250FAF1A1B21F7003895BA /* AbstractUPnPDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63250FAE1A1B21F7003895BA /* AbstractUPnPDevice.swift */; };
 		633C992D1A13B9770059444C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C992C1A13B9770059444C /* main.m */; };
@@ -31,6 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		63114D181A23AA3500CCB2AA /* UPnPDeviceParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPDeviceParser.swift; sourceTree = "<group>"; };
 		63250FAC1A19D4B4003895BA /* UPnPDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPDB.swift; sourceTree = "<group>"; };
 		63250FAE1A1B21F7003895BA /* AbstractUPnPDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnPDevice.swift; sourceTree = "<group>"; };
 		633C99271A13B9770059444C /* ControlPointDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ControlPointDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -160,6 +162,7 @@
 			children = (
 				633C995D1A150D090059444C /* AbstractXMLParser.swift */,
 				633C995E1A150D090059444C /* XMLParserElementObservation.swift */,
+				63114D181A23AA3500CCB2AA /* UPnPDeviceParser.swift */,
 			);
 			name = Parsers;
 			sourceTree = "<group>";
@@ -316,6 +319,7 @@
 				633C99551A13BD8E0059444C /* FolderViewController.m in Sources */,
 				633C99521A13BD650059444C /* RootFolderViewController.m in Sources */,
 				633C995F1A150D090059444C /* AbstractXMLParser.swift in Sources */,
+				63114D191A23AA3500CCB2AA /* UPnPDeviceParser.swift in Sources */,
 				633C99301A13B9770059444C /* AppDelegate.m in Sources */,
 				63E36B241A2016D0001E15D1 /* UPnPManager.swift in Sources */,
 				63E36B141A1DABCE001E15D1 /* AbstractUPnP.swift in Sources */,

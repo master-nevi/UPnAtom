@@ -8,6 +8,6 @@
 
 import Foundation
 
-class AbstractUPnPService: AbstractUPnP_Swift {
+class AbstractUPnPService_Swift: AbstractUPnP_Swift {
     
 }

@@ -57,6 +57,25 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
-        baseURL = self.xmlLocation
+
+        baseURL = self.xmlLocation // will be handled by parser
+        
+        let deviceParser = UPnPDeviceParser_Swift(upnpDevice: self)
+        let parsedDevice = deviceParser.parse().parsedDevice
+        self.udn = parsedDevice?.udn
+        if let baseURL = parsedDevice?.baseURL {
+            self.baseURL = baseURL
+        }
+        else {
+            self.baseURL = self.xmlLocation
+        }
+        self.friendlyName = parsedDevice?.friendlyName
+        self.manufacturer = parsedDevice?.manufacturer
+        self.manufacturerURL = parsedDevice?.manufacturerURL
+        self.modelDescription = parsedDevice?.modelDescription
+        self.modelName = parsedDevice?.modelName
+        self.modelNumber = parsedDevice?.modelNumber
+        self.modelURL = parsedDevice?.modelURL
+        self.serialNumber = parsedDevice?.serialNumber
     }
 }
