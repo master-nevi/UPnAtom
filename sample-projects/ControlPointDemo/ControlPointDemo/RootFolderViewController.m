@@ -26,6 +26,7 @@
 
     UPnPDB* db = [[UPnPManager GetInstance] DB];
     UPnPDB_Swift* db2 = [[UPnPManager_Swift sharedInstance] upnpDB];
+    NSLog(@"%@", db2);
     [db addObserver:self];
     
     //Search for UPnP Devices
