@@ -8,15 +8,16 @@
 
 import Foundation
 
-struct UPnPDeviceIconDescription {
-    let url: NSURL
-    let width, height, depth: Int
-    var description: String {
-        return "\(url.absoluteString) (\(width)x\(height))"
-    }
-}
-
 class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
+    struct IconDescription: Printable {
+        let url: NSURL
+        let width, height, depth: Int
+        let mimeType: String
+        var description: String {
+            return "\(url.absoluteString) (\(mimeType):\(width)x\(height))"
+        }
+    }
+    
     // public
     let udn: String?
     let baseURL: NSURL!
@@ -28,7 +29,7 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     let modelNumber: String?
     let modelURL: NSURL?
     let serialNumber: String?
-    let iconDescriptions: [UPnPDeviceIconDescription]?
+    let iconDescriptions: [IconDescription]?
     override var className: String { return "AbstractUPnPDevice_Swift" }
     override var description: String {
         var properties = [String: String]()
@@ -44,15 +45,9 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         if let modelNumber = modelNumber { properties["modelNumber"] = modelNumber }
         if let absoluteModelURL = modelURL?.absoluteString { properties["modelURL"] = absoluteModelURL }
         if let serialNumber = serialNumber { properties["serialNumber"] = serialNumber }
-        if let iconDescriptions = iconDescriptions {
-            var descriptions = ""
-            for iconDescription in iconDescriptions {
-                descriptions += iconDescription.description
-            }
-            properties["iconDescriptions"] = descriptions
-        }
+        if let iconDescriptions = iconDescriptions { properties["iconDescriptions"] = arrayDescription(iconDescriptions) }
 
-        return objectDescription(properties)
+        return stringDictionaryDescription(properties)
     }
     
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
@@ -77,5 +72,6 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         self.modelNumber = parsedDevice?.modelNumber
         self.modelURL = parsedDevice?.modelURL
         self.serialNumber = parsedDevice?.serialNumber
+        self.iconDescriptions = parsedDevice?.iconDescriptions
     }
 }

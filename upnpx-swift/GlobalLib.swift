@@ -12,10 +12,19 @@ protocol ExtendedPrintable: Printable {
     var className: String { get }
 }
 
-func objectDescription(properties: [String: String]) -> String {
+func stringDictionaryDescription(properties: [String: String]) -> String {
     var description = "{ \n"
     for (key, value) in properties {
         description += "\t\(key) = \(value) \n"
+    }
+    description += "}"
+    return description
+}
+
+func arrayDescription<T: Printable>(array: [T]) -> String {
+    var description = "{ \n"
+    for item in array {
+        description += "\t\(item.description)\n"
     }
     description += "}"
     return description

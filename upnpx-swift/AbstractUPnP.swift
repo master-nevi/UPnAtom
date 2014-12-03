@@ -21,7 +21,7 @@ import Foundation
         properties["usn"] = usn
         if let absoluteXMLLocation = xmlLocation.absoluteString { properties["xmlLocation"] = absoluteXMLLocation }
         
-        return objectDescription(properties)
+        return stringDictionaryDescription(properties)
     }
     
     init?(ssdpDevice: SSDPDBDevice_ObjC) {

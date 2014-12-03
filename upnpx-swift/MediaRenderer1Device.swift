@@ -14,6 +14,6 @@ class MediaRenderer1Device_Swift: AbstractUPnPDevice_Swift {
         var properties = [String: String]()
         properties[super.className] = super.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
         
-        return objectDescription(properties)
+        return stringDictionaryDescription(properties)
     }
 }
