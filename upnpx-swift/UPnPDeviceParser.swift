@@ -9,7 +9,7 @@
 import Foundation
 
 class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
-    struct ParserUPnPDevice {
+    class ParserUPnPDevice {
         var udn: String?
         var baseURL: NSURL?
         var friendlyName: String?
@@ -25,14 +25,14 @@ class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
         init() { } // allow intializing with empty temp device
     }
     
-    struct ParserIconDescription {
-        var url: NSURL?
+    class ParserIconDescription {
+        var relativeURL: NSURL?
         var width, height, depth: Int?
         var mimeType: String?
         init() { } // allow intializing with empty temp device
         var iconDescription: AbstractUPnPDevice_Swift.IconDescription? {
-            if url != nil && width != nil && height != nil && depth != nil && mimeType != nil {
-                return AbstractUPnPDevice_Swift.IconDescription(url: url!, width: width!, height: height!, depth: depth!, mimeType: mimeType!)
+            if relativeURL != nil && width != nil && height != nil && depth != nil && mimeType != nil {
+                return AbstractUPnPDevice_Swift.IconDescription(relativeURL: relativeURL!, width: width!, height: height!, depth: depth!, mimeType: mimeType!)
             }
             
             return nil
@@ -147,9 +147,9 @@ class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
             }
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "icon", ""], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "icon", "url"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self.deviceStack.last
-            currentDevice?.currentIconDescription?.url = NSURL(string: text)
+            currentDevice?.currentIconDescription?.relativeURL = NSURL(string: text)
         }))
     }
     

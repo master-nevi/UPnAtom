@@ -10,11 +10,11 @@ import Foundation
 
 class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     struct IconDescription: Printable {
-        let url: NSURL
+        let relativeURL: NSURL
         let width, height, depth: Int
         let mimeType: String
         var description: String {
-            return "\(url.absoluteString) (\(mimeType):\(width)x\(height))"
+            return "\(relativeURL.absoluteString!) (\(mimeType):\(width)x\(height))"
         }
     }
     
@@ -45,7 +45,7 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         if let modelNumber = modelNumber { properties["modelNumber"] = modelNumber }
         if let absoluteModelURL = modelURL?.absoluteString { properties["modelURL"] = absoluteModelURL }
         if let serialNumber = serialNumber { properties["serialNumber"] = serialNumber }
-        if let iconDescriptions = iconDescriptions { properties["iconDescriptions"] = arrayDescription(iconDescriptions) }
+        if let iconDescriptions = iconDescriptions { properties["iconDescriptions"] = arrayDescription(iconDescriptions).stringByReplacingOccurrencesOfString("\n", replacement: "\n\t") }
 
         return stringDictionaryDescription(properties)
     }
@@ -62,7 +62,7 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
             self.baseURL = baseURL
         }
         else {
-            self.baseURL = self.xmlLocation
+            self.baseURL = NSURL(string: "/", relativeToURL: self.xmlLocation)?.absoluteURL
         }
         self.friendlyName = parsedDevice?.friendlyName
         self.manufacturer = parsedDevice?.manufacturer

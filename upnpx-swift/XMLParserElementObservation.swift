@@ -23,11 +23,12 @@ class XMLParserElementObservation_Swift {
     
     init(elementPath: [String], didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?, didEndParsingElement: ((elementName: String) -> Void)?, foundInnerText: ((elementName: String, text: String) -> Void)?) {
         self.elementPath = elementPath
-        if let didStartParsingElement = didStartParsingElement {
-            self.didStartParsingElement = {[unowned self] (elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void in
-                // reset _innerText at the start of the element parse
-                self._innerText = nil
-                
+        
+        self.didStartParsingElement = {[unowned self] (elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void in
+            // reset _innerText at the start of the element parse
+            self._innerText = nil
+            
+            if let didStartParsingElement = didStartParsingElement {
                 didStartParsingElement(elementName: elementName, attributeDict: attributeDict)
             }
         }
