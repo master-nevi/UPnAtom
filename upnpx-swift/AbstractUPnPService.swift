@@ -9,5 +9,9 @@
 import Foundation
 
 class AbstractUPnPService_Swift: AbstractUPnP_Swift {
-    
+    override init?(ssdpDevice: SSDPDBDevice_ObjC) {
+        super.init(ssdpDevice: ssdpDevice)
+        
+        let serviceParser = UPnPServiceParser_Swift(upnpService: self)
+    }
 }

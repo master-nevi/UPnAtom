@@ -28,6 +28,8 @@
 		63E36B1C1A1DC086001E15D1 /* MediaServer1Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B1B1A1DC086001E15D1 /* MediaServer1Device.swift */; };
 		63E36B1F1A1DC200001E15D1 /* AbstractUPnPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B1E1A1DC200001E15D1 /* AbstractUPnPService.swift */; };
 		63E36B241A2016D0001E15D1 /* UPnPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B231A2016D0001E15D1 /* UPnPManager.swift */; };
+		63E6E2361A34E29E00023ED8 /* UPnPServiceParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E6E2351A34E29E00023ED8 /* UPnPServiceParser.swift */; };
+		63E6E23B1A35098E00023ED8 /* UniqueServiceName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E6E23A1A35098E00023ED8 /* UniqueServiceName.swift */; };
 		A9E7FB1EA244CA7E9EF3910B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA38D7BD03FE826E3BD0AD5A /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +63,8 @@
 		63E36B1B1A1DC086001E15D1 /* MediaServer1Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaServer1Device.swift; sourceTree = "<group>"; };
 		63E36B1E1A1DC200001E15D1 /* AbstractUPnPService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnPService.swift; sourceTree = "<group>"; };
 		63E36B231A2016D0001E15D1 /* UPnPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPManager.swift; sourceTree = "<group>"; };
+		63E6E2351A34E29E00023ED8 /* UPnPServiceParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPServiceParser.swift; sourceTree = "<group>"; };
+		63E6E23A1A35098E00023ED8 /* UniqueServiceName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniqueServiceName.swift; sourceTree = "<group>"; };
 		6731BDB9ACEF097F0FD8F40C /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		92D8BE707C243DA8A0E35CC3 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		EA38D7BD03FE826E3BD0AD5A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -163,6 +167,7 @@
 				633C995D1A150D090059444C /* AbstractXMLParser.swift */,
 				633C995E1A150D090059444C /* XMLParserElementObservation.swift */,
 				63114D181A23AA3500CCB2AA /* UPnPDeviceParser.swift */,
+				63E6E2351A34E29E00023ED8 /* UPnPServiceParser.swift */,
 			);
 			name = Parsers;
 			sourceTree = "<group>";
@@ -172,6 +177,7 @@
 			children = (
 				63E36B151A1DBBA9001E15D1 /* UPnPDeviceFactory.swift */,
 				63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */,
+				63E6E23A1A35098E00023ED8 /* UniqueServiceName.swift */,
 				63E36B221A1DC2F0001E15D1 /* Services */,
 				63E36B211A1DC2E8001E15D1 /* Devices */,
 			);
@@ -318,6 +324,7 @@
 				633C99601A150D090059444C /* XMLParserElementObservation.swift in Sources */,
 				633C99551A13BD8E0059444C /* FolderViewController.m in Sources */,
 				633C99521A13BD650059444C /* RootFolderViewController.m in Sources */,
+				63E6E2361A34E29E00023ED8 /* UPnPServiceParser.swift in Sources */,
 				633C995F1A150D090059444C /* AbstractXMLParser.swift in Sources */,
 				63114D191A23AA3500CCB2AA /* UPnPDeviceParser.swift in Sources */,
 				633C99301A13B9770059444C /* AppDelegate.m in Sources */,
@@ -328,6 +335,7 @@
 				633C992D1A13B9770059444C /* main.m in Sources */,
 				63E36B1F1A1DC200001E15D1 /* AbstractUPnPService.swift in Sources */,
 				633C99581A13C8760059444C /* PlayBack.m in Sources */,
+				63E6E23B1A35098E00023ED8 /* UniqueServiceName.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

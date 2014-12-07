@@ -52,8 +52,6 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
-
-        baseURL = self.xmlLocation // will be handled by parser
         
         let deviceParser = UPnPDeviceParser_Swift(upnpDevice: self)
         let parsedDevice = deviceParser.parse().parsedDevice

@@ -52,6 +52,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasAdded:) name:[UPnPRegistry_Swift UPnPDeviceWasAddedNotification] object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPRegistry_Swift UPnPDeviceWasRemovedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasAdded:) name:[UPnPRegistry_Swift UPnPServiceWasAddedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasRemoved:) name:[UPnPRegistry_Swift UPnPServiceWasRemovedNotification] object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -151,6 +153,18 @@
 - (void)deviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]) {
         NSLog(@"Removed device: %@", notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]);
+    }
+}
+
+- (void)serviceWasAdded:(NSNotification *)notification {
+    if (notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]) {
+        NSLog(@"Added service: %@", ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]).description);
+    }
+}
+
+- (void)serviceWasRemoved:(NSNotification *)notification {
+    if (notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]) {
+        NSLog(@"Removed service: %@", notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]);
     }
 }
 
