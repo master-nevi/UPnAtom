@@ -139,7 +139,7 @@ class AbstractXMLParser_Swift: NSObject {
 }
 
 extension AbstractXMLParser_Swift: NSXMLParserDelegate {
-    func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
+    internal func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
         _elementStack += [elementName]
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {
@@ -149,7 +149,7 @@ extension AbstractXMLParser_Swift: NSXMLParserDelegate {
         }
     }
     
-    func parser(parser: NSXMLParser!, didEndElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!) {
+    internal func parser(parser: NSXMLParser!, didEndElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!) {
         if let elementObservation = elementObservationForElementStack(_elementStack) {
             let foundInnerText = elementObservation.foundInnerText
             let innerText = elementObservation.innerText
@@ -171,7 +171,7 @@ extension AbstractXMLParser_Swift: NSXMLParserDelegate {
         }
     }
     
-    func parser(parser: NSXMLParser!, foundCharacters string: String!) {
+    internal func parser(parser: NSXMLParser!, foundCharacters string: String!) {
         // The parser object may send the delegate several parser:foundCharacters: messages to report the characters of an element. Because string may be only part of the total character content for the current element, you should append it to the current accumulation of characters until the element changes.
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {
@@ -179,7 +179,7 @@ extension AbstractXMLParser_Swift: NSXMLParserDelegate {
         }
     }
     
-    func parser(parser: NSXMLParser!, parseErrorOccurred parseError: NSError!) {
+    internal func parser(parser: NSXMLParser!, parseErrorOccurred parseError: NSError!) {
         println("Parser Error \(parseError.code), Description: \(parser.parserError?.localizedDescription), Line: \(parser.lineNumber), Column: \(parser.columnNumber)")
     }
 }

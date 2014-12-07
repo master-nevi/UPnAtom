@@ -72,11 +72,11 @@ extension UPnPDB_Swift {
 }
 
 extension UPnPDB_Swift: SSDPDB_ObjC_Observer {
-    func SSDPDBWillUpdate(sender: SSDPDB_ObjC!) {
+    internal func SSDPDBWillUpdate(sender: SSDPDB_ObjC!) {
         
     }
     
-    func SSDPDBUpdated(sender: SSDPDB_ObjC!) {
+    internal func SSDPDBUpdated(sender: SSDPDB_ObjC!) {
         let ssdpDevices = sender.SSDPObjCDevices.copy() as [SSDPDBDevice_ObjC]
         dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
             let rootDevices = self._rootDevices
@@ -95,23 +95,28 @@ extension UPnPDB_Swift: SSDPDB_ObjC_Observer {
                 }
             }
             
-            let rootDevicesSet = NSMutableSet(array: Array(rootDevices.values))
-            rootDevicesSet.minusSet(NSSet(array: devicesToKeep))
-            let devicesToRemove = rootDevicesSet.allObjects as [AbstractUPnPDevice_Swift] // casting from [AnyObject]
-            
-            for deviceToRemove in devicesToRemove {
-                self._rootDevices.removeValueForKey(deviceToRemove.usn)
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    NSNotificationCenter.defaultCenter().postNotificationName(UPnPDB_Swift.UPnPDeviceWasRemovedNotification(), object: self, userInfo: [UPnPDB_Swift.UPnPDeviceKey(): deviceToRemove])
-                })
-            }
-            
-            for deviceToAdd in devicesToAdd {
-                self._rootDevices[deviceToAdd.usn] = deviceToAdd
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    NSNotificationCenter.defaultCenter().postNotificationName(UPnPDB_Swift.UPnPDeviceWasAddedNotification(), object: self, userInfo: [UPnPDB_Swift.UPnPDeviceKey(): deviceToAdd])
-                })
-            }
+            self.process(devicesToAdd, devicesToKeep: devicesToKeep)
         })
+    }
+    
+    private func process(devicesToAdd: [AbstractUPnPDevice_Swift], devicesToKeep: [AbstractUPnPDevice_Swift]) {
+        let rootDevices = self._rootDevices
+        let rootDevicesSet = NSMutableSet(array: Array(rootDevices.values))
+        rootDevicesSet.minusSet(NSSet(array: devicesToKeep))
+        let devicesToRemove = rootDevicesSet.allObjects as [AbstractUPnPDevice_Swift] // casting from [AnyObject]
+        
+        for deviceToRemove in devicesToRemove {
+            self._rootDevices.removeValueForKey(deviceToRemove.usn)
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPDB_Swift.UPnPDeviceWasRemovedNotification(), object: self, userInfo: [UPnPDB_Swift.UPnPDeviceKey(): deviceToRemove])
+            })
+        }
+        
+        for deviceToAdd in devicesToAdd {
+            self._rootDevices[deviceToAdd.usn] = deviceToAdd
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPDB_Swift.UPnPDeviceWasAddedNotification(), object: self, userInfo: [UPnPDB_Swift.UPnPDeviceKey(): deviceToAdd])
+            })
+        }
     }
 }
