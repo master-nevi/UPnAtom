@@ -25,7 +25,7 @@
     [super viewDidLoad];
 
     UPnPDB* db = [[UPnPManager GetInstance] DB];
-    UPnPDB_Swift* db2 = [[UPnPManager_Swift sharedInstance] upnpDB];
+    UPnPRegistry_Swift* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
     NSLog(@"%@", db2);
     [db addObserver:self];
     
@@ -50,8 +50,8 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasAdded:) name:[UPnPDB_Swift UPnPDeviceWasAddedNotification] object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPDB_Swift UPnPDeviceWasRemovedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasAdded:) name:[UPnPRegistry_Swift UPnPDeviceWasAddedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPRegistry_Swift UPnPDeviceWasRemovedNotification] object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -143,14 +143,14 @@
 #pragma mark - NSNotification callbacks
 
 - (void)deviceWasAdded:(NSNotification *)notification {
-    if (notification.userInfo[[UPnPDB_Swift UPnPDeviceKey]]) {
-        NSLog(@"Added device: %@", ((AbstractUPnP_Swift *)notification.userInfo[[UPnPDB_Swift UPnPDeviceKey]]).description);
+    if (notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]) {
+        NSLog(@"Added device: %@", ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]).description);
     }
 }
 
 - (void)deviceWasRemoved:(NSNotification *)notification {
-    if (notification.userInfo[[UPnPDB_Swift UPnPDeviceKey]]) {
-        NSLog(@"Removed device: %@", notification.userInfo[[UPnPDB_Swift UPnPDeviceKey]]);
+    if (notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]) {
+        NSLog(@"Removed device: %@", notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]);
     }
 }
 

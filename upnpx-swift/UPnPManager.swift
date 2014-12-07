@@ -15,9 +15,9 @@ private let _UPnPManagerSharedInstance = UPnPManager_Swift()
         return _UPnPManagerSharedInstance
     }
     let ssdp = SSDPDB_ObjC()
-    let upnpDB: UPnPDB_Swift
+    let upnpRegistry: UPnPRegistry_Swift
     
     init() {
-        upnpDB = UPnPDB_Swift(ssdpDB: ssdp)
+        upnpRegistry = UPnPRegistry_Swift(ssdpDB: ssdp)
     }
 }

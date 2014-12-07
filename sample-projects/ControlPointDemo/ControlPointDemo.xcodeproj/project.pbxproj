@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		63114D191A23AA3500CCB2AA /* UPnPDeviceParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63114D181A23AA3500CCB2AA /* UPnPDeviceParser.swift */; };
-		63250FAD1A19D4B4003895BA /* UPnPDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63250FAC1A19D4B4003895BA /* UPnPDB.swift */; };
+		63250FAD1A19D4B4003895BA /* UPnPRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63250FAC1A19D4B4003895BA /* UPnPRegistry.swift */; };
 		63250FAF1A1B21F7003895BA /* AbstractUPnPDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63250FAE1A1B21F7003895BA /* AbstractUPnPDevice.swift */; };
 		633C992D1A13B9770059444C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C992C1A13B9770059444C /* main.m */; };
 		633C99301A13B9770059444C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C992F1A13B9770059444C /* AppDelegate.m */; };
@@ -33,7 +33,7 @@
 
 /* Begin PBXFileReference section */
 		63114D181A23AA3500CCB2AA /* UPnPDeviceParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPDeviceParser.swift; sourceTree = "<group>"; };
-		63250FAC1A19D4B4003895BA /* UPnPDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPDB.swift; sourceTree = "<group>"; };
+		63250FAC1A19D4B4003895BA /* UPnPRegistry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPRegistry.swift; sourceTree = "<group>"; };
 		63250FAE1A1B21F7003895BA /* AbstractUPnPDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnPDevice.swift; sourceTree = "<group>"; };
 		633C99271A13B9770059444C /* ControlPointDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ControlPointDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		633C992B1A13B9770059444C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -181,7 +181,7 @@
 		63E36B1D1A1DC1B0001E15D1 /* Management */ = {
 			isa = PBXGroup;
 			children = (
-				63250FAC1A19D4B4003895BA /* UPnPDB.swift */,
+				63250FAC1A19D4B4003895BA /* UPnPRegistry.swift */,
 				63E36B231A2016D0001E15D1 /* UPnPManager.swift */,
 			);
 			name = Management;
@@ -311,7 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63250FAF1A1B21F7003895BA /* AbstractUPnPDevice.swift in Sources */,
-				63250FAD1A19D4B4003895BA /* UPnPDB.swift in Sources */,
+				63250FAD1A19D4B4003895BA /* UPnPRegistry.swift in Sources */,
 				63E36B1A1A1DC076001E15D1 /* MediaRenderer1Device.swift in Sources */,
 				63E36B1C1A1DC086001E15D1 /* MediaServer1Device.swift in Sources */,
 				63E36B121A1B2E1F001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m in Sources */,
