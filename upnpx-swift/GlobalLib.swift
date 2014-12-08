@@ -30,6 +30,16 @@ func arrayDescription<T: Printable>(array: [T]) -> String {
     return description
 }
 
+func returnIfContainsElements<T: _CollectionType>(x: T?) -> T? {
+    if let x = x {
+        if countElements(x) > 0 {
+            return x
+        }
+    }
+    
+    return nil
+}
+
 extension String {
     func rangesOfString(findStr:String) -> [Range<String.Index>] {
         var arr = [Range<String.Index>]()

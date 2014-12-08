@@ -19,13 +19,13 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     }
     
     // public
-    let udn: String?
+    let udn: String!
     let baseURL: NSURL!
-    let friendlyName: String?
-    let manufacturer: String?
+    let friendlyName: String!
+    let manufacturer: String!
     let manufacturerURL: NSURL?
     let modelDescription: String?
-    let modelName: String?
+    let modelName: String!
     let modelNumber: String?
     let modelURL: NSURL?
     let serialNumber: String?
@@ -55,18 +55,37 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         
         let deviceParser = UPnPDeviceParser_Swift(upnpDevice: self)
         let parsedDevice = deviceParser.parse().parsedDevice
-        self.udn = parsedDevice?.udn
+        
+        if let udn = returnIfContainsElements(parsedDevice?.udn) {
+            self.udn = udn
+        }
+        else { return nil }
+        
         if let baseURL = parsedDevice?.baseURL {
             self.baseURL = baseURL
         }
         else {
             self.baseURL = NSURL(string: "/", relativeToURL: self.xmlLocation)?.absoluteURL
         }
-        self.friendlyName = parsedDevice?.friendlyName
-        self.manufacturer = parsedDevice?.manufacturer
+        
+        if let friendlyName = returnIfContainsElements(parsedDevice?.friendlyName) {
+            self.friendlyName = friendlyName
+        }
+        else { return nil }
+        
+        if let manufacturer = returnIfContainsElements(parsedDevice?.manufacturer) {
+            self.manufacturer = manufacturer
+        }
+        else { return nil }
+        
         self.manufacturerURL = parsedDevice?.manufacturerURL
         self.modelDescription = parsedDevice?.modelDescription
-        self.modelName = parsedDevice?.modelName
+        
+        if let modelName = returnIfContainsElements(parsedDevice?.modelName) {
+            self.modelName = modelName
+        }
+        else { return nil }
+        
         self.modelNumber = parsedDevice?.modelNumber
         self.modelURL = parsedDevice?.modelURL
         self.serialNumber = parsedDevice?.serialNumber
