@@ -13,6 +13,9 @@ import Foundation
     let urn: String!
     let usn: UniqueServiceName!
     let xmlLocation: NSURL!
+    var baseURL: NSURL! {
+        return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
+    }
     var className: String { return "AbstractUPnP_Swift" }
     var description: String {
         var properties = [String: String]()
@@ -20,6 +23,7 @@ import Foundation
         properties["urn"] = urn
         properties["usn"] = usn.description
         if let absoluteXMLLocation = xmlLocation.absoluteString { properties["xmlLocation"] = absoluteXMLLocation }
+        if let absoluteBaseURL = baseURL.absoluteString { properties["baseURL"] = absoluteBaseURL }
         
         return stringDictionaryDescription(properties)
     }

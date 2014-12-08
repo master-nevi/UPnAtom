@@ -10,26 +10,72 @@ import Foundation
 
 class UPnPServiceParser_Swift: AbstractXMLParser_Swift {
     class ParserUPnPService {
-        
+        var baseURL: NSURL?
+        var serviceType: String?
+        var serviceID: String?
+        var relativeDescriptionURL: NSURL?
+        var relativeControlURL: NSURL?
+        var relativeEventURL: NSURL?
     }
     
-    unowned let upnpService: AbstractUPnPService_Swift
+    private unowned let _upnpService: AbstractUPnPService_Swift
+    private var _baseURL: NSURL?
+    private var _currentParserService: ParserUPnPService?
+    private var _foundParserService: ParserUPnPService?
     
     init(supportNamespaces: Bool, upnpService: AbstractUPnPService_Swift) {
-        self.upnpService = upnpService
+        self._upnpService = upnpService
         super.init(supportNamespaces: supportNamespaces)
         
+        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            self._baseURL = NSURL(string: text)
+        }))
+        
+        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service"], didStartParsingElement: { (elementName, attributeDict) -> Void in
+            self._currentParserService = ParserUPnPService()
+        }, didEndParsingElement: { (elementName) -> Void in
+            if let serviceType = self._currentParserService?.serviceType {
+                if serviceType == self._upnpService.urn {
+                    self._foundParserService = self._currentParserService
+                }
+            }
+        }, foundInnerText: nil))
+        
+        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "serviceType"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.serviceType = text
+        }))
+        
+        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "serviceId"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.serviceID = text
+        }))
+        
+        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "SCPDURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.relativeDescriptionURL = NSURL(string: text)
+        }))
+        
+        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "controlURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.relativeControlURL = NSURL(string: text)
+        }))
+        
+        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "eventSubURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.relativeEventURL = NSURL(string: text)
+        }))
     }
     
     convenience init(upnpService: AbstractUPnPService_Swift) {
         self.init(supportNamespaces: false, upnpService: upnpService)
     }
     
-//    func parse() -> (parserStatus: ParserStatus, parsedService: ParserUPnPService?) {
-//        var parseStatus = super.parseFrom(upnpDevice.xmlLocation)
-//        
-//        foundDevice?.baseURL = baseURL
-//        
-//        return (parseStatus, foundDevice)
-//    }
+    func parse() -> (parserStatus: ParserStatus, parsedService: ParserUPnPService?) {
+        var parseStatus = super.parseFrom(_upnpService.xmlLocation)
+        
+        _foundParserService?.baseURL = _baseURL
+        
+        return (parseStatus, _foundParserService)
+    }
 }

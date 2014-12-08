@@ -9,9 +9,74 @@
 import Foundation
 
 class AbstractUPnPService_Swift: AbstractUPnP_Swift {
+    // public
+    var serviceType: String {
+        return urn
+    }
+    let serviceID: String!
+    var descriptionURL: NSURL {
+        return NSURL(string: _relativeDescriptionURL.absoluteString!, relativeToURL: baseURL)!
+    }
+    var controlURL: NSURL {
+        return NSURL(string: _relativeControlURL.absoluteString!, relativeToURL: baseURL)!
+    }
+    var eventURL: NSURL {
+        return NSURL(string: _relativeEventURL.absoluteString!, relativeToURL: baseURL)!
+    }
+    override var baseURL: NSURL! {
+        if let baseURL = _baseURLFromXML {
+            return baseURL
+        }
+        return super.baseURL
+    }
+    override var className: String { return "AbstractUPnPService_Swift" }
+    override var description: String {
+        var properties = [String: String]()
+        properties[super.className] = super.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
+        
+        properties["serviceType"] = serviceType
+        if let serviceID = serviceID { properties["serviceID"] = serviceID }
+        if let descriptionURL = descriptionURL.absoluteString { properties["descriptionURL"] = descriptionURL }
+        if let controlURL = controlURL.absoluteString { properties["controlURL"] = controlURL }
+        if let eventURL = eventURL.absoluteString { properties["eventURL"] = eventURL }
+        
+        return stringDictionaryDescription(properties)
+    }
+    
+    // private
+    private let _baseURLFromXML: NSURL?
+    private let _relativeDescriptionURL: NSURL!
+    private let _relativeControlURL: NSURL!
+    private let _relativeEventURL: NSURL!
+    
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
         
         let serviceParser = UPnPServiceParser_Swift(upnpService: self)
+        let parsedService = serviceParser.parse().parsedService
+        
+        if let baseURL = parsedService?.baseURL {
+            _baseURLFromXML = baseURL
+        }
+        
+        if let serviceID = parsedService?.serviceID {
+            self.serviceID = serviceID
+        }
+        else { return nil }
+        
+        if let relativeDescriptionURL = parsedService?.relativeDescriptionURL {
+            self._relativeDescriptionURL = relativeDescriptionURL
+        }
+        else { return nil }
+        
+        if let relativeControlURL = parsedService?.relativeControlURL {
+            self._relativeControlURL = relativeControlURL
+        }
+        else { return nil }
+        
+        if let relativeEventURL = parsedService?.relativeEventURL {
+            self._relativeEventURL = relativeEventURL
+        }
+        else { return nil }
     }
 }

@@ -20,7 +20,6 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     
     // public
     let udn: String!
-    let baseURL: NSURL!
     let friendlyName: String!
     let manufacturer: String!
     let manufacturerURL: NSURL?
@@ -30,18 +29,23 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     let modelURL: NSURL?
     let serialNumber: String?
     let iconDescriptions: [IconDescription]?
+    override var baseURL: NSURL! {
+        if let baseURL = _baseURLFromXML {
+            return baseURL
+        }
+        return super.baseURL
+    }
     override var className: String { return "AbstractUPnPDevice_Swift" }
     override var description: String {
         var properties = [String: String]()
         properties[super.className] = super.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
         
-        if let udn = udn { properties["udn"] = udn }
-        if let absoluteBaseURL = baseURL.absoluteString { properties["baseURL"] = absoluteBaseURL }
-        if let friendlyName = friendlyName { properties["friendlyName"] = friendlyName }
-        if let manufacturer = manufacturer { properties["manufacturer"] = manufacturer }
+        properties["udn"] = udn
+        properties["friendlyName"] = friendlyName
+        properties["manufacturer"] = manufacturer
         if let absoluteManufacturerURL = manufacturerURL?.absoluteString { properties["manufacturerURL"] = absoluteManufacturerURL }
         if let modelDescription = modelDescription { properties["modelDescription"] = modelDescription }
-        if let modelName = modelName { properties["modelName"] = modelName }
+        properties["modelName"] = modelName
         if let modelNumber = modelNumber { properties["modelNumber"] = modelNumber }
         if let absoluteModelURL = modelURL?.absoluteString { properties["modelURL"] = absoluteModelURL }
         if let serialNumber = serialNumber { properties["serialNumber"] = serialNumber }
@@ -50,30 +54,30 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         return stringDictionaryDescription(properties)
     }
     
+    // private
+    private let _baseURLFromXML: NSURL?
+    
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
         
         let deviceParser = UPnPDeviceParser_Swift(upnpDevice: self)
         let parsedDevice = deviceParser.parse().parsedDevice
         
-        if let udn = returnIfContainsElements(parsedDevice?.udn) {
+        if let udn = parsedDevice?.udn {
             self.udn = udn
         }
         else { return nil }
         
         if let baseURL = parsedDevice?.baseURL {
-            self.baseURL = baseURL
-        }
-        else {
-            self.baseURL = NSURL(string: "/", relativeToURL: self.xmlLocation)?.absoluteURL
+            _baseURLFromXML = baseURL
         }
         
-        if let friendlyName = returnIfContainsElements(parsedDevice?.friendlyName) {
+        if let friendlyName = parsedDevice?.friendlyName {
             self.friendlyName = friendlyName
         }
         else { return nil }
         
-        if let manufacturer = returnIfContainsElements(parsedDevice?.manufacturer) {
+        if let manufacturer = parsedDevice?.manufacturer {
             self.manufacturer = manufacturer
         }
         else { return nil }
@@ -81,7 +85,7 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         self.manufacturerURL = parsedDevice?.manufacturerURL
         self.modelDescription = parsedDevice?.modelDescription
         
-        if let modelName = returnIfContainsElements(parsedDevice?.modelName) {
+        if let modelName = parsedDevice?.modelName {
             self.modelName = modelName
         }
         else { return nil }
