@@ -20,10 +20,14 @@
 		633C99581A13C8760059444C /* PlayBack.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99571A13C8760059444C /* PlayBack.m */; };
 		633C995F1A150D090059444C /* AbstractXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633C995D1A150D090059444C /* AbstractXMLParser.swift */; };
 		633C99601A150D090059444C /* XMLParserElementObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633C995E1A150D090059444C /* XMLParserElementObservation.swift */; };
+		635645E31A382BC900283A51 /* AVTransport1Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635645E21A382BC900283A51 /* AVTransport1Service.swift */; };
+		635645E51A382BD800283A51 /* ConnectionManager1Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635645E41A382BD800283A51 /* ConnectionManager1Service.swift */; };
+		635645E71A382BFA00283A51 /* ContentDirectory1Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635645E61A382BFA00283A51 /* ContentDirectory1Service.swift */; };
+		635645E91A382C1B00283A51 /* RenderingControl1Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635645E81A382C1B00283A51 /* RenderingControl1Service.swift */; };
 		63713E5E1A20391700EC81FC /* GlobalLib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63713E5D1A20391700EC81FC /* GlobalLib.swift */; };
 		63E36B121A1B2E1F001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B111A1B2E1E001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m */; };
 		63E36B141A1DABCE001E15D1 /* AbstractUPnP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */; };
-		63E36B161A1DBBA9001E15D1 /* UPnPDeviceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B151A1DBBA9001E15D1 /* UPnPDeviceFactory.swift */; };
+		63E36B161A1DBBA9001E15D1 /* UPnPFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B151A1DBBA9001E15D1 /* UPnPFactory.swift */; };
 		63E36B1A1A1DC076001E15D1 /* MediaRenderer1Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B191A1DC076001E15D1 /* MediaRenderer1Device.swift */; };
 		63E36B1C1A1DC086001E15D1 /* MediaServer1Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B1B1A1DC086001E15D1 /* MediaServer1Device.swift */; };
 		63E36B1F1A1DC200001E15D1 /* AbstractUPnPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B1E1A1DC200001E15D1 /* AbstractUPnPService.swift */; };
@@ -54,11 +58,15 @@
 		633C995A1A150CCE0059444C /* ControlPointDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ControlPointDemo-Bridging-Header.h"; sourceTree = "<group>"; };
 		633C995D1A150D090059444C /* AbstractXMLParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractXMLParser.swift; sourceTree = "<group>"; };
 		633C995E1A150D090059444C /* XMLParserElementObservation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XMLParserElementObservation.swift; sourceTree = "<group>"; };
+		635645E21A382BC900283A51 /* AVTransport1Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVTransport1Service.swift; sourceTree = "<group>"; };
+		635645E41A382BD800283A51 /* ConnectionManager1Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionManager1Service.swift; sourceTree = "<group>"; };
+		635645E61A382BFA00283A51 /* ContentDirectory1Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentDirectory1Service.swift; sourceTree = "<group>"; };
+		635645E81A382C1B00283A51 /* RenderingControl1Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderingControl1Service.swift; sourceTree = "<group>"; };
 		63713E5D1A20391700EC81FC /* GlobalLib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalLib.swift; sourceTree = "<group>"; };
 		63E36B101A1B2E1E001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SSDPDB_ObjC+SwiftCompatibility.h"; sourceTree = "<group>"; };
 		63E36B111A1B2E1E001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SSDPDB_ObjC+SwiftCompatibility.m"; sourceTree = "<group>"; };
 		63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnP.swift; sourceTree = "<group>"; };
-		63E36B151A1DBBA9001E15D1 /* UPnPDeviceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPDeviceFactory.swift; sourceTree = "<group>"; };
+		63E36B151A1DBBA9001E15D1 /* UPnPFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPFactory.swift; sourceTree = "<group>"; };
 		63E36B191A1DC076001E15D1 /* MediaRenderer1Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaRenderer1Device.swift; sourceTree = "<group>"; };
 		63E36B1B1A1DC086001E15D1 /* MediaServer1Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaServer1Device.swift; sourceTree = "<group>"; };
 		63E36B1E1A1DC200001E15D1 /* AbstractUPnPService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnPService.swift; sourceTree = "<group>"; };
@@ -175,7 +183,7 @@
 		63E36B181A1DBFF6001E15D1 /* UPnP Objects */ = {
 			isa = PBXGroup;
 			children = (
-				63E36B151A1DBBA9001E15D1 /* UPnPDeviceFactory.swift */,
+				63E36B151A1DBBA9001E15D1 /* UPnPFactory.swift */,
 				63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */,
 				63E6E23A1A35098E00023ED8 /* UniqueServiceName.swift */,
 				63E36B221A1DC2F0001E15D1 /* Services */,
@@ -207,6 +215,10 @@
 			isa = PBXGroup;
 			children = (
 				63E36B1E1A1DC200001E15D1 /* AbstractUPnPService.swift */,
+				635645E21A382BC900283A51 /* AVTransport1Service.swift */,
+				635645E41A382BD800283A51 /* ConnectionManager1Service.swift */,
+				635645E61A382BFA00283A51 /* ContentDirectory1Service.swift */,
+				635645E81A382C1B00283A51 /* RenderingControl1Service.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -321,17 +333,21 @@
 				63E36B1A1A1DC076001E15D1 /* MediaRenderer1Device.swift in Sources */,
 				63E36B1C1A1DC086001E15D1 /* MediaServer1Device.swift in Sources */,
 				63E36B121A1B2E1F001E15D1 /* SSDPDB_ObjC+SwiftCompatibility.m in Sources */,
+				635645E71A382BFA00283A51 /* ContentDirectory1Service.swift in Sources */,
 				633C99601A150D090059444C /* XMLParserElementObservation.swift in Sources */,
+				635645E31A382BC900283A51 /* AVTransport1Service.swift in Sources */,
 				633C99551A13BD8E0059444C /* FolderViewController.m in Sources */,
 				633C99521A13BD650059444C /* RootFolderViewController.m in Sources */,
+				635645E91A382C1B00283A51 /* RenderingControl1Service.swift in Sources */,
 				63E6E2361A34E29E00023ED8 /* UPnPServiceParser.swift in Sources */,
 				633C995F1A150D090059444C /* AbstractXMLParser.swift in Sources */,
 				63114D191A23AA3500CCB2AA /* UPnPDeviceParser.swift in Sources */,
 				633C99301A13B9770059444C /* AppDelegate.m in Sources */,
+				635645E51A382BD800283A51 /* ConnectionManager1Service.swift in Sources */,
 				63E36B241A2016D0001E15D1 /* UPnPManager.swift in Sources */,
 				63E36B141A1DABCE001E15D1 /* AbstractUPnP.swift in Sources */,
 				63713E5E1A20391700EC81FC /* GlobalLib.swift in Sources */,
-				63E36B161A1DBBA9001E15D1 /* UPnPDeviceFactory.swift in Sources */,
+				63E36B161A1DBBA9001E15D1 /* UPnPFactory.swift in Sources */,
 				633C992D1A13B9770059444C /* main.m in Sources */,
 				63E36B1F1A1DC200001E15D1 /* AbstractUPnPService.swift in Sources */,
 				633C99581A13C8760059444C /* PlayBack.m in Sources */,

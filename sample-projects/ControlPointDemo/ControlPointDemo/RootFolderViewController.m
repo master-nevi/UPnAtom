@@ -146,25 +146,29 @@
 
 - (void)deviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]) {
-        NSLog(@"Added device: %@", ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]).description);
+        AbstractUPnP_Swift *upnpObject = ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]);
+        NSLog(@"Added device: %@ %@", upnpObject.className, upnpObject.description);
     }
 }
 
 - (void)deviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]) {
-        NSLog(@"Removed device: %@", notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]);
+        AbstractUPnP_Swift *upnpObject = ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]);
+        NSLog(@"Removed device: %@ %@", upnpObject.className, upnpObject.description);
     }
 }
 
 - (void)serviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]) {
-        NSLog(@"Added service: %@", ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]).description);
+        AbstractUPnP_Swift *upnpObject = ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]);
+        NSLog(@"Added service: %@ %@", upnpObject.className, upnpObject.description);
     }
 }
 
 - (void)serviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]) {
-        NSLog(@"Removed service: %@", notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]);
+        AbstractUPnP_Swift *upnpObject = ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]);
+        NSLog(@"Removed service: %@ %@", upnpObject.className, upnpObject.description);
     }
 }
 

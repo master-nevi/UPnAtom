@@ -106,7 +106,7 @@ extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
                             devicesToKeep.append(foundDevice)
                         }
                         else {
-                            if let newDevice = UPnPDeviceFactory_Swift.createDeviceFrom(ssdpDevice) {
+                            if let newDevice = UPnPFactory_Swift.createDeviceFrom(ssdpDevice) {
                                 devicesToAdd.append(newDevice)
                             }
                         }
@@ -116,7 +116,7 @@ extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
                             servicesToKeep.append(foundService)
                         }
                         else {
-                            if let newService = AbstractUPnPService_Swift(ssdpDevice: ssdpDevice) {
+                            if let newService = UPnPFactory_Swift.createServiceFrom(ssdpDevice) {
                                 servicesToAdd.append(newService)
                             }
                         }
