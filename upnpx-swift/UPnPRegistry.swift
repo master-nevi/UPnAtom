@@ -26,7 +26,7 @@ import Foundation
     
     init(ssdpDB: SSDPDB_ObjC) {
         self.ssdpDB = ssdpDB
-        ssdpDB.addSSDPDBObserver(self)
+        ssdpDB.addObserver(self)
     }
     
     func ssdpServicesFor(uuid: String) -> [SSDPDBDevice_ObjC] {

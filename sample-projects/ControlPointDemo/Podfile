@@ -3,4 +3,5 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 xcodeproj 'ControlPointDemo'
 
-pod 'upnpx', :git => 'https://github.com/fkuehne/upnpx.git', :commit => '5228d90c4fcd5aa5a92cbd3ca7ad4a91cbcabc98'
+pod 'upnpx', :git => 'https://github.com/fkuehne/upnpx.git', :commit => '8e31bd182d7e7b4cb07220cab2b627a5653792e6'
+pod 'AFNetworking', '2.4.1'

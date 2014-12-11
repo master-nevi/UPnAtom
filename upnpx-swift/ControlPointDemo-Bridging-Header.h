@@ -3,4 +3,3 @@
 //
 
 #import <upnpx/SSDPDB_ObjC.h>
-#import "SSDPDB_ObjC+SwiftCompatibility.h"
