@@ -31,16 +31,14 @@ class AbstractUPnPService_Swift: AbstractUPnP_Swift {
     }
     override var className: String { return "AbstractUPnPService_Swift" }
     override var description: String {
-        var properties = [String: String]()
-        properties[super.className] = super.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
-        
-        properties["serviceType"] = serviceType
-        if let serviceID = serviceID { properties["serviceID"] = serviceID }
-        if let descriptionURL = descriptionURL.absoluteString { properties["descriptionURL"] = descriptionURL }
-        if let controlURL = controlURL.absoluteString { properties["controlURL"] = controlURL }
-        if let eventURL = eventURL.absoluteString { properties["eventURL"] = eventURL }
-        
-        return stringDictionaryDescription(properties)
+        var properties = PropertyPrinter()
+        properties.add(super.className, property: super.description)
+        properties.add("serviceType", property: serviceType)
+        properties.add("serviceID", property: serviceID)
+        properties.add("descriptionURL", property: descriptionURL.absoluteString)
+        properties.add("controlURL", property: controlURL.absoluteString)
+        properties.add("eventURL", property: eventURL.absoluteString)
+        return properties.description
     }
     
     // private

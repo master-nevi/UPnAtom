@@ -18,14 +18,13 @@ import Foundation
     }
     var className: String { return "AbstractUPnP_Swift" }
     var description: String {
-        var properties = [String: String]()
-        properties["uuid"] = uuid
-        properties["urn"] = urn
-        properties["usn"] = usn.description
-        if let absoluteXMLLocation = xmlLocation.absoluteString { properties["xmlLocation"] = absoluteXMLLocation }
-        if let absoluteBaseURL = baseURL.absoluteString { properties["baseURL"] = absoluteBaseURL }
-        
-        return stringDictionaryDescription(properties)
+        var properties = PropertyPrinter()
+        properties.add("uuid", property: uuid)
+        properties.add("urn", property: urn)
+        properties.add("usn", property: usn.description)
+        properties.add("xmlLocation", property: xmlLocation.absoluteString)
+        properties.add("baseURL", property: baseURL.absoluteString)        
+        return properties.description
     }
     
     init?(ssdpDevice: SSDPDBDevice_ObjC) {

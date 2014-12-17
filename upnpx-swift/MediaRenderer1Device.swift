@@ -11,9 +11,8 @@ import Foundation
 class MediaRenderer1Device_Swift: AbstractUPnPDevice_Swift {
     override var className: String { return "MediaRenderer1Device_Swift" }
     override var description: String {
-        var properties = [String: String]()
-        properties[super.className] = super.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
-        
-        return stringDictionaryDescription(properties)
+        var properties = PropertyPrinter()
+        properties.add(super.className, property: super.description)        
+        return properties.description
     }
 }

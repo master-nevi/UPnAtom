@@ -37,21 +37,19 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     }
     override var className: String { return "AbstractUPnPDevice_Swift" }
     override var description: String {
-        var properties = [String: String]()
-        properties[super.className] = super.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
-        
-        properties["udn"] = udn
-        properties["friendlyName"] = friendlyName
-        properties["manufacturer"] = manufacturer
-        if let absoluteManufacturerURL = manufacturerURL?.absoluteString { properties["manufacturerURL"] = absoluteManufacturerURL }
-        if let modelDescription = modelDescription { properties["modelDescription"] = modelDescription }
-        properties["modelName"] = modelName
-        if let modelNumber = modelNumber { properties["modelNumber"] = modelNumber }
-        if let absoluteModelURL = modelURL?.absoluteString { properties["modelURL"] = absoluteModelURL }
-        if let serialNumber = serialNumber { properties["serialNumber"] = serialNumber }
-        if let iconDescriptions = iconDescriptions { properties["iconDescriptions"] = arrayDescription(iconDescriptions).stringByReplacingOccurrencesOfString("\n", replacement: "\n\t") }
-
-        return stringDictionaryDescription(properties)
+        var properties = PropertyPrinter()
+        properties.add(super.className, property: super.description)
+        properties.add("udn", property: udn)
+        properties.add("friendlyName", property: friendlyName)
+        properties.add("manufacturer", property: manufacturer)
+        properties.add("manufacturerURL", property: manufacturerURL?.absoluteString)
+        properties.add("modelDescription", property: modelDescription)
+        properties.add("modelName", property: modelName)
+        properties.add("modelNumber", property: modelNumber)
+        properties.add("modelURL", property: modelURL?.absoluteString)
+        properties.add("serialNumber", property: serialNumber)
+        properties.add("iconDescriptions", property: iconDescriptions)
+        return properties.description
     }
     
     // private

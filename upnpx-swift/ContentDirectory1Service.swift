@@ -11,9 +11,8 @@ import Foundation
 class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
     override var className: String { return "ContentDirectory1Service_Swift" }
     override var description: String {
-        var properties = [String: String]()
-        properties[super.className] = super.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
-        
-        return stringDictionaryDescription(properties)
+        var properties = PropertyPrinter()
+        properties.add(super.className, property: super.description)        
+        return properties.description
     }
 }
