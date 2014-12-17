@@ -3,3 +3,5 @@
 //
 
 #import <upnpx/SSDPDB_ObjC.h>
+
+#import <AFNetworking/AFNetworking.h>

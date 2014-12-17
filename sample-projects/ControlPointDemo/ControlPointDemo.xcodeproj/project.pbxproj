@@ -26,6 +26,8 @@
 		635645E91A382C1B00283A51 /* RenderingControl1Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635645E81A382C1B00283A51 /* RenderingControl1Service.swift */; };
 		63713E5E1A20391700EC81FC /* GlobalLib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63713E5D1A20391700EC81FC /* GlobalLib.swift */; };
 		63DD9E531A411A4800C78525 /* PropertyPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD9E521A411A4800C78525 /* PropertyPrinter.swift */; };
+		63DD9E561A411F1E00C78525 /* SOAPRequestSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD9E551A411F1E00C78525 /* SOAPRequestSerializer.swift */; };
+		63DD9E581A411F3A00C78525 /* SOAPResponseSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD9E571A411F3A00C78525 /* SOAPResponseSerializer.swift */; };
 		63E36B141A1DABCE001E15D1 /* AbstractUPnP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */; };
 		63E36B161A1DBBA9001E15D1 /* UPnPFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B151A1DBBA9001E15D1 /* UPnPFactory.swift */; };
 		63E36B1A1A1DC076001E15D1 /* MediaRenderer1Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E36B191A1DC076001E15D1 /* MediaRenderer1Device.swift */; };
@@ -64,6 +66,8 @@
 		635645E81A382C1B00283A51 /* RenderingControl1Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderingControl1Service.swift; sourceTree = "<group>"; };
 		63713E5D1A20391700EC81FC /* GlobalLib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalLib.swift; sourceTree = "<group>"; };
 		63DD9E521A411A4800C78525 /* PropertyPrinter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPrinter.swift; sourceTree = "<group>"; };
+		63DD9E551A411F1E00C78525 /* SOAPRequestSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOAPRequestSerializer.swift; sourceTree = "<group>"; };
+		63DD9E571A411F3A00C78525 /* SOAPResponseSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOAPResponseSerializer.swift; sourceTree = "<group>"; };
 		63E36B131A1DABCE001E15D1 /* AbstractUPnP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractUPnP.swift; sourceTree = "<group>"; };
 		63E36B151A1DBBA9001E15D1 /* UPnPFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPFactory.swift; sourceTree = "<group>"; };
 		63E36B191A1DC076001E15D1 /* MediaRenderer1Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaRenderer1Device.swift; sourceTree = "<group>"; };
@@ -158,6 +162,7 @@
 			children = (
 				63713E5D1A20391700EC81FC /* GlobalLib.swift */,
 				63DD9E521A411A4800C78525 /* PropertyPrinter.swift */,
+				63DD9E541A411EC300C78525 /* SOAP Serializers */,
 				63E36B171A1DBFE9001E15D1 /* Parsers */,
 				63E36B1D1A1DC1B0001E15D1 /* Management */,
 				63E36B181A1DBFF6001E15D1 /* UPnP Objects */,
@@ -165,6 +170,15 @@
 			);
 			name = "upnpx-swift";
 			path = "../../upnpx-swift";
+			sourceTree = "<group>";
+		};
+		63DD9E541A411EC300C78525 /* SOAP Serializers */ = {
+			isa = PBXGroup;
+			children = (
+				63DD9E551A411F1E00C78525 /* SOAPRequestSerializer.swift */,
+				63DD9E571A411F3A00C78525 /* SOAPResponseSerializer.swift */,
+			);
+			name = "SOAP Serializers";
 			sourceTree = "<group>";
 		};
 		63E36B171A1DBFE9001E15D1 /* Parsers */ = {
@@ -342,10 +356,12 @@
 				63114D191A23AA3500CCB2AA /* UPnPDeviceParser.swift in Sources */,
 				633C99301A13B9770059444C /* AppDelegate.m in Sources */,
 				635645E51A382BD800283A51 /* ConnectionManager1Service.swift in Sources */,
+				63DD9E561A411F1E00C78525 /* SOAPRequestSerializer.swift in Sources */,
 				63E36B241A2016D0001E15D1 /* UPnPManager.swift in Sources */,
 				63E36B141A1DABCE001E15D1 /* AbstractUPnP.swift in Sources */,
 				63713E5E1A20391700EC81FC /* GlobalLib.swift in Sources */,
 				63E36B161A1DBBA9001E15D1 /* UPnPFactory.swift in Sources */,
+				63DD9E581A411F3A00C78525 /* SOAPResponseSerializer.swift in Sources */,
 				633C992D1A13B9770059444C /* main.m in Sources */,
 				63E36B1F1A1DC200001E15D1 /* AbstractUPnPService.swift in Sources */,
 				633C99581A13C8760059444C /* PlayBack.m in Sources */,
