@@ -42,28 +42,29 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
             }
         }
         
-        if parameters != nil {
-            if mutableRequest.valueForHTTPHeaderField("Content-Type") == nil {
-                var charSet = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
-                mutableRequest.setValue("text/xml; charset=\(charSet)", forHTTPHeaderField: "Content-Type")
-            }
-            
-            mutableRequest.setValue("\"\(upnpNamespace)#\(soapAction)", forHTTPHeaderField: "SOAPACTION")
-            
-            var body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-            body += "<s:Envelope s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">"
-            body += "<s:Body>"
-            for (key, value) in parameters as NSDictionary {
+        if mutableRequest.valueForHTTPHeaderField("Content-Type") == nil {
+            var charSet = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+            mutableRequest.setValue("text/xml; charset=\"\(charSet)\"", forHTTPHeaderField: "Content-Type")
+        }
+        
+        mutableRequest.setValue("\"\(upnpNamespace)#\(soapAction)\"", forHTTPHeaderField: "SOAPACTION")
+        
+        var body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        body += "<s:Envelope s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+        body += "<s:Body>"
+        body += "<u:\(soapAction) xmlns:u=\"\(upnpNamespace)\">"
+        if let parameters = parameters as? NSDictionary {
+            for (key, value) in parameters {
                 body += "<\(key)>\(value)</\(key)>"
             }
-            body += "<u:\(soapAction) xmlns:u=\"\(upnpNamespace)\">"
-            body += "</u:\(soapAction)>"
-            body += "</s:Body></s:Envelope>"
-            
-            mutableRequest.setValue("\(countElements(body.utf8))", forHTTPHeaderField: "Content-Length")
-            
-            mutableRequest.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         }
+        body += "</u:\(soapAction)>"
+        body += "</s:Body></s:Envelope>"
+        println("swift: \(body)")
+        
+        mutableRequest.setValue("\(countElements(body.utf8))", forHTTPHeaderField: "Content-Length")
+        
+        mutableRequest.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         
         return mutableRequest
     }

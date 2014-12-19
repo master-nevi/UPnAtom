@@ -25,7 +25,6 @@ class SOAPResponseSerializer: AFXMLParserResponseSerializer {
             return nil
         }
 
-        println("\(NSString(data: data, encoding: NSUTF8StringEncoding))")
         var serializationError: NSError?
         var reponseObject: AnyObject!
         let expectedResponseParameters = self.expectedResponseParameters!
