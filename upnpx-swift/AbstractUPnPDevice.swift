@@ -59,7 +59,7 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         super.init(ssdpDevice: ssdpDevice)
         
         let deviceParser = UPnPDeviceParser_Swift(upnpDevice: self)
-        let parsedDevice = deviceParser.parse().parsedDevice
+        let parsedDevice = deviceParser.parse().value
         
         if let udn = parsedDevice?.udn {
             self.udn = udn

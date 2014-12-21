@@ -51,7 +51,7 @@ class AbstractUPnPService_Swift: AbstractUPnP_Swift {
         super.init(ssdpDevice: ssdpDevice)
         
         let serviceParser = UPnPServiceParser_Swift(upnpService: self)
-        let parsedService = serviceParser.parse().parsedService
+        let parsedService = serviceParser.parse().value
         
         if let baseURL = parsedService?.baseURL {
             _baseURLFromXML = baseURL

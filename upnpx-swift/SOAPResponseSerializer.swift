@@ -10,9 +10,7 @@ import Foundation
 
 class SOAPResponseSerializer: AFXMLParserResponseSerializer {
     var expectedResponseParameters: [String]?
-    var soapAction = ""
-    
-    private let xmlParser = AbstractXMLParser_Swift(supportNamespaces: true)
+    var soapAction: String?
     
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
         if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
@@ -21,32 +19,27 @@ class SOAPResponseSerializer: AFXMLParserResponseSerializer {
             }
         }
         
-        if self.expectedResponseParameters == nil {
+        if soapAction == nil || expectedResponseParameters == nil {
             return nil
         }
 
         var serializationError: NSError?
-        var reponseObject: AnyObject!
-        let expectedResponseParameters = self.expectedResponseParameters!
-        var responseParameters = [String: String]()
+        var responseObject: AnyObject!
+        let xmlParser = SOAPResponseParser(soapAction: soapAction!, expectedResponseParameters: expectedResponseParameters!)
         
-        xmlParser.clearAllElementObservations()
-        for parameter in expectedResponseParameters {
-            xmlParser.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["Envelope", "Body", "\(soapAction)Response", parameter], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-                responseParameters[elementName] = text
-            }))
+        switch xmlParser.parse(soapResponseData: data) {
+        case .Success(let value):
+            responseObject = value()
+        case .NoContentSuccess:
+            serializationError = NSError(domain: "upnpx-swift", code: 0, userInfo: [NSLocalizedDescriptionKey: "No response data"])
+        case .Failure(let error):
+            serializationError = error
         }
-        
-        if xmlParser.parse(data: data) == ParserStatus.Failed {
-            serializationError = NSError(domain: "upnpx-swift", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse SOAP response"])
-        }
-        
-        reponseObject = responseParameters
         
         if serializationError != nil && error != nil {
             error.memory = serializationError!
         }
         
-        return reponseObject
+        return responseObject
     }
 }

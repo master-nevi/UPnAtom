@@ -8,10 +8,6 @@
 
 import Foundation
 
-enum ParserStatus: Int {
-    case Succeeded, Failed
-}
-
 // Subclassing NSObject in order to be a NSXMLParserDelegate
 class AbstractXMLParser_Swift: NSObject {
     // public
@@ -83,46 +79,55 @@ class AbstractXMLParser_Swift: NSObject {
         return nil
     }
     
-    func parse(#data: NSData) -> ParserStatus {
-        var parserStatus = ParserStatus.Failed
+    func parse(#data: NSData) -> Result<Any> {
+        var parserResult: Result<Any> = .Failure(AbstractXMLParser_Swift.createError("Parser failure"))
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
                 let parser = NSXMLParser(data: validData)
-                parserStatus = self.startParser(parser)
+                parserResult = self.startParser(parser)
             }
         }
         
-        return parserStatus
+        return parserResult
     }
     
-    func parse(#contentsOfURL: NSURL) -> ParserStatus {
-        var parserStatus = ParserStatus.Failed
+    func parse(#contentsOfURL: NSURL) -> Result<Any> {
+        var parserResult: Result<Any> = .Failure(AbstractXMLParser_Swift.createError("Parser failure"))
         autoreleasepool { () -> () in
             if let data = NSData(contentsOfURL: contentsOfURL) {
                 if let validData = self.validateForParsing(data) {
                     let parser = NSXMLParser(data: validData)
-                    parserStatus = self.startParser(parser)
+                    parserResult = self.startParser(parser)
                 }
             }
         }
         
-        return parserStatus
+        return parserResult
     }
     
     // MARK: - Internal lib
     
-    private func startParser(parser: NSXMLParser) -> ParserStatus {
+    internal class func createError(message: String) -> Error {
+        return NSError(domain: "upnpx-swift", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
+    }
+    
+    private func startParser(parser: NSXMLParser) -> Result<Any> {
         parser.shouldProcessNamespaces = _supportNamespaces
         parser.delegate = self
         
-        var parserStatus = ParserStatus.Failed
+        var parserResult: Result<Any> = .Failure(AbstractXMLParser_Swift.createError("Parser failure"))
         if parser.parse() {
-            parserStatus = .Succeeded
+            parserResult = .NoContentSuccess
+        }
+        else {
+            if let parserError = parser.parserError {
+                parserResult = .Failure(parserError)
+            }
         }
         
         parser.delegate = nil
         
-        return parserStatus
+        return parserResult
     }
     
     private func validateForParsing(data: NSData) -> NSData? {
@@ -177,9 +182,5 @@ extension AbstractXMLParser_Swift: NSXMLParserDelegate {
         if let elementObservation = elementObservationForElementStack(_elementStack) {
             elementObservation.appendInnerText(string)
         }
-    }
-    
-    internal func parser(parser: NSXMLParser!, parseErrorOccurred parseError: NSError!) {
-        println("Parser Error \(parseError.code), Description: \(parser.parserError?.localizedDescription), Line: \(parser.lineNumber), Column: \(parser.columnNumber)")
     }
 }

@@ -43,3 +43,54 @@ func curlRep(request: NSURLRequest) -> String {
     
     return curl
 }
+
+typealias Error = NSError
+
+enum Result<T> {
+    // @autoclosure wierdness is to save us from a weird compiler error when using generic enums: http://owensd.io/2014/08/06/fixed-enum-layout.html
+    case Success(@autoclosure() -> T)
+    case NoContentSuccess
+    case Failure(Error)
+    
+    init(_ value: T) {
+        self = .Success(value)
+    }
+    
+    init(_ error: NSError) {
+        self = .Failure(error)
+    }
+    
+    init() {
+        self = .NoContentSuccess
+    }
+    
+    var failed: Bool {
+        switch self {
+        case .Failure(let error):
+            return true
+            
+        default:
+            return false
+        }
+    }
+    
+    var error: NSError? {
+        switch self {
+        case .Failure(let error):
+            return error
+            
+        default:
+            return nil
+        }
+    }
+    
+    var value: T? {
+        switch self {
+        case .Success(let value):
+            return value()
+            
+        default:
+            return nil
+        }
+    }
+}

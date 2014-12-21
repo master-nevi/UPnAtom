@@ -71,11 +71,18 @@ class UPnPServiceParser_Swift: AbstractXMLParser_Swift {
         self.init(supportNamespaces: false, upnpService: upnpService)
     }
     
-    func parse() -> (parserStatus: ParserStatus, parsedService: ParserUPnPService?) {
-        let parseStatus = super.parse(contentsOfURL: _upnpService.xmlLocation)
-        
-        _foundParserService?.baseURL = _baseURL
-        
-        return (parseStatus, _foundParserService)
+    func parse() -> Result<ParserUPnPService> {
+        switch super.parse(contentsOfURL: _upnpService.xmlLocation) {
+        case .Success, .NoContentSuccess:
+            if let foundParserService = _foundParserService {
+                foundParserService.baseURL = _baseURL
+                return .Success(foundParserService)
+            }
+            else {
+                return .Failure(AbstractXMLParser_Swift.createError("Parser error"))
+            }
+        case .Failure(let error):
+            return .Failure(error)
+        }
     }
 }

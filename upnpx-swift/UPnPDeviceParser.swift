@@ -157,12 +157,19 @@ class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
         self.init(supportNamespaces: false, upnpDevice: upnpDevice)
     }
     
-    func parse() -> (parserStatus: ParserStatus, parsedDevice: ParserUPnPDevice?) {
-        let parseStatus = super.parse(contentsOfURL: _upnpDevice.xmlLocation)
-        
-        _foundDevice?.baseURL = _baseURL
-        
-        return (parseStatus, _foundDevice)
+    func parse() -> Result<ParserUPnPDevice> {
+        switch super.parse(contentsOfURL: _upnpDevice.xmlLocation) {
+        case .Success, .NoContentSuccess:
+            if let foundDevice = _foundDevice {
+                foundDevice.baseURL = _baseURL
+                return .Success(foundDevice)
+            }
+            else {
+                return .Failure(AbstractXMLParser_Swift.createError("Parser error"))
+            }
+        case .Failure(let error):
+            return .Failure(error)
+        }
     }
     
     private func didStartParsingDeviceElement() {
