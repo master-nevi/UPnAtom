@@ -9,10 +9,14 @@
 import Foundation
 
 class MediaRenderer1Device_Swift: AbstractUPnPDevice_Swift {
+    
+}
+
+extension MediaRenderer1Device_Swift: ExtendedPrintable {
     override var className: String { return "MediaRenderer1Device_Swift" }
     override var description: String {
         var properties = PropertyPrinter()
-        properties.add(super.className, property: super.description)        
+        properties.add(super.className, property: super.description)
         return properties.description
     }
 }

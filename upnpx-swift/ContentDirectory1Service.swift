@@ -19,13 +19,6 @@ class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
         actionURL = NSURL(string: controlURL.absoluteString!, relativeToURL: baseURL)!
     }
     
-    override var className: String { return "ContentDirectory1Service_Swift" }
-    override var description: String {
-        var properties = PropertyPrinter()
-        properties.add(super.className, property: super.description)        
-        return properties.description
-    }
-    
     func getSortCapabilities(completion: (sortCapabilities: String?) -> Void) {
         let soapRequest = prepareSoapRequest("GetSortCapabilities", parameters: nil, expectedResponseParameters: ["SortCaps"])
         
@@ -70,5 +63,14 @@ class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
         manager.responseSerializer = responseSerializer
         
         return (request, manager)
+    }
+}
+
+extension ContentDirectory1Service_Swift: ExtendedPrintable {
+    override var className: String { return "ContentDirectory1Service_Swift" }
+    override var description: String {
+        var properties = PropertyPrinter()
+        properties.add(super.className, property: super.description)
+        return properties.description
     }
 }

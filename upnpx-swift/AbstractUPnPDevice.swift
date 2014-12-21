@@ -35,22 +35,6 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         }
         return super.baseURL
     }
-    override var className: String { return "AbstractUPnPDevice_Swift" }
-    override var description: String {
-        var properties = PropertyPrinter()
-        properties.add(super.className, property: super.description)
-        properties.add("udn", property: udn)
-        properties.add("friendlyName", property: friendlyName)
-        properties.add("manufacturer", property: manufacturer)
-        properties.add("manufacturerURL", property: manufacturerURL?.absoluteString)
-        properties.add("modelDescription", property: modelDescription)
-        properties.add("modelName", property: modelName)
-        properties.add("modelNumber", property: modelNumber)
-        properties.add("modelURL", property: modelURL?.absoluteString)
-        properties.add("serialNumber", property: serialNumber)
-        properties.add("iconDescriptions", property: iconDescriptions)
-        return properties.description
-    }
     
     // private
     private let _baseURLFromXML: NSURL?
@@ -92,5 +76,24 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
         self.modelURL = parsedDevice?.modelURL
         self.serialNumber = parsedDevice?.serialNumber
         self.iconDescriptions = parsedDevice?.iconDescriptions
+    }
+}
+
+extension AbstractUPnPDevice_Swift: ExtendedPrintable {
+    override var className: String { return "AbstractUPnPDevice_Swift" }
+    override var description: String {
+        var properties = PropertyPrinter()
+        properties.add(super.className, property: super.description)
+        properties.add("udn", property: udn)
+        properties.add("friendlyName", property: friendlyName)
+        properties.add("manufacturer", property: manufacturer)
+        properties.add("manufacturerURL", property: manufacturerURL?.absoluteString)
+        properties.add("modelDescription", property: modelDescription)
+        properties.add("modelName", property: modelName)
+        properties.add("modelNumber", property: modelNumber)
+        properties.add("modelURL", property: modelURL?.absoluteString)
+        properties.add("serialNumber", property: serialNumber)
+        properties.add("iconDescriptions", property: iconDescriptions)
+        return properties.description
     }
 }

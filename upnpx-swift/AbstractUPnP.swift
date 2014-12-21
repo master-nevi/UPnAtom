@@ -16,16 +16,6 @@ import Foundation
     var baseURL: NSURL! {
         return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
     }
-    var className: String { return "AbstractUPnP_Swift" }
-    var description: String {
-        var properties = PropertyPrinter()
-        properties.add("uuid", property: uuid)
-        properties.add("urn", property: urn)
-        properties.add("usn", property: usn.description)
-        properties.add("xmlLocation", property: xmlLocation.absoluteString)
-        properties.add("baseURL", property: baseURL.absoluteString)        
-        return properties.description
-    }
     
     init?(ssdpDevice: SSDPDBDevice_ObjC) {
         if let uuid = returnIfContainsElements(ssdpDevice.uuid) {
@@ -47,5 +37,18 @@ import Foundation
             self.xmlLocation = NSURL(string: xmlLocation)
         }
         else { return nil }
+    }
+}
+
+extension AbstractUPnP_Swift: ExtendedPrintable {
+    var className: String { return "AbstractUPnP_Swift" }
+    var description: String {
+        var properties = PropertyPrinter()
+        properties.add("uuid", property: uuid)
+        properties.add("urn", property: urn)
+        properties.add("usn", property: usn.description)
+        properties.add("xmlLocation", property: xmlLocation.absoluteString)
+        properties.add("baseURL", property: baseURL.absoluteString)
+        return properties.description
     }
 }
