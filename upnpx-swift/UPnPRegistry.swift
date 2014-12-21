@@ -52,7 +52,7 @@ import Foundation
         dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
             self._rootDevices[device.usn] = device
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceWasAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): device])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): device])
             })
         })
     }
@@ -60,24 +60,24 @@ import Foundation
 
 /// Extension used for defining notification constants. Functions are used since class constants are not supported in swift yet
 extension UPnPRegistry_Swift {
-    class func UPnPDeviceWasAddedNotification() -> String {
-        return "UPnPDeviceWasAddedNotification"
+    class func UPnPDeviceAddedNotification() -> String {
+        return "UPnPDeviceAddedNotification"
     }
     
-    class func UPnPDeviceWasRemovedNotification() -> String {
-        return "UPnPDeviceWasRemovedNotification"
+    class func UPnPDeviceRemovedNotification() -> String {
+        return "UPnPDeviceRemovedNotification"
     }
     
     class func UPnPDeviceKey() -> String {
         return "UPnPDeviceKey"
     }
     
-    class func UPnPServiceWasAddedNotification() -> String {
-        return "UPnPServiceWasAddedNotification"
+    class func UPnPServiceAddedNotification() -> String {
+        return "UPnPServiceAddedNotification"
     }
     
-    class func UPnPServiceWasRemovedNotification() -> String {
-        return "UPnPServiceWasRemovedNotification"
+    class func UPnPServiceRemovedNotification() -> String {
+        return "UPnPServiceRemovedNotification"
     }
     
     class func UPnPServiceKey() -> String {
@@ -138,14 +138,14 @@ extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
         for deviceToRemove in devicesToRemove {
             self._rootDevices.removeValueForKey(deviceToRemove.usn)
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceWasRemovedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): deviceToRemove])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceRemovedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): deviceToRemove])
             })
         }
         
         for deviceToAdd in devicesToAdd {
             self._rootDevices[deviceToAdd.usn] = deviceToAdd
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceWasAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): deviceToAdd])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): deviceToAdd])
             })
         }
     }
@@ -159,14 +159,14 @@ extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
         for serviceToRemove in servicesToRemove {
             self._rootDeviceServices.removeValueForKey(serviceToRemove.usn)
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPServiceWasRemovedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPServiceKey(): serviceToRemove])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPServiceRemovedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPServiceKey(): serviceToRemove])
             })
         }
         
         for serviceToAdd in servicesToAdd {
             self._rootDeviceServices[serviceToAdd.usn] = serviceToAdd
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPServiceWasAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPServiceKey(): serviceToAdd])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPServiceAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPServiceKey(): serviceToAdd])
             })
         }
     }

@@ -50,10 +50,10 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasAdded:) name:[UPnPRegistry_Swift UPnPDeviceWasAddedNotification] object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPRegistry_Swift UPnPDeviceWasRemovedNotification] object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasAdded:) name:[UPnPRegistry_Swift UPnPServiceWasAddedNotification] object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasRemoved:) name:[UPnPRegistry_Swift UPnPServiceWasRemovedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasAdded:) name:[UPnPRegistry_Swift UPnPDeviceAddedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPRegistry_Swift UPnPDeviceRemovedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasAdded:) name:[UPnPRegistry_Swift UPnPServiceAddedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasRemoved:) name:[UPnPRegistry_Swift UPnPServiceRemovedNotification] object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
