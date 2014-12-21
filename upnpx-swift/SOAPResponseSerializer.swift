@@ -37,7 +37,7 @@ class SOAPResponseSerializer: AFXMLParserResponseSerializer {
             }))
         }
         
-        if xmlParser.parse(data) == .Failed {
+        if xmlParser.parse(data: data) == ParserStatus.Failed {
             serializationError = NSError(domain: "upnpx-swift", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse SOAP response"])
         }
         

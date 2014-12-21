@@ -158,7 +158,7 @@ class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
     }
     
     func parse() -> (parserStatus: ParserStatus, parsedDevice: ParserUPnPDevice?) {
-        var parseStatus = super.parseFrom(_upnpDevice.xmlLocation)
+        let parseStatus = super.parse(contentsOfURL: _upnpDevice.xmlLocation)
         
         _foundDevice?.baseURL = _baseURL
         

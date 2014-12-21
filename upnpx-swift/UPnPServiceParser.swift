@@ -72,7 +72,7 @@ class UPnPServiceParser_Swift: AbstractXMLParser_Swift {
     }
     
     func parse() -> (parserStatus: ParserStatus, parsedService: ParserUPnPService?) {
-        var parseStatus = super.parseFrom(_upnpService.xmlLocation)
+        let parseStatus = super.parse(contentsOfURL: _upnpService.xmlLocation)
         
         _foundParserService?.baseURL = _baseURL
         

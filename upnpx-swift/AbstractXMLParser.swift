@@ -83,7 +83,7 @@ class AbstractXMLParser_Swift: NSObject {
         return nil
     }
     
-    func parse(data: NSData) -> ParserStatus {
+    func parse(#data: NSData) -> ParserStatus {
         var parserStatus = ParserStatus.Failed
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
@@ -95,10 +95,10 @@ class AbstractXMLParser_Swift: NSObject {
         return parserStatus
     }
     
-    func parseFrom(url: NSURL) -> ParserStatus {
+    func parse(#contentsOfURL: NSURL) -> ParserStatus {
         var parserStatus = ParserStatus.Failed
         autoreleasepool { () -> () in
-            if let data = NSData(contentsOfURL: url) {
+            if let data = NSData(contentsOfURL: contentsOfURL) {
                 if let validData = self.validateForParsing(data) {
                     let parser = NSXMLParser(data: validData)
                     parserStatus = self.startParser(parser)
