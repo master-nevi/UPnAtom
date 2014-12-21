@@ -94,3 +94,10 @@ enum Result<T> {
         }
     }
 }
+
+func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {
+    if let found = find(arr,object) {
+        return arr.removeAtIndex(found)
+    }
+    return nil
+}

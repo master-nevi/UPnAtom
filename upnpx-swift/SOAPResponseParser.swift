@@ -10,6 +10,7 @@ import Foundation
 
 class SOAPResponseParser: AbstractXMLParser_Swift {
     private let _responseParameters = [String: String]()
+    // TODO: Investigate if the abstract parser supports parsing without needing expectedResponseParameters
     init(supportNamespaces: Bool, soapAction: String, expectedResponseParameters: [String]) {
         super.init(supportNamespaces: supportNamespaces)
         

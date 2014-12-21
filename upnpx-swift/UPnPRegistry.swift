@@ -20,7 +20,7 @@ import Foundation
     let ssdpDB: SSDPDB_ObjC
     
     // private
-    private let _concurrentDeviceQueue = dispatch_queue_create("com.upnpx.swift.rootDeviceQueue", DISPATCH_QUEUE_CONCURRENT)
+    private let _concurrentDeviceQueue = dispatch_queue_create("com.upnpx-swift.rootDeviceQueue", DISPATCH_QUEUE_CONCURRENT)
     lazy private var _rootDevices = [UniqueServiceName: AbstractUPnPDevice_Swift]()
     lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService_Swift]()
     
