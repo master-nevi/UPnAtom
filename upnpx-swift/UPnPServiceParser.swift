@@ -79,7 +79,7 @@ class UPnPServiceParser_Swift: AbstractXMLParser_Swift {
                 return .Success(foundParserService)
             }
             else {
-                return .Failure(AbstractXMLParser_Swift.createError("Parser error"))
+                return .Failure(createError("Parser error"))
             }
         case .Failure(let error):
             return .Failure(error)

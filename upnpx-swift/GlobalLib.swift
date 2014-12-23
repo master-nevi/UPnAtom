@@ -56,7 +56,7 @@ enum Result<T> {
         self = .Success(value)
     }
     
-    init(_ error: NSError) {
+    init(_ error: Error) {
         self = .Failure(error)
     }
     
@@ -74,7 +74,7 @@ enum Result<T> {
         }
     }
     
-    var error: NSError? {
+    var error: Error? {
         switch self {
         case .Failure(let error):
             return error
@@ -93,6 +93,43 @@ enum Result<T> {
             return nil
         }
     }
+}
+
+enum VoidResult {
+    case Success
+    case Failure(Error)
+    
+    init() {
+        self = .Success
+    }
+    
+    init(_ error: Error) {
+        self = .Failure(error)
+    }
+    
+    var failed: Bool {
+        switch self {
+        case .Failure(let error):
+            return true
+            
+        default:
+            return false
+        }
+    }
+    
+    var error: Error? {
+        switch self {
+        case .Failure(let error):
+            return error
+            
+        default:
+            return nil
+        }
+    }
+}
+
+func createError(message: String) -> Error {
+    return NSError(domain: "upnpx-swift", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
 }
 
 func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {

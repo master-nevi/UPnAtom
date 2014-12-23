@@ -80,7 +80,7 @@ class AbstractXMLParser_Swift: NSObject {
     }
     
     func parse(#data: NSData) -> Result<Any> {
-        var parserResult: Result<Any> = .Failure(AbstractXMLParser_Swift.createError("Parser failure"))
+        var parserResult: Result<Any> = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
                 let parser = NSXMLParser(data: validData)
@@ -92,7 +92,7 @@ class AbstractXMLParser_Swift: NSObject {
     }
     
     func parse(#contentsOfURL: NSURL) -> Result<Any> {
-        var parserResult: Result<Any> = .Failure(AbstractXMLParser_Swift.createError("Parser failure"))
+        var parserResult: Result<Any> = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let data = NSData(contentsOfURL: contentsOfURL) {
                 if let validData = self.validateForParsing(data) {
@@ -107,15 +107,11 @@ class AbstractXMLParser_Swift: NSObject {
     
     // MARK: - Internal lib
     
-    internal class func createError(message: String) -> Error {
-        return NSError(domain: "upnpx-swift", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
-    }
-    
     private func startParser(parser: NSXMLParser) -> Result<Any> {
         parser.shouldProcessNamespaces = _supportNamespaces
         parser.delegate = self
         
-        var parserResult: Result<Any> = .Failure(AbstractXMLParser_Swift.createError("Parser failure"))
+        var parserResult: Result<Any> = .Failure(createError("Parser failure"))
         if parser.parse() {
             parserResult = .NoContentSuccess
         }

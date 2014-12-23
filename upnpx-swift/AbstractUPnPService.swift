@@ -37,8 +37,8 @@ class AbstractUPnPService_Swift: AbstractUPnP_Swift {
     private let _relativeEventURL: NSURL!
     
     // MARK: UPnP Event handling related
-    lazy private var _eventObservers = [UPnPEventObserver]()
-    private var _concurrentDeviceQueue: dispatch_queue_t!
+    lazy private var _eventObservers = [EventObserver]()
+    private var _concurrentEventObserverQueue: dispatch_queue_t!
     
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
@@ -70,22 +70,22 @@ class AbstractUPnPService_Swift: AbstractUPnP_Swift {
         }
         else { return nil }
         
-        _concurrentDeviceQueue = dispatch_queue_create("com.upnpx-swift.upnpEventQueue.\(serviceType)", DISPATCH_QUEUE_CONCURRENT)
+        _concurrentEventObserverQueue = dispatch_queue_create("com.upnpx-swift.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
     }
 }
 
 // MARK: UPnP Event handling
 
 extension AbstractUPnPService_Swift {
-    class UPnPEventObserver {
+    private class EventObserver {
         let notificationCenterObserver: AnyObject
         init(notificationCenterObserver: AnyObject) {
             self.notificationCenterObserver = notificationCenterObserver
         }
     }
     
-    private class func UPnPEventReceivedNotification() -> String {
-        return "UPnPEventReceivedNotification"
+    private func UPnPEventReceivedNotification() -> String {
+        return "UPnPEventReceivedNotification.\(usn.rawValue)"
     }
     
     private class func UPnPEventInfoKey() -> String {
@@ -93,14 +93,14 @@ extension AbstractUPnPService_Swift {
     }
     
     func addEventObserver(queue: NSOperationQueue?, callBackBlock: (UPnPEvent_Swift) -> Void) -> AnyObject {
-        let observer = UPnPEventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(AbstractUPnPService_Swift.UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
+        let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
             if let rawEventInfo = notification.userInfo?[AbstractUPnPService_Swift.UPnPEventInfoKey()] as? [String: String] {
                 let event = self.createEvent(rawEventInfo)
                 callBackBlock(event)
             }
         })
         
-        dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
+        dispatch_barrier_async(_concurrentEventObserverQueue, { () -> Void in
             self._eventObservers.append(observer)
             
             if self._eventObservers.count == 1 {
@@ -112,8 +112,8 @@ extension AbstractUPnPService_Swift {
     }
     
     func removeEventObserver(observer: AnyObject) {
-        dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
-            if let observer = observer as? UPnPEventObserver {
+        dispatch_barrier_async(_concurrentEventObserverQueue, { () -> Void in
+            if let observer = observer as? EventObserver {
                 removeObject(&self._eventObservers, observer)
                 NSNotificationCenter.defaultCenter().removeObserver(observer.notificationCenterObserver)
             }
@@ -130,9 +130,9 @@ extension AbstractUPnPService_Swift {
     }
 }
 
-extension AbstractUPnPService_Swift.UPnPEventObserver: Equatable { }
+extension AbstractUPnPService_Swift.EventObserver: Equatable { }
 
-func ==(lhs: AbstractUPnPService_Swift.UPnPEventObserver, rhs: AbstractUPnPService_Swift.UPnPEventObserver) -> Bool {
+private func ==(lhs: AbstractUPnPService_Swift.EventObserver, rhs: AbstractUPnPService_Swift.EventObserver) -> Bool {
     return lhs.notificationCenterObserver === rhs.notificationCenterObserver
 }
 

@@ -27,6 +27,7 @@
 		63713E5E1A20391700EC81FC /* GlobalLib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63713E5D1A20391700EC81FC /* GlobalLib.swift */; };
 		6383D9CF1A469A050054C365 /* SOAPResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6383D9CE1A469A050054C365 /* SOAPResponseParser.swift */; };
 		6383D9D31A4764920054C365 /* UPnPEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6383D9D21A4764920054C365 /* UPnPEvent.swift */; };
+		6383D9D51A493F4A0054C365 /* UPnPEventSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6383D9D41A493F4A0054C365 /* UPnPEventSubscriptionManager.swift */; };
 		63DD9E531A411A4800C78525 /* PropertyPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD9E521A411A4800C78525 /* PropertyPrinter.swift */; };
 		63DD9E561A411F1E00C78525 /* SOAPRequestSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD9E551A411F1E00C78525 /* SOAPRequestSerializer.swift */; };
 		63DD9E581A411F3A00C78525 /* SOAPResponseSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD9E571A411F3A00C78525 /* SOAPResponseSerializer.swift */; };
@@ -69,6 +70,7 @@
 		63713E5D1A20391700EC81FC /* GlobalLib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalLib.swift; sourceTree = "<group>"; };
 		6383D9CE1A469A050054C365 /* SOAPResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOAPResponseParser.swift; sourceTree = "<group>"; };
 		6383D9D21A4764920054C365 /* UPnPEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPEvent.swift; sourceTree = "<group>"; };
+		6383D9D41A493F4A0054C365 /* UPnPEventSubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPEventSubscriptionManager.swift; sourceTree = "<group>"; };
 		63DD9E521A411A4800C78525 /* PropertyPrinter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPrinter.swift; sourceTree = "<group>"; };
 		63DD9E551A411F1E00C78525 /* SOAPRequestSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOAPRequestSerializer.swift; sourceTree = "<group>"; };
 		63DD9E571A411F3A00C78525 /* SOAPResponseSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOAPResponseSerializer.swift; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 			children = (
 				63250FAC1A19D4B4003895BA /* UPnPRegistry.swift */,
 				63E36B231A2016D0001E15D1 /* UPnPManager.swift */,
+				6383D9D41A493F4A0054C365 /* UPnPEventSubscriptionManager.swift */,
 			);
 			name = Management;
 			sourceTree = "<group>";
@@ -380,6 +383,7 @@
 				63DD9E581A411F3A00C78525 /* SOAPResponseSerializer.swift in Sources */,
 				633C992D1A13B9770059444C /* main.m in Sources */,
 				63E36B1F1A1DC200001E15D1 /* AbstractUPnPService.swift in Sources */,
+				6383D9D51A493F4A0054C365 /* UPnPEventSubscriptionManager.swift in Sources */,
 				633C99581A13C8760059444C /* PlayBack.m in Sources */,
 				63E6E23B1A35098E00023ED8 /* UniqueServiceName.swift in Sources */,
 			);
