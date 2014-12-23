@@ -27,7 +27,7 @@ class SOAPResponseParser: AbstractXMLParser_Swift {
     
     func parse(#soapResponseData: NSData) -> Result<[String: String]> {
         switch super.parse(data: soapResponseData) {
-        case .Success, .NoContentSuccess:
+        case .Success:
             return .Success(_responseParameters)
         case .Failure(let error):
             return .Failure(error)

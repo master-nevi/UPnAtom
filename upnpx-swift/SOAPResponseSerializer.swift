@@ -30,8 +30,6 @@ class SOAPResponseSerializer: AFXMLParserResponseSerializer {
         switch xmlParser.parse(soapResponseData: data) {
         case .Success(let value):
             responseObject = value()
-        case .NoContentSuccess:
-            serializationError = NSError(domain: "upnpx-swift", code: 0, userInfo: [NSLocalizedDescriptionKey: "No response data"])
         case .Failure(let error):
             serializationError = error
         }

@@ -79,8 +79,8 @@ class AbstractXMLParser_Swift: NSObject {
         return nil
     }
     
-    func parse(#data: NSData) -> Result<Any> {
-        var parserResult: Result<Any> = .Failure(createError("Parser failure"))
+    func parse(#data: NSData) -> VoidResult {
+        var parserResult: VoidResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
                 let parser = NSXMLParser(data: validData)
@@ -91,8 +91,8 @@ class AbstractXMLParser_Swift: NSObject {
         return parserResult
     }
     
-    func parse(#contentsOfURL: NSURL) -> Result<Any> {
-        var parserResult: Result<Any> = .Failure(createError("Parser failure"))
+    func parse(#contentsOfURL: NSURL) -> VoidResult {
+        var parserResult: VoidResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let data = NSData(contentsOfURL: contentsOfURL) {
                 if let validData = self.validateForParsing(data) {
@@ -107,13 +107,13 @@ class AbstractXMLParser_Swift: NSObject {
     
     // MARK: - Internal lib
     
-    private func startParser(parser: NSXMLParser) -> Result<Any> {
+    private func startParser(parser: NSXMLParser) -> VoidResult {
         parser.shouldProcessNamespaces = _supportNamespaces
         parser.delegate = self
         
-        var parserResult: Result<Any> = .Failure(createError("Parser failure"))
+        var parserResult: VoidResult = .Failure(createError("Parser failure"))
         if parser.parse() {
-            parserResult = .NoContentSuccess
+            parserResult = .Success
         }
         else {
             if let parserError = parser.parserError {

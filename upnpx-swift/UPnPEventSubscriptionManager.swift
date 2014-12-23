@@ -37,8 +37,6 @@ internal class UPnPEventSubscriptionManager {
             completion(subscription: .Failure(createError("Subscription for event URL exists")))
             return
         }
-        
-        
     }
     
     func unsubscribe(subscription: AnyObject, completion: (result: VoidResult) -> Void ) {

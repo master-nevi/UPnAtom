@@ -73,7 +73,7 @@ class UPnPServiceParser_Swift: AbstractXMLParser_Swift {
     
     func parse() -> Result<ParserUPnPService> {
         switch super.parse(contentsOfURL: _upnpService.xmlLocation) {
-        case .Success, .NoContentSuccess:
+        case .Success:
             if let foundParserService = _foundParserService {
                 foundParserService.baseURL = _baseURL
                 return .Success(foundParserService)

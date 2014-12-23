@@ -49,7 +49,6 @@ typealias Error = NSError
 enum Result<T> {
     // @autoclosure wierdness is to save us from a weird compiler error when using generic enums: http://owensd.io/2014/08/06/fixed-enum-layout.html
     case Success(@autoclosure() -> T)
-    case NoContentSuccess
     case Failure(Error)
     
     init(_ value: T) {
@@ -59,11 +58,7 @@ enum Result<T> {
     init(_ error: Error) {
         self = .Failure(error)
     }
-    
-    init() {
-        self = .NoContentSuccess
-    }
-    
+        
     var failed: Bool {
         switch self {
         case .Failure(let error):

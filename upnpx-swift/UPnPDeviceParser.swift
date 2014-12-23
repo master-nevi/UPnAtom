@@ -159,7 +159,7 @@ class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
     
     func parse() -> Result<ParserUPnPDevice> {
         switch super.parse(contentsOfURL: _upnpDevice.xmlLocation) {
-        case .Success, .NoContentSuccess:
+        case .Success:
             if let foundDevice = _foundDevice {
                 foundDevice.baseURL = _baseURL
                 return .Success(foundDevice)
