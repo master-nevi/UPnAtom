@@ -146,8 +146,8 @@
 
 - (void)deviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]) {
-        AbstractUPnP_Swift *upnpObject = ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]);
-        NSLog(@"Added device: %@ %@", upnpObject.className, upnpObject.description);
+//        AbstractUPnP_Swift *upnpObject = ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPDeviceKey]]);
+//        NSLog(@"Added device: %@ %@", upnpObject.className, upnpObject.description);
     }
 }
 
@@ -161,17 +161,17 @@
 - (void)serviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]) {
         AbstractUPnP_Swift *upnpObject = ((AbstractUPnP_Swift *)notification.userInfo[[UPnPRegistry_Swift UPnPServiceKey]]);
-        NSLog(@"Added service: %@ %@", upnpObject.className, upnpObject.description);
+//        NSLog(@"Added service: %@ %@", upnpObject.className, upnpObject.description);
         if (![upnpObject.baseURL.absoluteString isEqualToString:@"http://192.168.11.101:5001/"]) {
             return;
         }
         
         if ([upnpObject.className isEqualToString:@"ContentDirectory1Service_Swift"]) {
             ContentDirectory1Service_Swift *contentDirectoryService = (ContentDirectory1Service_Swift *)upnpObject;
-            [contentDirectoryService getSortCapabilities:^(NSString *sortCapabilities) {
+            [contentDirectoryService getSortCapabilities:^(NSString *sortCapabilities, NSError *error) {
                 NSLog(@"sort capabilities: %@", sortCapabilities);
             }];
-            [contentDirectoryService browse:@"0" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" completion:^(NSString *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID) {
+            [contentDirectoryService browse:@"0" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" completion:^(NSString *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID, NSError *error) {
                 NSLog(@"browse: %@\nnumberReturned: %@\ntotalMatches: %@\nupdateID: %@", result, numberReturned, totalMatches, updateID);
             }];
         }

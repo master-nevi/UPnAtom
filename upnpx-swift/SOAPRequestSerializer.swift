@@ -60,7 +60,7 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
         }
         body += "</u:\(soapAction)>"
         body += "</s:Body></s:Envelope>"
-        println("swift: \(body)")
+//        println("swift: \(body)")
         
         mutableRequest.setValue("\(countElements(body.utf8))", forHTTPHeaderField: "Content-Length")
         

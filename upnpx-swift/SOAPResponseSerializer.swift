@@ -9,7 +9,6 @@
 import Foundation
 
 class SOAPResponseSerializer: AFXMLParserResponseSerializer {
-    var expectedResponseParameters: [String]?
     var soapAction: String?
     
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
@@ -19,13 +18,13 @@ class SOAPResponseSerializer: AFXMLParserResponseSerializer {
             }
         }
         
-        if soapAction == nil || expectedResponseParameters == nil {
+        if soapAction == nil {
             return nil
         }
 
         var serializationError: NSError?
         var responseObject: AnyObject!
-        let xmlParser = SOAPResponseParser(soapAction: soapAction!, expectedResponseParameters: expectedResponseParameters!)
+        let xmlParser = SOAPResponseParser(soapAction: soapAction!)
         
         switch xmlParser.parse(soapResponseData: data) {
         case .Success(let value):
