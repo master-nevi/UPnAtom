@@ -15,7 +15,7 @@ class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
      
-        requestSerializer = SOAPRequestSerializer.serializer(urn)
+        requestSerializer = SOAPRequestSerializer(upnpNamespace: urn)
         actionURL = NSURL(string: controlURL.absoluteString!, relativeToURL: baseURL)!
     }
     
@@ -57,8 +57,7 @@ class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
         requestSerializer.soapAction = soapAction
         let request = requestSerializer.requestWithMethod("POST", URLString: actionURL.absoluteString, parameters: parameters, error: nil)
         
-        let responseSerializer = SOAPResponseSerializer()
-        responseSerializer.soapAction = soapAction
+        let responseSerializer = SOAPResponseSerializer(soapAction: soapAction)
         
         let manager = AFHTTPRequestOperationManager()
         manager.responseSerializer = responseSerializer

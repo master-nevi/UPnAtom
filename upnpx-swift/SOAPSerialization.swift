@@ -1,34 +1,27 @@
 //
-//  SoapRequestSerializer.swift
+//  SOAPSerialization.swift
 //  ControlPointDemo
 //
-//  Created by David Robles on 12/16/14.
+//  Created by David Robles on 12/28/14.
 //  Copyright (c) 2014 David Robles. All rights reserved.
 //
 
 import Foundation
 
 class SOAPRequestSerializer: AFHTTPRequestSerializer {
-    let upnpNamespace = ""
+    let upnpNamespace: String
     var soapAction = ""
     
     init(upnpNamespace: String) {
-        super.init()
         self.upnpNamespace = upnpNamespace
+        super.init()
     }
     
     required init(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
         self.upnpNamespace = aDecoder.decodeObjectOfClass(SOAPRequestSerializer.self, forKey: "upnpNamespace") as String
+        super.init(coder: aDecoder)
     }
-    
-    class func serializer(upnpNamespace: String) -> SOAPRequestSerializer {
-        var serializer = SOAPRequestSerializer(upnpNamespace: upnpNamespace)
         
-        return serializer
-    }
-    
     override func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
         var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
         
@@ -60,12 +53,51 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
         }
         body += "</u:\(soapAction)>"
         body += "</s:Body></s:Envelope>"
-//        println("swift: \(body)")
+        //        println("swift: \(body)")
         
         mutableRequest.setValue("\(countElements(body.utf8))", forHTTPHeaderField: "Content-Length")
         
         mutableRequest.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         
         return mutableRequest
+    }
+}
+
+class SOAPResponseSerializer: AFXMLParserResponseSerializer {
+    let soapAction: String
+    
+    init(soapAction: String) {
+        self.soapAction = soapAction
+        super.init()
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        self.soapAction = aDecoder.decodeObjectOfClass(SOAPResponseSerializer.self, forKey: "soapAction") as String
+        super.init(coder: aDecoder)
+    }
+    
+    override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
+        if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
+            if error == nil {
+                return nil
+            }
+        }
+        
+        var serializationError: NSError?
+        var responseObject: AnyObject!
+        let xmlParser = SOAPResponseParser(soapAction: soapAction)
+        
+        switch xmlParser.parse(soapResponseData: data) {
+        case .Success(let value):
+            responseObject = value()
+        case .Failure(let error):
+            serializationError = error
+        }
+        
+        if serializationError != nil && error != nil {
+            error.memory = serializationError!
+        }
+        
+        return responseObject
     }
 }
