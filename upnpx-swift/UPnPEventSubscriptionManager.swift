@@ -13,7 +13,8 @@ protocol UPnPEventSubscriber {
 }
 
 internal class UPnPEventSubscriptionManager {
-    private class Subscription {
+    // Subclasses NSObject in order to filter collections of this class using NSPredicate
+    private class Subscription: NSObject {
         let subscriptionID: String
         let expiration: NSDate
         let subscriber: UPnPEventSubscriber

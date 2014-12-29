@@ -92,11 +92,11 @@ extension AbstractUPnPService_Swift {
         return "UPnPEventInfoKey"
     }
     
-    func addEventObserver(queue: NSOperationQueue?, callBackBlock: (UPnPEvent_Swift) -> Void) -> AnyObject {
+    func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent_Swift) -> Void) -> AnyObject {
         let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
             if let rawEventInfo = notification.userInfo?[AbstractUPnPService_Swift.UPnPEventInfoKey()] as? [String: String] {
                 let event = self.createEvent(rawEventInfo)
-                callBackBlock(event)
+                callBackBlock(event: event)
             }
         })
         
