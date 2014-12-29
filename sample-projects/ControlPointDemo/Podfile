@@ -5,3 +5,4 @@ xcodeproj 'ControlPointDemo'
 
 pod 'upnpx', :git => 'https://github.com/fkuehne/upnpx.git', :commit => '8e31bd182d7e7b4cb07220cab2b627a5653792e6'
 pod 'AFNetworking', '2.4.1'
+pod 'CocoaHTTPServer', '2.3'

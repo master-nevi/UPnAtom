@@ -118,7 +118,7 @@
     [urlRequest setHTTPMethod:@"POST"];
     [urlRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
 
-    NSLog(@"\n\n%@", [self curlRepresentation:urlRequest]);
+
 
     NSHTTPURLResponse *urlResponse;
     NSData *resp = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:nil];
@@ -154,22 +154,6 @@
     return ret;
 }
 
-- (NSString *)curlRepresentation:(NSURLRequest *)request {
-    NSMutableString *curl = [NSMutableString new];
-    [curl appendString:@"curl -i"];
-    [curl appendString:[NSString stringWithFormat:@" -X %@", request.HTTPMethod]];
-    if ([request HTTPBody]) {
-        [curl appendString:@" -d '"];
-        [curl appendString:[[NSString alloc] initWithData:[request HTTPBody] encoding:NSUTF8StringEncoding]];
-        [curl appendString:@"'"];
-    }
-    [[request allHTTPHeaderFields] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        [curl appendString:[NSString stringWithFormat:@" -H '%@: %@'", key, obj]];
-    }];
-    [curl appendString:[NSString stringWithFormat:@" \"%@\"", [request URL]]];
-    
-    return curl;
-}
 
 -(void)setStringValueForFoundAsset:(NSString*)value{
     if(value != nil){

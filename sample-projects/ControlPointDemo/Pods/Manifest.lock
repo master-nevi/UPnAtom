@@ -20,10 +20,23 @@ PODS:
   - AFNetworking/UIKit (2.4.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - CocoaAsyncSocket (7.4.1)
+  - CocoaHTTPServer (2.3):
+    - CocoaAsyncSocket
+    - CocoaLumberjack
+  - CocoaLumberjack (2.0.0-rc):
+    - CocoaLumberjack/Default
+    - CocoaLumberjack/Extensions
+  - CocoaLumberjack/Core (2.0.0-rc)
+  - CocoaLumberjack/Default (2.0.0-rc):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Extensions (2.0.0-rc):
+    - CocoaLumberjack/Default
   - upnpx (1.3.0)
 
 DEPENDENCIES:
   - AFNetworking (= 2.4.1)
+  - CocoaHTTPServer (= 2.3)
   - upnpx (from `https://github.com/fkuehne/upnpx.git`, commit `8e31bd182d7e7b4cb07220cab2b627a5653792e6`)
 
 EXTERNAL SOURCES:
@@ -33,6 +46,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
+  CocoaAsyncSocket: b0a1a89e7ea4c1c0ea4ec83f57d55117d3cdae06
+  CocoaHTTPServer: 217df4cba4e48803db2480f97b805aaad2230dd1
+  CocoaLumberjack: 6186e27827fc574b50b16c10102fcc591437f06c
   upnpx: e9c5b4ca6fa09224fdf78b1a5e168a2637784506
 
 COCOAPODS: 0.34.4
