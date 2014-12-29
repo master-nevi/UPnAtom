@@ -31,6 +31,22 @@ internal class UPnPEventSubscriptionManager {
     // private
     private var _subscriptions = [String: Subscription]()
     private let _concurrentSubscriptionQueue = dispatch_queue_create("com.upnpx-swift.upnp-event-subscription-manager.subscription-queue", DISPATCH_QUEUE_CONCURRENT)
+    private let _httpServer = HTTPServer()
+    private let _httpServerPort: UInt16 = 52808
+    
+    init() {
+        _httpServer.setPort(_httpServerPort)
+        _httpServer.setConnectionClass(UPnPEventHTTPConnection.self)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self,
+            selector: "applicationDidEnterBackground:",
+            name: UIApplicationDidEnterBackgroundNotification,
+            object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self,
+            selector: "applicationWillEnterForeground:",
+            name: UIApplicationWillEnterForegroundNotification,
+            object: nil)
+    }
     
     func subscribe(subscriber: UPnPEventSubscriber, eventURL: NSURL, completion: (subscription: Result<AnyObject>) -> Void) {
         let hasSubscriptionForEventURL: Bool = (_subscriptions.values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "eventURLString = %@", eventURL.absoluteString!)!).count > 0
@@ -44,8 +60,35 @@ internal class UPnPEventSubscriptionManager {
         dispatch_barrier_async(_concurrentSubscriptionQueue, { () -> Void in
             if let subscription = subscription as? Subscription {
                 self._subscriptions.removeValueForKey(subscription.subscriptionID)
+                self.startStopHTTPServerIfNeeded()
             }
         })
+    }
+    
+    internal func handleIncomingEvent(eventData: NSData) {
+        
+    }
+    
+    @objc private func applicationDidEnterBackground(notification: NSNotification){
+        if _httpServer.isRunning() {
+            _httpServer.stop()
+        }
+    }
+    
+    @objc private func applicationWillEnterForeground(notification: NSNotification){
+        startStopHTTPServerIfNeeded()
+    }
+    
+    private func startStopHTTPServerIfNeeded() {
+        if _subscriptions.count == 0 {
+            _httpServer.stop()
+        }
+        else if _subscriptions.count > 0 && !_httpServer.isRunning() {
+            var error: NSError?
+            if !_httpServer.start(&error) {
+                error != nil ? println("Error starting HTTP server: \(error!.localizedDescription)") : println("Error starting HTTP server")
+            }
+        }
     }
 }
 

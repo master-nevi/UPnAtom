@@ -5,3 +5,8 @@
 #import <upnpx/SSDPDB_ObjC.h>
 
 #import <AFNetworking/AFNetworking.h>
+#import <CocoaHTTPServer/HTTPServer.h>
+#import <CocoaHTTPServer/HTTPConnection.h>
+#import <CocoaHTTPServer/HTTPDataResponse.h>
+#import <CocoaHTTPServer/HTTPMessage.h>
+#import <CocoaAsyncSocket/GCDAsyncSocket.h>
