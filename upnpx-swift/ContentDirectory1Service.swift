@@ -19,20 +19,20 @@ class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
         actionURL = NSURL(string: controlURL.absoluteString!, relativeToURL: baseURL)!
     }
     
-    func getSortCapabilities(completion: (sortCapabilities: String?, error: NSError?) -> Void) {
+    func getSortCapabilities(success: (sortCapabilities: String?) -> Void, failure:(error: NSError?) -> Void) {
         let soapRequest = prepareSoapRequest("GetSortCapabilities", parameters: nil)
         
         let requestOperation = soapRequest.manager.HTTPRequestOperationWithRequest(soapRequest.request, success: { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
-            completion(sortCapabilities: responseObject?["SortCaps"], error: nil)
+            success(sortCapabilities: responseObject?["SortCaps"])
             }, failure: { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                completion(sortCapabilities: nil, error: error)
+                failure(error: error)
         })
         
         soapRequest.manager.operationQueue.addOperation(requestOperation)
     }
     
-    func browse(objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, completion: (result: String?, numberReturned: String?, totalMatches: String?, updateID: String?, error: NSError?) -> Void) {
+    func browse(objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, success: (result: String?, numberReturned: String?, totalMatches: String?, updateID: String?) -> Void, failure: (error: NSError?) -> Void) {
         let parameters = [
             "ObjectID" : objectID,
             "BrowseFlag" : browseFlag,
@@ -45,9 +45,9 @@ class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
         
         let requestOperation = soapRequest.manager.HTTPRequestOperationWithRequest(soapRequest.request, success: { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
-            completion(result: responseObject?["Result"], numberReturned: responseObject?["NumberReturned"], totalMatches: responseObject?["TotalMatches"], updateID: responseObject?["UpdateID"], error: nil)
+            success(result: responseObject?["Result"], numberReturned: responseObject?["NumberReturned"], totalMatches: responseObject?["TotalMatches"], updateID: responseObject?["UpdateID"])
             }, failure: { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                completion(result: nil, numberReturned: nil, totalMatches: nil, updateID: nil, error: error)
+                failure(error: error)
         })
         
         soapRequest.manager.operationQueue.addOperation(requestOperation)

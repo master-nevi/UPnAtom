@@ -168,11 +168,16 @@
         
         if ([upnpObject.className isEqualToString:@"ContentDirectory1Service_Swift"]) {
             ContentDirectory1Service_Swift *contentDirectoryService = (ContentDirectory1Service_Swift *)upnpObject;
-            [contentDirectoryService getSortCapabilities:^(NSString *sortCapabilities, NSError *error) {
+            [contentDirectoryService getSortCapabilities:^(NSString *sortCapabilities) {
                 NSLog(@"sort capabilities: %@", sortCapabilities);
+            } failure:^(NSError *error) {
+                
             }];
-            [contentDirectoryService browse:@"0" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" completion:^(NSString *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID, NSError *error) {
+            
+            [contentDirectoryService browse:@"0" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" success:^(NSString *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID) {
                 NSLog(@"browse: %@\nnumberReturned: %@\ntotalMatches: %@\nupdateID: %@", result, numberReturned, totalMatches, updateID);
+            } failure:^(NSError *error) {
+                
             }];
         }
     }
