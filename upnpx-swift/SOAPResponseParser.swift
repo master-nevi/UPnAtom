@@ -11,8 +11,8 @@ import Foundation
 class SOAPResponseParser: AbstractDOMXMLParser {
     private var _responseParameters = [String: String]()
     
-    override func parse(#document: GDataXMLDocument) -> VoidResult {
-        var result: VoidResult!
+    override func parse(#document: GDataXMLDocument) -> EmptyResult {
+        var result: EmptyResult!
         document.enumerateNodes("/s:Envelope/s:Body/*/*", closure: { (node: GDataXMLNode) -> Void in
 //            println("name: \(node.name()) string value: \(node.stringValue())")
             if node.name() != nil && node.stringValue() != nil && countElements(node.name()) > 0 && countElements(node.stringValue()) > 0 {

@@ -56,7 +56,7 @@ internal class UPnPEventSubscriptionManager {
         }
     }
     
-    func unsubscribe(subscription: AnyObject, completion: (result: VoidResult) -> Void ) {
+    func unsubscribe(subscription: AnyObject, completion: (result: EmptyResult) -> Void ) {
         dispatch_barrier_async(_concurrentSubscriptionQueue, { () -> Void in
             if let subscription = subscription as? Subscription {
                 self._subscriptions.removeValueForKey(subscription.subscriptionID)

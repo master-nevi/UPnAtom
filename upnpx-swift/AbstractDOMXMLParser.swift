@@ -16,33 +16,33 @@ class AbstractDOMXMLParser {
         self.customDefaultNamespacePrefix = customDefaultNamespacePrefix
     }
     
-    func parse(#data: NSData) -> VoidResult {
-        var parserResult: VoidResult = .Failure(createError("Parser failure"))
+    func parse(#data: NSData) -> EmptyResult {
+        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             var parseError: NSError?
             let xmlDocument = GDataXMLDocument(data: data, error: &parseError)
             self.defaultNamespace = xmlDocument.rootElement().customDefaultNamespace(prefix: self.customDefaultNamespacePrefix)
-            parserResult = parseError != nil ? VoidResult.Failure(parseError!) : self.parse(document: xmlDocument)
+            parserResult = parseError != nil ? EmptyResult.Failure(parseError!) : self.parse(document: xmlDocument)
         }
         
         return parserResult
     }
     
-    func parse(#contentsOfURL: NSURL) -> VoidResult {
-        var parserResult: VoidResult = .Failure(createError("Parser failure"))
+    func parse(#contentsOfURL: NSURL) -> EmptyResult {
+        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let data = NSData(contentsOfURL: contentsOfURL) {
                 var parseError: NSError?
                 let xmlDocument = GDataXMLDocument(data: data, error: &parseError)
                 self.defaultNamespace = xmlDocument.rootElement().customDefaultNamespace(prefix: self.customDefaultNamespacePrefix)
-                parserResult = parseError != nil ? VoidResult.Failure(parseError!) : self.parse(document: xmlDocument)
+                parserResult = parseError != nil ? EmptyResult.Failure(parseError!) : self.parse(document: xmlDocument)
             }
         }
         
         return parserResult
     }
     
-    internal func parse(#document: GDataXMLDocument) -> VoidResult {
+    internal func parse(#document: GDataXMLDocument) -> EmptyResult {
         fatalError("Implement in subclass")
     }
     

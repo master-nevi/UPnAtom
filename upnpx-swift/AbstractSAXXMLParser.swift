@@ -79,8 +79,8 @@ class AbstractSAXXMLParser_Swift: NSObject {
         return nil
     }
     
-    func parse(#data: NSData) -> VoidResult {
-        var parserResult: VoidResult = .Failure(createError("Parser failure"))
+    func parse(#data: NSData) -> EmptyResult {
+        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
                 let parser = NSXMLParser(data: validData)
@@ -91,8 +91,8 @@ class AbstractSAXXMLParser_Swift: NSObject {
         return parserResult
     }
     
-    func parse(#contentsOfURL: NSURL) -> VoidResult {
-        var parserResult: VoidResult = .Failure(createError("Parser failure"))
+    func parse(#contentsOfURL: NSURL) -> EmptyResult {
+        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let data = NSData(contentsOfURL: contentsOfURL) {
                 if let validData = self.validateForParsing(data) {
@@ -107,11 +107,11 @@ class AbstractSAXXMLParser_Swift: NSObject {
     
     // MARK: - Internal lib
     
-    private func startParser(parser: NSXMLParser) -> VoidResult {
+    private func startParser(parser: NSXMLParser) -> EmptyResult {
         parser.shouldProcessNamespaces = _supportNamespaces
         parser.delegate = self
         
-        var parserResult: VoidResult = .Failure(createError("Parser failure"))
+        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         if parser.parse() {
             parserResult = .Success
         }
