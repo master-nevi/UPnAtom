@@ -8,18 +8,22 @@
 
 import Foundation
 
-class SOAPResponseParser: AbstractXMLParser_Swift {
+class SOAPResponseParser: AbstractDOMXMLParser {
     private var _responseParameters = [String: String]()
     
-    init(supportNamespaces: Bool, soapAction: String) {
-        super.init(supportNamespaces: supportNamespaces)
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["Envelope", "Body", "\(soapAction)Response", "*"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            self._responseParameters[elementName] = text
-        }))
-    }
-    
-    convenience init(soapAction: String) {
-        self.init(supportNamespaces: true, soapAction: soapAction)
+    override func parse(#document: GDataXMLDocument) -> VoidResult {
+        var result: VoidResult!
+        document.enumerateNodes("/s:Envelope/s:Body/*/*", closure: { (node: GDataXMLNode) -> Void in
+//            println("name: \(node.name()) string value: \(node.stringValue())")
+            if node.name() != nil && node.stringValue() != nil && countElements(node.name()) > 0 && countElements(node.stringValue()) > 0 {
+                self._responseParameters[node.name()] = node.stringValue()
+            }
+            
+            result = .Success
+            }, failure: { (error: NSError) -> Void in
+            result = .Failure(error)
+        })
+        return result
     }
     
     func parse(#soapResponseData: NSData) -> Result<[String: String]> {

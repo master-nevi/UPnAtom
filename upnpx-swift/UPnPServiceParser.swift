@@ -8,7 +8,7 @@
 
 import Foundation
 
-class UPnPServiceParser_Swift: AbstractXMLParser_Swift {
+class UPnPServiceParser_Swift: AbstractSAXXMLParser_Swift {
     class ParserUPnPService {
         var baseURL: NSURL?
         var serviceType: String?
@@ -27,11 +27,11 @@ class UPnPServiceParser_Swift: AbstractXMLParser_Swift {
         self._upnpService = upnpService
         super.init(supportNamespaces: supportNamespaces)
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             self._baseURL = NSURL(string: text)
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service"], didStartParsingElement: { (elementName, attributeDict) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service"], didStartParsingElement: { (elementName, attributeDict) -> Void in
             self._currentParserService = ParserUPnPService()
         }, didEndParsingElement: { (elementName) -> Void in
             if let serviceType = self._currentParserService?.serviceType {
@@ -41,27 +41,27 @@ class UPnPServiceParser_Swift: AbstractXMLParser_Swift {
             }
         }, foundInnerText: nil))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "serviceType"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "serviceType"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentService = self._currentParserService
             currentService?.serviceType = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "serviceId"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "serviceId"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentService = self._currentParserService
             currentService?.serviceID = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "SCPDURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "SCPDURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentService = self._currentParserService
             currentService?.relativeDescriptionURL = NSURL(string: text)
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "controlURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "controlURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentService = self._currentParserService
             currentService?.relativeControlURL = NSURL(string: text)
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "eventSubURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "serviceList", "service", "eventSubURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentService = self._currentParserService
             currentService?.relativeEventURL = NSURL(string: text)
         }))

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class XMLParserElementObservation_Swift {
+class SAXXMLParserElementObservation_Swift {
     // public
     let didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?
     let didEndParsingElement: ((elementName: String) -> Void)?

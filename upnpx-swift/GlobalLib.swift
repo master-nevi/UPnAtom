@@ -90,6 +90,7 @@ enum Result<T> {
     }
 }
 
+/// TODO: update to EmptyResult
 enum VoidResult {
     case Success
     case Failure(Error)

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
+class UPnPDeviceParser_Swift: AbstractSAXXMLParser_Swift {
     class ParserUPnPDevice {
         var udn: String?
         var baseURL: NSURL?
@@ -49,68 +49,68 @@ class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
         self._upnpDevice = upnpDevice
         super.init(supportNamespaces: supportNamespaces)
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             self._baseURL = NSURL(string: text)
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["root", "device"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["root", "device"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
             self.didStartParsingDeviceElement()
         }, didEndParsingElement: { [unowned self] (elementName) -> Void in
             self.didEndParsingDeviceElement()
         }, foundInnerText: nil))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "deviceList", "device"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "deviceList", "device"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
             self.didStartParsingDeviceElement()
         }, didEndParsingElement: { [unowned self] (elementName) -> Void in
             self.didEndParsingDeviceElement()
         }, foundInnerText: nil))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "UDN"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "UDN"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.udn = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "friendlyName"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "friendlyName"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.friendlyName = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "modelDescription"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "modelDescription"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.modelDescription = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "modelName"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "modelName"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.modelName = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "modelNumber"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "modelNumber"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.modelNumber = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "modelURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "modelURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.modelURL = NSURL(string: text)
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "serialNumber"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "serialNumber"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.serialNumber = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "manufacturer"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "manufacturer"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.manufacturer = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "device", "manufacturerURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "device", "manufacturerURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.manufacturerURL = NSURL(string: text)
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "icon"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "icon"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.currentIconDescription = ParserIconDescription()
         }, didEndParsingElement: { [unowned self] (elementName) -> Void in
@@ -121,33 +121,33 @@ class UPnPDeviceParser_Swift: AbstractXMLParser_Swift {
             currentDevice?.currentIconDescription = nil
         }, foundInnerText: nil))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "icon", "mimetype"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "icon", "mimetype"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.currentIconDescription?.mimeType = text
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "icon", "width"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "icon", "width"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
                 var currentDevice = self._deviceStack.last
                 currentDevice?.currentIconDescription?.width = Int(textNumber.intValue)
             }
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "icon", "height"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "icon", "height"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
                 var currentDevice = self._deviceStack.last
                 currentDevice?.currentIconDescription?.height = Int(textNumber.intValue)
             }
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "icon", "depth"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "icon", "depth"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
                 var currentDevice = self._deviceStack.last
                 currentDevice?.currentIconDescription?.depth = Int(textNumber.intValue)
             }
         }))
         
-        self.addElementObservation(XMLParserElementObservation_Swift(elementPath: ["*", "icon", "url"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+        self.addElementObservation(SAXXMLParserElementObservation_Swift(elementPath: ["*", "icon", "url"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.last
             currentDevice?.currentIconDescription?.relativeURL = NSURL(string: text)
         }))
