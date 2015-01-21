@@ -8,7 +8,7 @@
 
 import Foundation
 
-class AbstractUPnPService_Swift: AbstractUPnP_Swift {
+class AbstractUPnPService: AbstractUPnP {
     // public
     var serviceType: String {
         return urn
@@ -43,7 +43,7 @@ class AbstractUPnPService_Swift: AbstractUPnP_Swift {
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
         
-        let serviceParser = UPnPServiceParser_Swift(upnpService: self)
+        let serviceParser = UPnPServiceParser(upnpService: self)
         let parsedService = serviceParser.parse().value
         
         if let baseURL = parsedService?.baseURL {
@@ -76,7 +76,7 @@ class AbstractUPnPService_Swift: AbstractUPnP_Swift {
 
 // MARK: UPnP Event handling
 
-extension AbstractUPnPService_Swift {
+extension AbstractUPnPService {
     private class EventObserver {
         let notificationCenterObserver: AnyObject
         init(notificationCenterObserver: AnyObject) {
@@ -92,9 +92,9 @@ extension AbstractUPnPService_Swift {
         return "UPnPEventInfoKey"
     }
     
-    func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent_Swift) -> Void) -> AnyObject {
+    func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent) -> Void) -> AnyObject {
         let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
-            if let rawEventInfo = notification.userInfo?[AbstractUPnPService_Swift.UPnPEventInfoKey()] as? [String: String] {
+            if let rawEventInfo = notification.userInfo?[AbstractUPnPService.UPnPEventInfoKey()] as? [String: String] {
                 let event = self.createEvent(rawEventInfo)
                 callBackBlock(event: event)
             }
@@ -125,19 +125,19 @@ extension AbstractUPnPService_Swift {
     }
     
     /// overridable by service subclasses
-    func createEvent(rawEventInfo: [String: String]) -> UPnPEvent_Swift {
-        return UPnPEvent_Swift(rawEventInfo: rawEventInfo)
+    func createEvent(rawEventInfo: [String: String]) -> UPnPEvent {
+        return UPnPEvent(rawEventInfo: rawEventInfo)
     }
 }
 
-extension AbstractUPnPService_Swift.EventObserver: Equatable { }
+extension AbstractUPnPService.EventObserver: Equatable { }
 
-private func ==(lhs: AbstractUPnPService_Swift.EventObserver, rhs: AbstractUPnPService_Swift.EventObserver) -> Bool {
+private func ==(lhs: AbstractUPnPService.EventObserver, rhs: AbstractUPnPService.EventObserver) -> Bool {
     return lhs.notificationCenterObserver === rhs.notificationCenterObserver
 }
 
-extension AbstractUPnPService_Swift: ExtendedPrintable {
-    override var className: String { return "AbstractUPnPService_Swift" }
+extension AbstractUPnPService: ExtendedPrintable {
+    override var className: String { return "AbstractUPnPService" }
     override var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)

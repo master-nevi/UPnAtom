@@ -8,7 +8,7 @@
 
 import Foundation
 
-class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
+class AbstractUPnPDevice: AbstractUPnP {
     struct IconDescription: Printable {
         let relativeURL: NSURL
         let width, height, depth: Int
@@ -42,7 +42,7 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
         
-        let deviceParser = UPnPDeviceParser_Swift(upnpDevice: self)
+        let deviceParser = UPnPDeviceParser(upnpDevice: self)
         let parsedDevice = deviceParser.parse().value
         
         if let udn = parsedDevice?.udn {
@@ -79,8 +79,8 @@ class AbstractUPnPDevice_Swift: AbstractUPnP_Swift {
     }
 }
 
-extension AbstractUPnPDevice_Swift: ExtendedPrintable {
-    override var className: String { return "AbstractUPnPDevice_Swift" }
+extension AbstractUPnPDevice: ExtendedPrintable {
+    override var className: String { return "AbstractUPnPDevice" }
     override var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)

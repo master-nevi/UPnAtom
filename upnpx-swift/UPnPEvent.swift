@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc class UPnPEvent_Swift {
+@objc class UPnPEvent {
     let rawEventInfo: [String: String]
     init(rawEventInfo: [String: String]) {
         self.rawEventInfo = rawEventInfo

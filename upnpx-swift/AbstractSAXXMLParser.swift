@@ -1,5 +1,5 @@
 //
-//  AbstractSAXXMLParser_Swift.swift
+//  AbstractSAXXMLParser.swift
 //  upnpx
 //
 //  Created by David Robles on 11/12/14.
@@ -9,13 +9,13 @@
 import Foundation
 
 // Subclassing NSObject in order to be a NSXMLParserDelegate
-class AbstractSAXXMLParser_Swift: NSObject {
+class AbstractSAXXMLParser: NSObject {
     // public
     
     // private
     private let _supportNamespaces: Bool
     lazy private var _elementStack = [String]()
-    lazy private var _elementObservations = [SAXXMLParserElementObservation_Swift]()
+    lazy private var _elementObservations = [SAXXMLParserElementObservation]()
     
     init(supportNamespaces: Bool) {
         _supportNamespaces = supportNamespaces
@@ -25,7 +25,7 @@ class AbstractSAXXMLParser_Swift: NSObject {
         self.init(supportNamespaces: false)
     }
     
-    func addElementObservation(elementObservation: SAXXMLParserElementObservation_Swift) {
+    func addElementObservation(elementObservation: SAXXMLParserElementObservation) {
         _elementObservations.append(elementObservation)
     }
     
@@ -33,7 +33,7 @@ class AbstractSAXXMLParser_Swift: NSObject {
         _elementObservations.removeAll(keepCapacity: false)
     }
     
-    func elementObservationForElementStack(elementStack: [String]) -> SAXXMLParserElementObservation_Swift? {
+    func elementObservationForElementStack(elementStack: [String]) -> SAXXMLParserElementObservation? {
         for elementObservation in _elementObservations {
             // Full compares go first
             if elementObservation.elementPath == elementStack {
@@ -139,7 +139,7 @@ class AbstractSAXXMLParser_Swift: NSObject {
     }
 }
 
-extension AbstractSAXXMLParser_Swift: NSXMLParserDelegate {
+extension AbstractSAXXMLParser: NSXMLParserDelegate {
     internal func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
         _elementStack += [elementName]
         

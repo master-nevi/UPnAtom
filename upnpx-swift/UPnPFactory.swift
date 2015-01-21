@@ -8,30 +8,30 @@
 
 import Foundation
 
-class UPnPFactory_Swift {
-    class func createDeviceFrom(ssdpDevice: SSDPDBDevice_ObjC) -> AbstractUPnPDevice_Swift? {
+class UPnPFactory {
+    class func createDeviceFrom(ssdpDevice: SSDPDBDevice_ObjC) -> AbstractUPnPDevice? {
         switch ssdpDevice.urn {
         case .Some(let urn) where urn == "urn:schemas-upnp-org:device:MediaRenderer:1":
             return MediaRenderer1Device_Swift(ssdpDevice: ssdpDevice)
         case .Some(let urn) where urn == "urn:schemas-upnp-org:device:MediaServer:1":
             return MediaServer1Device_Swift(ssdpDevice: ssdpDevice)
         default:
-            return AbstractUPnPDevice_Swift(ssdpDevice: ssdpDevice)
+            return AbstractUPnPDevice(ssdpDevice: ssdpDevice)
         }
     }
     
-    class func createServiceFrom(ssdpDevice: SSDPDBDevice_ObjC) -> AbstractUPnPService_Swift? {
+    class func createServiceFrom(ssdpDevice: SSDPDBDevice_ObjC) -> AbstractUPnPService? {
         switch ssdpDevice.urn {
         case .Some(let urn) where urn == "urn:schemas-upnp-org:service:AVTransport:1":
-            return AVTransport1Service_Swift(ssdpDevice: ssdpDevice)
+            return AVTransport1Service(ssdpDevice: ssdpDevice)
         case .Some(let urn) where urn == "urn:schemas-upnp-org:service:ConnectionManager:1":
-            return ConnectionManager1Service_Swift(ssdpDevice: ssdpDevice)
+            return ConnectionManager1Service(ssdpDevice: ssdpDevice)
         case .Some(let urn) where urn == "urn:schemas-upnp-org:service:ContentDirectory:1":
-            return ContentDirectory1Service_Swift(ssdpDevice: ssdpDevice)
+            return ContentDirectory1Service(ssdpDevice: ssdpDevice)
         case .Some(let urn) where urn == "urn:schemas-upnp-org:service:RenderingControl:1":
-            return RenderingControl1Service_Swift(ssdpDevice: ssdpDevice)
+            return RenderingControl1Service(ssdpDevice: ssdpDevice)
         default:
-            return AbstractUPnPService_Swift(ssdpDevice: ssdpDevice)
+            return AbstractUPnPService(ssdpDevice: ssdpDevice)
         }
     }
 }

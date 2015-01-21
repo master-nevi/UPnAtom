@@ -8,12 +8,12 @@
 
 import Foundation
 
-class RenderingControl1Service_Swift: AbstractUPnPService_Swift {
+class RenderingControl1Service: AbstractUPnPService {
     
 }
 
-extension RenderingControl1Service_Swift: ExtendedPrintable {
-    override var className: String { return "RenderingControl1Service_Swift" }
+extension RenderingControl1Service: ExtendedPrintable {
+    override var className: String { return "RenderingControl1Service" }
     override var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)

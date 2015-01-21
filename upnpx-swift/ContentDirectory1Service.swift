@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
+class ContentDirectory1Service: AbstractUPnPService {
     let requestSerializer: SOAPRequestSerializer!
     let actionURL: NSURL!
     
@@ -66,8 +66,8 @@ class ContentDirectory1Service_Swift: AbstractUPnPService_Swift {
     }
 }
 
-extension ContentDirectory1Service_Swift: ExtendedPrintable {
-    override var className: String { return "ContentDirectory1Service_Swift" }
+extension ContentDirectory1Service: ExtendedPrintable {
+    override var className: String { return "ContentDirectory1Service" }
     override var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)

@@ -8,10 +8,10 @@
 
 import Foundation
 
-@objc class UPnPRegistry_Swift {
+@objc class UPnPRegistry {
     // public
-    var rootDevices: [AbstractUPnPDevice_Swift] {
-        var rootDevices: [AbstractUPnPDevice_Swift]!
+    var rootDevices: [AbstractUPnPDevice] {
+        var rootDevices: [AbstractUPnPDevice]!
         dispatch_sync(_concurrentDeviceQueue, { () -> Void in
             rootDevices = Array(self._rootDevices.values)
         })
@@ -21,8 +21,8 @@ import Foundation
     
     // private
     private let _concurrentDeviceQueue = dispatch_queue_create("com.upnpx-swift.upnp-registry.device-queue", DISPATCH_QUEUE_CONCURRENT)
-    lazy private var _rootDevices = [UniqueServiceName: AbstractUPnPDevice_Swift]()
-    lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService_Swift]()
+    lazy private var _rootDevices = [UniqueServiceName: AbstractUPnPDevice]()
+    lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService]()
     
     init(ssdpDB: SSDPDB_ObjC) {
         self.ssdpDB = ssdpDB
@@ -48,18 +48,18 @@ import Foundation
     }
     
     /// MARK: unused method consider deleting
-    private func addRootDevice(device: AbstractUPnPDevice_Swift) {
+    private func addRootDevice(device: AbstractUPnPDevice) {
         dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
             self._rootDevices[device.usn] = device
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): device])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry.UPnPDeviceKey(): device])
             })
         })
     }
 }
 
 /// Extension used for defining notification constants. Functions are used since class constants are not supported in swift yet
-extension UPnPRegistry_Swift {
+extension UPnPRegistry {
     class func UPnPDeviceAddedNotification() -> String {
         return "UPnPDeviceAddedNotification"
     }
@@ -85,7 +85,7 @@ extension UPnPRegistry_Swift {
     }
 }
 
-extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
+extension UPnPRegistry: SSDPDB_ObjC_Observer {
     internal func SSDPDBWillUpdate(sender: SSDPDB_ObjC!) {
         
     }
@@ -94,11 +94,11 @@ extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
         let ssdpDevices = sender.SSDPObjCDevices.copy() as [SSDPDBDevice_ObjC]
         dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
             let devices = self._rootDevices
-            var devicesToAdd = [AbstractUPnPDevice_Swift]()
-            var devicesToKeep = [AbstractUPnPDevice_Swift]()
+            var devicesToAdd = [AbstractUPnPDevice]()
+            var devicesToKeep = [AbstractUPnPDevice]()
             let services = self._rootDeviceServices
-            var servicesToAdd = [AbstractUPnPService_Swift]()
-            var servicesToKeep = [AbstractUPnPService_Swift] ()
+            var servicesToAdd = [AbstractUPnPService]()
+            var servicesToKeep = [AbstractUPnPService] ()
             for ssdpDevice in ssdpDevices {
                 if ssdpDevice.uuid != nil && ssdpDevice.urn != nil {
                     if ssdpDevice.isdevice {
@@ -106,7 +106,7 @@ extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
                             devicesToKeep.append(foundDevice)
                         }
                         else {
-                            if let newDevice = UPnPFactory_Swift.createDeviceFrom(ssdpDevice) {
+                            if let newDevice = UPnPFactory.createDeviceFrom(ssdpDevice) {
                                 devicesToAdd.append(newDevice)
                             }
                         }
@@ -116,7 +116,7 @@ extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
                             servicesToKeep.append(foundService)
                         }
                         else {
-                            if let newService = UPnPFactory_Swift.createServiceFrom(ssdpDevice) {
+                            if let newService = UPnPFactory.createServiceFrom(ssdpDevice) {
                                 servicesToAdd.append(newService)
                             }
                         }
@@ -129,44 +129,44 @@ extension UPnPRegistry_Swift: SSDPDB_ObjC_Observer {
         })
     }
     
-    private func process(devicesToAdd: [AbstractUPnPDevice_Swift], devicesToKeep: [AbstractUPnPDevice_Swift]) {
+    private func process(devicesToAdd: [AbstractUPnPDevice], devicesToKeep: [AbstractUPnPDevice]) {
         let devices = self._rootDevices
         let devicesSet = NSMutableSet(array: Array(devices.values))
         devicesSet.minusSet(NSSet(array: devicesToKeep))
-        let devicesToRemove = devicesSet.allObjects as [AbstractUPnPDevice_Swift] // casting from [AnyObject]
+        let devicesToRemove = devicesSet.allObjects as [AbstractUPnPDevice] // casting from [AnyObject]
         
         for deviceToRemove in devicesToRemove {
             self._rootDevices.removeValueForKey(deviceToRemove.usn)
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceRemovedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): deviceToRemove])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPDeviceRemovedNotification(), object: self, userInfo: [UPnPRegistry.UPnPDeviceKey(): deviceToRemove])
             })
         }
         
         for deviceToAdd in devicesToAdd {
             self._rootDevices[deviceToAdd.usn] = deviceToAdd
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPDeviceKey(): deviceToAdd])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry.UPnPDeviceKey(): deviceToAdd])
             })
         }
     }
     
-    private func process(servicesToAdd: [AbstractUPnPService_Swift], servicesToKeep: [AbstractUPnPService_Swift]) {
+    private func process(servicesToAdd: [AbstractUPnPService], servicesToKeep: [AbstractUPnPService]) {
         let services = self._rootDeviceServices
         let servicesSet = NSMutableSet(array: Array(services.values))
         servicesSet.minusSet(NSSet(array: servicesToKeep))
-        let servicesToRemove = servicesSet.allObjects as [AbstractUPnPService_Swift] // casting from [AnyObject]
+        let servicesToRemove = servicesSet.allObjects as [AbstractUPnPService] // casting from [AnyObject]
         
         for serviceToRemove in servicesToRemove {
             self._rootDeviceServices.removeValueForKey(serviceToRemove.usn)
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPServiceRemovedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPServiceKey(): serviceToRemove])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPServiceRemovedNotification(), object: self, userInfo: [UPnPRegistry.UPnPServiceKey(): serviceToRemove])
             })
         }
         
         for serviceToAdd in servicesToAdd {
             self._rootDeviceServices[serviceToAdd.usn] = serviceToAdd
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry_Swift.UPnPServiceAddedNotification(), object: self, userInfo: [UPnPRegistry_Swift.UPnPServiceKey(): serviceToAdd])
+                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPServiceAddedNotification(), object: self, userInfo: [UPnPRegistry.UPnPServiceKey(): serviceToAdd])
             })
         }
     }

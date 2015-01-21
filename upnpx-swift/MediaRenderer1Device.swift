@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MediaRenderer1Device_Swift: AbstractUPnPDevice_Swift {
+class MediaRenderer1Device_Swift: AbstractUPnPDevice {
     
 }
 

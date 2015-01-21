@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc class AbstractUPnP_Swift: ExtendedPrintable {
+@objc class AbstractUPnP: ExtendedPrintable {
     let uuid: String!
     let urn: String!
     let usn: UniqueServiceName!
@@ -40,8 +40,8 @@ import Foundation
     }
 }
 
-extension AbstractUPnP_Swift: ExtendedPrintable {
-    var className: String { return "AbstractUPnP_Swift" }
+extension AbstractUPnP: ExtendedPrintable {
+    var className: String { return "AbstractUPnP" }
     var description: String {
         var properties = PropertyPrinter()
         properties.add("uuid", property: uuid)

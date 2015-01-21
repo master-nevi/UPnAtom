@@ -8,12 +8,12 @@
 
 import Foundation
 
-class AVTransport1Service_Swift: AbstractUPnPService_Swift {
+class AVTransport1Service: AbstractUPnPService {
     
 }
 
-extension AVTransport1Service_Swift: ExtendedPrintable {
-    override var className: String { return "AVTransport1Service_Swift" }
+extension AVTransport1Service: ExtendedPrintable {
+    override var className: String { return "AVTransport1Service" }
     override var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
