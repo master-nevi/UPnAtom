@@ -161,8 +161,8 @@
 - (void)serviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-//        NSLog(@"Added service: %@ %@", upnpObject.className, upnpObject.description);
-        if (![upnpObject.baseURL.absoluteString isEqualToString:@"http://192.168.11.101:5001/"]) {
+        NSLog(@"Added service: %@ %@", upnpObject.className, upnpObject.description);
+        if (![upnpObject.baseURL.absoluteString containsString:@":5001"]) {
             return;
         }
         
