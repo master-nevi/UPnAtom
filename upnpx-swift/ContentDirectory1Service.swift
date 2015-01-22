@@ -9,31 +9,27 @@
 import Foundation
 
 class ContentDirectory1Service: AbstractUPnPService {
-    let requestSerializer: SOAPRequestSerializer!
-    let actionURL: NSURL!
+    let sessionManager: SOAPSessionManager!
     
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
-     
-        requestSerializer = SOAPRequestSerializer(upnpNamespace: urn)
-        actionURL = NSURL(string: controlURL.absoluteString!, relativeToURL: baseURL)!
+        
+        sessionManager = SOAPSessionManager(baseURL: baseURL)
     }
     
     func getSortCapabilities(success: (sortCapabilities: String?) -> Void, failure:(error: NSError?) -> Void) {
-        let soapRequest = prepareSoapRequest("GetSortCapabilities", parameters: nil)
+        let parameters = SOAPRequestParameters(soapAction: "GetSortCapabilities", serviceURN: urn, arguments: nil)
         
-        let requestOperation = soapRequest.manager.HTTPRequestOperationWithRequest(soapRequest.request, success: { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
+        sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
             success(sortCapabilities: responseObject?["SortCaps"])
-            }, failure: { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
         })
-        
-        soapRequest.manager.operationQueue.addOperation(requestOperation)
     }
     
     func browse(objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, success: (result: String?, numberReturned: String?, totalMatches: String?, updateID: String?) -> Void, failure: (error: NSError?) -> Void) {
-        let parameters = [
+        let arguments = [
             "ObjectID" : objectID,
             "BrowseFlag" : browseFlag,
             "Filter": filter,
@@ -41,28 +37,14 @@ class ContentDirectory1Service: AbstractUPnPService {
             "RequestedCount" : requestedCount,
             "SortCriteria" : sortCriteria]
         
-        let soapRequest = prepareSoapRequest("Browse", parameters: parameters)
+        let parameters = SOAPRequestParameters(soapAction: "Browse", serviceURN: urn, arguments: arguments)
         
-        let requestOperation = soapRequest.manager.HTTPRequestOperationWithRequest(soapRequest.request, success: { (operation: AFHTTPRequestOperation!, responseObject: AnyObject!) -> Void in
+        sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
             success(result: responseObject?["Result"], numberReturned: responseObject?["NumberReturned"], totalMatches: responseObject?["TotalMatches"], updateID: responseObject?["UpdateID"])
-            }, failure: { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
         })
-        
-        soapRequest.manager.operationQueue.addOperation(requestOperation)
-    }
-    
-    private func prepareSoapRequest(soapAction: String, parameters: [String: String]?) -> (request: NSMutableURLRequest, manager: AFHTTPRequestOperationManager) {
-        requestSerializer.soapAction = soapAction
-        let request = requestSerializer.requestWithMethod("POST", URLString: actionURL.absoluteString, parameters: parameters, error: nil)
-        
-        let responseSerializer = SOAPResponseSerializer(soapAction: soapAction)
-        
-        let manager = AFHTTPRequestOperationManager()
-        manager.responseSerializer = responseSerializer
-        
-        return (request, manager)
     }
 }
 

@@ -28,6 +28,7 @@
 		6383D9CF1A469A050054C365 /* SOAPResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6383D9CE1A469A050054C365 /* SOAPResponseParser.swift */; };
 		6383D9D31A4764920054C365 /* UPnPEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6383D9D21A4764920054C365 /* UPnPEvent.swift */; };
 		6383D9D51A493F4A0054C365 /* UPnPEventSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6383D9D41A493F4A0054C365 /* UPnPEventSubscriptionManager.swift */; };
+		63872F2C1A70C5BE00469B11 /* SOAPSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63872F2B1A70C5BE00469B11 /* SOAPSessionManager.swift */; };
 		63B8C7FD1A5D06B700683344 /* AbstractDOMXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63B8C7FC1A5D06B700683344 /* AbstractDOMXMLParser.swift */; };
 		63BB64A21A50FAE500E9D3F0 /* UPnPEventHTTPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BB64A11A50FAE500E9D3F0 /* UPnPEventHTTPConnection.swift */; };
 		63BB64AA1A513A4700E9D3F0 /* SOAPSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BB64A91A513A4700E9D3F0 /* SOAPSerialization.swift */; };
@@ -73,6 +74,7 @@
 		6383D9CE1A469A050054C365 /* SOAPResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOAPResponseParser.swift; sourceTree = "<group>"; };
 		6383D9D21A4764920054C365 /* UPnPEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPEvent.swift; sourceTree = "<group>"; };
 		6383D9D41A493F4A0054C365 /* UPnPEventSubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPEventSubscriptionManager.swift; sourceTree = "<group>"; };
+		63872F2B1A70C5BE00469B11 /* SOAPSessionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOAPSessionManager.swift; sourceTree = "<group>"; };
 		63B8C7FC1A5D06B700683344 /* AbstractDOMXMLParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractDOMXMLParser.swift; sourceTree = "<group>"; };
 		63BB64A11A50FAE500E9D3F0 /* UPnPEventHTTPConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UPnPEventHTTPConnection.swift; sourceTree = "<group>"; };
 		63BB64A91A513A4700E9D3F0 /* SOAPSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOAPSerialization.swift; sourceTree = "<group>"; };
@@ -172,7 +174,7 @@
 			children = (
 				63713E5D1A20391700EC81FC /* GlobalLib.swift */,
 				63DD9E521A411A4800C78525 /* PropertyPrinter.swift */,
-				63DD9E541A411EC300C78525 /* HTTP Client Serializers */,
+				63DD9E541A411EC300C78525 /* HTTP Client Session Managers / Serializers */,
 				63E36B171A1DBFE9001E15D1 /* Parsers */,
 				63E36B1D1A1DC1B0001E15D1 /* Management */,
 				6383D9D11A4764730054C365 /* UPnP Events */,
@@ -191,13 +193,14 @@
 			name = "UPnP Events";
 			sourceTree = "<group>";
 		};
-		63DD9E541A411EC300C78525 /* HTTP Client Serializers */ = {
+		63DD9E541A411EC300C78525 /* HTTP Client Session Managers / Serializers */ = {
 			isa = PBXGroup;
 			children = (
+				63872F2B1A70C5BE00469B11 /* SOAPSessionManager.swift */,
 				63BB64A91A513A4700E9D3F0 /* SOAPSerialization.swift */,
 				63BB64AB1A513AAE00E9D3F0 /* UPnPEventSubscriptionSerialization.swift */,
 			);
-			name = "HTTP Client Serializers";
+			name = "HTTP Client Session Managers / Serializers";
 			sourceTree = "<group>";
 		};
 		63E36B171A1DBFE9001E15D1 /* Parsers */ = {
@@ -368,6 +371,7 @@
 				63DD9E531A411A4800C78525 /* PropertyPrinter.swift in Sources */,
 				63BB64AC1A513AAE00E9D3F0 /* UPnPEventSubscriptionSerialization.swift in Sources */,
 				63BB64AA1A513A4700E9D3F0 /* SOAPSerialization.swift in Sources */,
+				63872F2C1A70C5BE00469B11 /* SOAPSessionManager.swift in Sources */,
 				63250FAD1A19D4B4003895BA /* UPnPRegistry.swift in Sources */,
 				63E36B1A1A1DC076001E15D1 /* MediaRenderer1Device.swift in Sources */,
 				63E36B1C1A1DC086001E15D1 /* MediaServer1Device.swift in Sources */,

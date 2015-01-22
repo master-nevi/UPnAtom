@@ -8,21 +8,24 @@
 
 import Foundation
 
-class SOAPRequestSerializer: AFHTTPRequestSerializer {
-    let upnpNamespace: String
-    var soapAction = ""
+class SOAPRequestParameters {
+    let soapAction: String
+    let serviceURN: String
+    let arguments: NSDictionary?
     
-    init(upnpNamespace: String) {
-        self.upnpNamespace = upnpNamespace
-        super.init()
+    init(soapAction: String, serviceURN: String, arguments: NSDictionary?) {
+        self.soapAction = soapAction
+        self.serviceURN = serviceURN
+        self.arguments = arguments
     }
-    
-    required init(coder aDecoder: NSCoder) {
-        self.upnpNamespace = aDecoder.decodeObjectOfClass(SOAPRequestSerializer.self, forKey: "upnpNamespace") as String
-        super.init(coder: aDecoder)
-    }
-        
+}
+
+class SOAPRequestSerializer: AFHTTPRequestSerializer {    
     override func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
+        let requestParameters: SOAPRequestParameters! = parameters as? SOAPRequestParameters
+        if requestParameters == nil {
+            return nil
+        }
         var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
@@ -40,18 +43,18 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
             mutableRequest.setValue("text/xml; charset=\"\(charSet)\"", forHTTPHeaderField: "Content-Type")
         }
         
-        mutableRequest.setValue("\"\(upnpNamespace)#\(soapAction)\"", forHTTPHeaderField: "SOAPACTION")
+        mutableRequest.setValue("\"\(requestParameters.serviceURN)#\(requestParameters.soapAction)\"", forHTTPHeaderField: "SOAPACTION")
         
         var body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
         body += "<s:Envelope s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">"
         body += "<s:Body>"
-        body += "<u:\(soapAction) xmlns:u=\"\(upnpNamespace)\">"
-        if let parameters = parameters as? NSDictionary {
-            for (key, value) in parameters {
+        body += "<u:\(requestParameters.soapAction) xmlns:u=\"\(requestParameters.serviceURN)\">"
+        if let arguments = requestParameters.arguments {
+            for (key, value) in arguments {
                 body += "<\(key)>\(value)</\(key)>"
             }
         }
-        body += "</u:\(soapAction)>"
+        body += "</u:\(requestParameters.soapAction)>"
         body += "</s:Body></s:Envelope>"
         //        println("swift: \(body)")
         
@@ -63,19 +66,7 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
     }
 }
 
-class SOAPResponseSerializer: AFXMLParserResponseSerializer {
-    let soapAction: String
-    
-    init(soapAction: String) {
-        self.soapAction = soapAction
-        super.init()
-    }
-    
-    required init(coder aDecoder: NSCoder) {
-        self.soapAction = aDecoder.decodeObjectOfClass(SOAPResponseSerializer.self, forKey: "soapAction") as String
-        super.init(coder: aDecoder)
-    }
-    
+class SOAPResponseSerializer: AFXMLParserResponseSerializer {    
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
         if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
             if error == nil {
