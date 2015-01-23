@@ -126,7 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				633C99291A13B9770059444C /* ControlPointDemo */,
-				633C99591A150CB40059444C /* upnpx-swift */,
+				633C99591A150CB40059444C /* UPnAtom */,
 				633C99281A13B9770059444C /* Products */,
 				603886B18FDA3521BECBBD9B /* Pods */,
 				484F20EFBF38325E492FC73D /* Frameworks */,
@@ -169,20 +169,20 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		633C99591A150CB40059444C /* upnpx-swift */ = {
+		633C99591A150CB40059444C /* UPnAtom */ = {
 			isa = PBXGroup;
 			children = (
 				63713E5D1A20391700EC81FC /* GlobalLib.swift */,
 				63DD9E521A411A4800C78525 /* PropertyPrinter.swift */,
+				633C995A1A150CCE0059444C /* ControlPointDemo-Bridging-Header.h */,
 				63DD9E541A411EC300C78525 /* HTTP Client Session Managers / Serializers */,
 				63E36B171A1DBFE9001E15D1 /* Parsers */,
 				63E36B1D1A1DC1B0001E15D1 /* Management */,
 				6383D9D11A4764730054C365 /* UPnP Events */,
 				63E36B181A1DBFF6001E15D1 /* UPnP Objects */,
-				633C995A1A150CCE0059444C /* ControlPointDemo-Bridging-Header.h */,
 			);
-			name = "upnpx-swift";
-			path = "../../upnpx-swift";
+			name = UPnAtom;
+			path = ../../Source;
 			sourceTree = "<group>";
 		};
 		6383D9D11A4764730054C365 /* UPnP Events */ = {
@@ -509,7 +509,7 @@
 				INFOPLIST_FILE = ControlPointDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "../../upnpx-swift/ControlPointDemo-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "../../Source/ControlPointDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -524,7 +524,7 @@
 				INFOPLIST_FILE = ControlPointDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "../../upnpx-swift/ControlPointDemo-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "../../Source/ControlPointDemo-Bridging-Header.h";
 			};
 			name = Release;
 		};
