@@ -9,22 +9,22 @@
 import Foundation
 
 class UPnPEventSubscribeRequestSerializer: AFHTTPRequestSerializer {
-    let callBack: NSURL
-    let timeout: Int // in seconds
-    
-    init(callBack: NSURL, timeout: Int) {
-        self.callBack = callBack
-        self.timeout = timeout
-        super.init()
-    }
-    
-    required init(coder aDecoder: NSCoder) {
-        self.callBack = NSURL(string: aDecoder.decodeObjectOfClass(UPnPEventSubscribeRequestSerializer.self, forKey: "callBack") as String)!
-        self.timeout = aDecoder.decodeIntegerForKey("timeout")
-        super.init(coder: aDecoder)
+    class Parameters {
+        let callBack: NSURL
+        let timeout: Int // in seconds
+        
+        init(callBack: NSURL, timeout: Int) {
+            self.callBack = callBack
+            self.timeout = timeout
+        }
     }
     
     override func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
+        let requestParameters: Parameters! = parameters as? Parameters
+        if requestParameters == nil {
+            return nil
+        }
+        
         var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
@@ -37,12 +37,12 @@ class UPnPEventSubscribeRequestSerializer: AFHTTPRequestSerializer {
             }
         }
         
-        if let callBackString = callBack.absoluteString {
+        if let callBackString = requestParameters.callBack.absoluteString {
             mutableRequest.setValue("<\(callBackString)>", forHTTPHeaderField: "CALLBACK")
         }
         
         mutableRequest.setValue("upnp:event", forHTTPHeaderField: "NT")
-        mutableRequest.setValue("Second-\(timeout)", forHTTPHeaderField: "TIMEOUT")
+        mutableRequest.setValue("Second-\(requestParameters.timeout)", forHTTPHeaderField: "TIMEOUT")
         
         return mutableRequest
     }
@@ -53,22 +53,22 @@ class UPnPEventSubscribeResponseSerializer: AFHTTPRequestSerializer {
 }
 
 class UPnPEventRenewSubscriptionRequestSerializer: AFHTTPRequestSerializer {
-    let subscriptionID: String
-    let timeout: Int // in seconds
-    
-    init(subscriptionID: String, timeout: Int) {
-        self.subscriptionID = subscriptionID
-        self.timeout = timeout
-        super.init()
-    }
-    
-    required init(coder aDecoder: NSCoder) {
-        self.subscriptionID = aDecoder.decodeObjectOfClass(UPnPEventSubscribeRequestSerializer.self, forKey: "subscriptionID") as String
-        self.timeout = aDecoder.decodeIntegerForKey("timeout")
-        super.init(coder: aDecoder)
+    class Parameters {
+        let subscriptionID: String
+        let timeout: Int // in seconds
+        
+        init(subscriptionID: String, timeout: Int) {
+            self.subscriptionID = subscriptionID
+            self.timeout = timeout
+        }
     }
     
     override func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
+        let requestParameters: Parameters! = parameters as? Parameters
+        if requestParameters == nil {
+            return nil
+        }
+        
         var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
@@ -81,8 +81,8 @@ class UPnPEventRenewSubscriptionRequestSerializer: AFHTTPRequestSerializer {
             }
         }
         
-        mutableRequest.setValue("\(subscriptionID)", forHTTPHeaderField: "SID")
-        mutableRequest.setValue("Second-\(timeout)", forHTTPHeaderField: "TIMEOUT")
+        mutableRequest.setValue("\(requestParameters.subscriptionID)", forHTTPHeaderField: "SID")
+        mutableRequest.setValue("Second-\(requestParameters.timeout)", forHTTPHeaderField: "TIMEOUT")
         
         return mutableRequest
     }
@@ -93,19 +93,20 @@ class UPnPEventRenewSubscriptionResponseSerializer: AFHTTPRequestSerializer {
 }
 
 class UPnPEventUnsubscribeRequestSerializer: AFHTTPRequestSerializer {
-    let subscriptionID: String
-    
-    init(subscriptionID: String, timeout: Int) {
-        self.subscriptionID = subscriptionID
-        super.init()
-    }
-    
-    required init(coder aDecoder: NSCoder) {
-        self.subscriptionID = aDecoder.decodeObjectOfClass(UPnPEventSubscribeRequestSerializer.self, forKey: "subscriptionID") as String
-        super.init(coder: aDecoder)
+    class Parameters {
+        let subscriptionID: String
+        
+        init(subscriptionID: String) {
+            self.subscriptionID = subscriptionID
+        }
     }
     
     override func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
+        let requestParameters: Parameters! = parameters as? Parameters
+        if requestParameters == nil {
+            return nil
+        }
+        
         var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
@@ -118,7 +119,7 @@ class UPnPEventUnsubscribeRequestSerializer: AFHTTPRequestSerializer {
             }
         }
         
-        mutableRequest.setValue("\(subscriptionID)", forHTTPHeaderField: "SID")
+        mutableRequest.setValue("\(requestParameters.subscriptionID)", forHTTPHeaderField: "SID")
         
         return mutableRequest
     }

@@ -8,24 +8,25 @@
 
 import Foundation
 
-class SOAPRequestParameters {
-    let soapAction: String
-    let serviceURN: String
-    let arguments: NSDictionary?
-    
-    init(soapAction: String, serviceURN: String, arguments: NSDictionary?) {
-        self.soapAction = soapAction
-        self.serviceURN = serviceURN
-        self.arguments = arguments
+class SOAPRequestSerializer: AFHTTPRequestSerializer {
+    class Parameters {
+        let soapAction: String
+        let serviceURN: String
+        let arguments: NSDictionary?
+        
+        init(soapAction: String, serviceURN: String, arguments: NSDictionary?) {
+            self.soapAction = soapAction
+            self.serviceURN = serviceURN
+            self.arguments = arguments
+        }
     }
-}
-
-class SOAPRequestSerializer: AFHTTPRequestSerializer {    
+    
     override func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
-        let requestParameters: SOAPRequestParameters! = parameters as? SOAPRequestParameters
+        let requestParameters: Parameters! = parameters as? Parameters
         if requestParameters == nil {
             return nil
         }
+        
         var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {

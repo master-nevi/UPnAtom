@@ -18,7 +18,7 @@ class ContentDirectory1Service: AbstractUPnPService {
     }
     
     func getSortCapabilities(success: (sortCapabilities: String?) -> Void, failure:(error: NSError?) -> Void) {
-        let parameters = SOAPRequestParameters(soapAction: "GetSortCapabilities", serviceURN: urn, arguments: nil)
+        let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetSortCapabilities", serviceURN: urn, arguments: nil)
         
         sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
@@ -37,7 +37,7 @@ class ContentDirectory1Service: AbstractUPnPService {
             "RequestedCount" : requestedCount,
             "SortCriteria" : sortCriteria]
         
-        let parameters = SOAPRequestParameters(soapAction: "Browse", serviceURN: urn, arguments: arguments)
+        let parameters = SOAPRequestSerializer.Parameters(soapAction: "Browse", serviceURN: urn, arguments: arguments)
         
         sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
