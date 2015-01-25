@@ -48,8 +48,25 @@ class UPnPEventSubscribeRequestSerializer: AFHTTPRequestSerializer {
     }
 }
 
-class UPnPEventSubscribeResponseSerializer: AFHTTPRequestSerializer {
-    
+class UPnPEventSubscribeResponseSerializer: AFHTTPResponseSerializer {
+    override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
+        if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
+            if error == nil {
+                return nil
+            }
+        }
+        
+        var serializationError: NSError?
+        var responseObject: AnyObject!
+        
+        // process here
+        
+        if serializationError != nil && error != nil {
+            error.memory = serializationError!
+        }
+        
+        return responseObject
+    }
 }
 
 class UPnPEventRenewSubscriptionRequestSerializer: AFHTTPRequestSerializer {
@@ -88,8 +105,25 @@ class UPnPEventRenewSubscriptionRequestSerializer: AFHTTPRequestSerializer {
     }
 }
 
-class UPnPEventRenewSubscriptionResponseSerializer: AFHTTPRequestSerializer {
-    
+class UPnPEventRenewSubscriptionResponseSerializer: AFHTTPResponseSerializer {
+    override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
+        if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
+            if error == nil {
+                return nil
+            }
+        }
+        
+        var serializationError: NSError?
+        var responseObject: AnyObject!
+        
+        // process here
+        
+        if serializationError != nil && error != nil {
+            error.memory = serializationError!
+        }
+        
+        return responseObject
+    }
 }
 
 class UPnPEventUnsubscribeRequestSerializer: AFHTTPRequestSerializer {
@@ -125,6 +159,23 @@ class UPnPEventUnsubscribeRequestSerializer: AFHTTPRequestSerializer {
     }
 }
 
-class UPnPEventUnsubscribeResponseSerializer: AFHTTPRequestSerializer {
-    
+class UPnPEventUnsubscribeResponseSerializer: AFHTTPResponseSerializer {
+    override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
+        if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
+            if error == nil {
+                return nil
+            }
+        }
+        
+        var serializationError: NSError?
+        var responseObject: AnyObject!
+        
+        // process here
+        
+        if serializationError != nil && error != nil {
+            error.memory = serializationError!
+        }
+        
+        return responseObject
+    }
 }
