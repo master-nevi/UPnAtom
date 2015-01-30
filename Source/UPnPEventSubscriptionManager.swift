@@ -30,7 +30,7 @@ internal class UPnPEventSubscriptionManager {
     
     // private
     private var _subscriptions = [String: Subscription]()
-    private let _concurrentSubscriptionQueue = dispatch_queue_create("com.upnpx-swift.upnp-event-subscription-manager.subscription-queue", DISPATCH_QUEUE_CONCURRENT)
+    private let _concurrentSubscriptionQueue = dispatch_queue_create("com.upnatom.upnp-event-subscription-manager.subscription-queue", DISPATCH_QUEUE_CONCURRENT)
     private let _httpServer = HTTPServer()
     private let _httpServerPort: UInt16 = 52808
     

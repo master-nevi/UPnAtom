@@ -70,7 +70,7 @@ class AbstractUPnPService: AbstractUPnP {
         }
         else { return nil }
         
-        _concurrentEventObserverQueue = dispatch_queue_create("com.upnpx-swift.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
+        _concurrentEventObserverQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
     }
 }
 

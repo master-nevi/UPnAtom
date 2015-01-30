@@ -124,7 +124,7 @@ enum EmptyResult {
 }
 
 func createError(message: String) -> Error {
-    return NSError(domain: "upnpx-swift", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
+    return NSError(domain: "UPnAtom", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
 }
 
 func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {
