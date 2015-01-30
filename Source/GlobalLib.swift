@@ -133,3 +133,14 @@ func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {
     }
     return nil
 }
+
+extension NSError {
+    /// An alternative to iOS's [NSError localizedDescription] which returns an esoteric Cocoa error when [NSError userInfo][NSLocalizedDescriptionKey] is nil. In that case, this method will return nil instead.
+    var localizedDescriptionOrNil: String? {
+        return self.userInfo?[NSLocalizedDescriptionKey] as? String
+    }
+    
+    func localizedDescription(defaultDescription: String) -> String {
+        return self.localizedDescriptionOrNil != nil ? self.localizedDescriptionOrNil! : defaultDescription
+    }
+}

@@ -39,6 +39,7 @@ class AbstractUPnPService: AbstractUPnP {
     // MARK: UPnP Event handling related
     lazy private var _eventObservers = [EventObserver]()
     private var _concurrentEventObserverQueue: dispatch_queue_t!
+    private var _eventSubscription: Any?
     
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
@@ -76,7 +77,7 @@ class AbstractUPnPService: AbstractUPnP {
 
 // MARK: UPnP Event handling
 
-extension AbstractUPnPService {
+extension AbstractUPnPService: UPnPEventSubscriber {
     private class EventObserver {
         let notificationCenterObserver: AnyObject
         init(notificationCenterObserver: AnyObject) {
@@ -105,6 +106,15 @@ extension AbstractUPnPService {
             
             if self._eventObservers.count == 1 {
                 // subscribe
+                UPnPManager_Swift.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<Any>) -> Void in
+                    switch subscription {
+                    case .Success(let value):
+                        self._eventSubscription = value
+                    case .Failure(let error):
+                        let errorDescription = error.localizedDescription("Unknown subscribe error")
+                        println("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
+                    }
+                })
             }
         })
         
@@ -120,8 +130,22 @@ extension AbstractUPnPService {
             
             if self._eventObservers.count == 0 {
                 // unsubscribe
+                UPnPManager_Swift.sharedInstance.eventSubscriptionManager.unsubscribe(self, completion: { (result: EmptyResult) -> Void in
+                    switch result {
+                    case .Success:
+                        self._eventSubscription = nil
+                    case .Failure(let error):
+                        let errorDescription = error.localizedDescription("Unknown unsubscribe error")
+                        println("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")
+                        self._eventSubscription = nil
+                    }
+                })
             }
         })
+    }
+    
+    func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventInfo: [String: String]) {
+        NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService.UPnPEventInfoKey(): eventInfo])
     }
     
     /// overridable by service subclasses

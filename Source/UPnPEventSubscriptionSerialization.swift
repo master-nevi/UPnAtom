@@ -49,6 +49,16 @@ class UPnPEventSubscribeRequestSerializer: AFHTTPRequestSerializer {
 }
 
 class UPnPEventSubscribeResponseSerializer: AFHTTPResponseSerializer {
+    class Response {
+        let subscriptionID: String
+        let timeout: Int // in seconds
+        
+        init(subscriptionID: String, timeout: Int) {
+            self.subscriptionID = subscriptionID
+            self.timeout = timeout
+        }
+    }
+    
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
         if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
             if error == nil {
@@ -59,7 +69,20 @@ class UPnPEventSubscribeResponseSerializer: AFHTTPResponseSerializer {
         var serializationError: NSError?
         var responseObject: AnyObject!
         
-        // process here
+        let subscriptionID: String! = (response as NSHTTPURLResponse).allHeaderFields["SID"] as? String
+        let timeoutString: String! = (response as NSHTTPURLResponse).allHeaderFields["TIMEOUT"] as? String
+        
+        if subscriptionID != nil && timeoutString != nil {
+            let secondKeywordRange: Range! = timeoutString.rangeOfString("Second-")
+            let timeout = timeoutString.substringWithRange(Range(start: secondKeywordRange.endIndex, end: timeoutString.endIndex)).toInt()
+            if let timeout = timeout {
+                responseObject = Response(subscriptionID: subscriptionID, timeout: timeout)
+            }
+        }
+            
+        if responseObject == nil {
+            serializationError = createError("Did not receive a valid subscription response")
+        }
         
         if serializationError != nil && error != nil {
             error.memory = serializationError!
@@ -106,6 +129,16 @@ class UPnPEventRenewSubscriptionRequestSerializer: AFHTTPRequestSerializer {
 }
 
 class UPnPEventRenewSubscriptionResponseSerializer: AFHTTPResponseSerializer {
+    class Response {
+        let subscriptionID: String
+        let timeout: Int // in seconds
+        
+        init(subscriptionID: String, timeout: Int) {
+            self.subscriptionID = subscriptionID
+            self.timeout = timeout
+        }
+    }
+    
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
         if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
             if error == nil {
@@ -116,7 +149,20 @@ class UPnPEventRenewSubscriptionResponseSerializer: AFHTTPResponseSerializer {
         var serializationError: NSError?
         var responseObject: AnyObject!
         
-        // process here
+        let subscriptionID: String! = (response as NSHTTPURLResponse).allHeaderFields["SID"] as? String
+        let timeoutString: String! = (response as NSHTTPURLResponse).allHeaderFields["TIMEOUT"] as? String
+        
+        if subscriptionID != nil && timeoutString != nil {
+            let secondKeywordRange: Range! = timeoutString.rangeOfString("Second-")
+            let timeout = timeoutString.substringWithRange(Range(start: secondKeywordRange.endIndex, end: timeoutString.endIndex)).toInt()
+            if let timeout = timeout {
+                responseObject = Response(subscriptionID: subscriptionID, timeout: timeout)
+            }
+        }
+        
+        if responseObject == nil {
+            serializationError = createError("Did not receive a valid subscription response")
+        }
         
         if serializationError != nil && error != nil {
             error.memory = serializationError!
@@ -167,15 +213,6 @@ class UPnPEventUnsubscribeResponseSerializer: AFHTTPResponseSerializer {
             }
         }
         
-        var serializationError: NSError?
-        var responseObject: AnyObject!
-        
-        // process here
-        
-        if serializationError != nil && error != nil {
-            error.memory = serializationError!
-        }
-        
-        return responseObject
+        return nil
     }
 }

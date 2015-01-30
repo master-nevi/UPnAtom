@@ -48,7 +48,7 @@ internal class UPnPEventSubscriptionManager {
             object: nil)
     }
     
-    func subscribe(subscriber: UPnPEventSubscriber, eventURL: NSURL, completion: (subscription: Result<AnyObject>) -> Void) {
+    func subscribe(subscriber: UPnPEventSubscriber, eventURL: NSURL, completion: (subscription: Result<Any>) -> Void) {
         let hasSubscriptionForEventURL: Bool = (_subscriptions.values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "eventURLString = %@", eventURL.absoluteString!)!).count > 0
         if hasSubscriptionForEventURL {
             completion(subscription: .Failure(createError("Subscription for event URL exists")))
@@ -56,7 +56,7 @@ internal class UPnPEventSubscriptionManager {
         }
     }
     
-    func unsubscribe(subscription: AnyObject, completion: (result: EmptyResult) -> Void ) {
+    func unsubscribe(subscription: Any, completion: (result: EmptyResult) -> Void ) {
         dispatch_barrier_async(_concurrentSubscriptionQueue, { () -> Void in
             if let subscription = subscription as? Subscription {
                 self._subscriptions.removeValueForKey(subscription.subscriptionID)
