@@ -54,9 +54,17 @@ internal class UPnPEventSubscriptionManager {
             completion(subscription: .Failure(createError("Subscription for event URL exists")))
             return
         }
+        
+        /// send subscribe RPC
+        
+        dispatch_barrier_async(_concurrentSubscriptionQueue, { () -> Void in
+            
+        })
     }
     
     func unsubscribe(subscription: Any, completion: (result: EmptyResult) -> Void ) {
+        /// send unsubscribe RPC
+        
         dispatch_barrier_async(_concurrentSubscriptionQueue, { () -> Void in
             if let subscription = subscription as? Subscription {
                 self._subscriptions.removeValueForKey(subscription.subscriptionID)
@@ -65,8 +73,11 @@ internal class UPnPEventSubscriptionManager {
         })
     }
     
-    internal func handleIncomingEvent(eventData: NSData) {
-        
+    /// TODO: parse event data
+    internal func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
+        if let subscription = (_subscriptions.values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!).first as? Subscription {
+            subscription.subscriber.handleEvent(self, eventInfo: [:])
+        }
     }
     
     @objc private func applicationDidEnterBackground(notification: NSNotification){

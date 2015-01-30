@@ -23,7 +23,7 @@ import Foundation
     override func httpResponseForMethod(method: String!, URI path: String!) -> NSObject! {
         if method.lowercaseString == "notify" && path == callBackPath {
             // TODO: this should be done via a delegate protocol however CocoaHTTPServer doesn't make this easy to do in Swift
-            UPnPManager_Swift.sharedInstance.eventSubscriptionManager.handleIncomingEvent(bodyData)
+            UPnPManager_Swift.sharedInstance.eventSubscriptionManager.handleIncomingEvent(subscriptionID: "", eventData: bodyData)
             
             return HTTPDataResponse(data: nil)
         }
