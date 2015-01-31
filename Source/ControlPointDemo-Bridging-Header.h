@@ -11,3 +11,4 @@
 #import <CocoaHTTPServer/HTTPMessage.h>
 #import <CocoaAsyncSocket/GCDAsyncSocket.h>
 #import <GDataXML-HTML/GDataXMLNode.h>
+#include <ifaddrs.h>
