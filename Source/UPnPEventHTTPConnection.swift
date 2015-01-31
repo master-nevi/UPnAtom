@@ -9,7 +9,6 @@
 import Foundation
 
 @objc class UPnPEventHTTPConnection: HTTPConnection {
-    let callBackPath = "/Event"
     let bodyData = NSMutableData()
     
     override func supportsMethod(method: String!, atPath path: String!) -> Bool {
@@ -21,7 +20,7 @@ import Foundation
     }
     
     override func httpResponseForMethod(method: String!, URI path: String!) -> NSObject! {
-        if method.lowercaseString == "notify" && path == callBackPath {
+        if method.lowercaseString == "notify" && path == UPnPManager_Swift.sharedInstance.eventSubscriptionManager.eventCallBackPath {
             // TODO: this should be done via a delegate protocol however CocoaHTTPServer doesn't make this easy to do in Swift
             UPnPManager_Swift.sharedInstance.eventSubscriptionManager.handleIncomingEvent(subscriptionID: "", eventData: bodyData)
             
