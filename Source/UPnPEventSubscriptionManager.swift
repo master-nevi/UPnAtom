@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol UPnPEventSubscriber {
+protocol UPnPEventSubscriber: class {
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventInfo: [String: String])
 }
 
@@ -17,14 +17,42 @@ internal class UPnPEventSubscriptionManager {
     private class Subscription: NSObject {
         let subscriptionID: String
         let expiration: NSDate
-        let subscriber: UPnPEventSubscriber
+        weak var subscriber: UPnPEventSubscriber?
         let eventURLString: String
+        private unowned let _manager: UPnPEventSubscriptionManager
+        private let _renewDate: NSDate
+        private var _renewWarningTimer: NSTimer?
+        private var _expirationTimer: NSTimer?
         
-        init(subscriptionID: String, expiration: NSDate, subscriber: UPnPEventSubscriber, eventURLString: String) {
+        init(subscriptionID: String, expiration: NSDate, subscriber: UPnPEventSubscriber, eventURLString: String, manager: UPnPEventSubscriptionManager) {
             self.subscriptionID = subscriptionID
             self.expiration = expiration
             self.subscriber = subscriber
             self.eventURLString = eventURLString
+            _manager = manager
+            let renewDate = expiration.dateByAddingTimeInterval(-30) // attempt renewal 30 seconds before expiration
+            _renewDate = renewDate
+            
+            super.init()
+            
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self._renewWarningTimer = NSTimer.scheduledTimerWithTimeInterval(renewDate.timeIntervalSinceNow, repeats: false, closure: { [weak self] () -> Void in
+                    if let strongSelf = self {
+                        strongSelf._manager.subscriptionNeedsRenewal(strongSelf)
+                    }
+                })
+                
+                self._expirationTimer = NSTimer.scheduledTimerWithTimeInterval(expiration.timeIntervalSinceNow, repeats: false, closure: { [weak self] () -> Void in
+                    if let strongSelf = self {
+                        strongSelf._manager.subscriptionDidExpire(strongSelf)
+                    }
+                })
+            })
+        }
+        
+        func invalidate() {
+            _renewWarningTimer?.invalidate()
+            _expirationTimer?.invalidate()
         }
     }
     
@@ -32,7 +60,8 @@ internal class UPnPEventSubscriptionManager {
     let eventCallBackPath = "/Event"
     
     // private
-    private var _subscriptions = [String: Subscription]()
+    /// Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    private var _subscriptions = [String: Subscription]() /* [eventURLString: Subscription] */
     private let _concurrentSubscriptionQueue = dispatch_queue_create("com.upnatom.upnp-event-subscription-manager.subscription-queue", DISPATCH_QUEUE_CONCURRENT)
     private let _httpServer = HTTPServer()
     private let _httpServerPort = 52808
@@ -40,6 +69,7 @@ internal class UPnPEventSubscriptionManager {
     private let _renewSubscriptionSessionManager = AFHTTPSessionManager()
     private let _unsubscribeSessionManager = AFHTTPSessionManager()
     private let _defaultSubscriptionTimeout: Int = 300
+    private var _backupSubscriptions = [Subscription]()
     private var _eventCallBackURL: NSURL? {
         let wifiInterface = "en0"
         if let address = getIFAddresses()[wifiInterface] {
@@ -78,15 +108,26 @@ internal class UPnPEventSubscriptionManager {
             object: nil)
     }
     
-    func subscribe(subscriber: UPnPEventSubscriber, eventURL: NSURL, completion: (subscription: Result<Any>) -> Void) {
-        let hasSubscriptionForEventURL: Bool = (_subscriptions.values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "eventURLString = %@", eventURL.absoluteString!)!).count > 0
-        if hasSubscriptionForEventURL {
-            completion(subscription: .Failure(createError("Subscription for event URL exists")))
+    func subscribe(subscriber: UPnPEventSubscriber, eventURL: NSURL, completion: ((result: Result<Any>) -> Void)? = nil) {
+        let eventURLString: String! = eventURL.absoluteString
+        if eventURLString == nil {
+            if let completion = completion {
+                completion(result: .Failure(createError("Event URL does not exist")))
+            }
+            return
+        }
+        
+        if self.subscriptions()[eventURLString] != nil {
+            if let completion = completion {
+                completion(result: .Failure(createError("Subscription for event URL exists")))
+            }
             return
         }
         
         if _eventCallBackURL == nil {
-            completion(subscription: .Failure(createError("Event call back URL could not be created")))
+            if let completion = completion {
+                completion(result: .Failure(createError("Event call back URL could not be created")))
+            }
             return
         }
         
@@ -95,49 +136,57 @@ internal class UPnPEventSubscriptionManager {
         _subscribeSessionManager.SUBSCRIBE(eventURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             let response: UPnPEventSubscribeResponseSerializer.Response! = responseObject as? UPnPEventSubscribeResponseSerializer.Response
             if response == nil {
-                completion(subscription: .Failure(createError("Failure serializing event subscribe response")))
+                if let completion = completion {
+                    completion(result: .Failure(createError("Failure serializing event subscribe response")))
+                }
                 return
             }
             
             let now = NSDate()
             let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
             
-            let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: eventURL.absoluteString!)
+            let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: eventURL.absoluteString!, manager: self)
             
-            dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
-                self._subscriptions[subscription.subscriptionID] = subscription
-                self.startStopHTTPServerIfNeeded()
-                completion(subscription: .Success(subscription))
+            self.add(subscription: subscription, completion: { () -> Void in
+                if let completion = completion {
+                    completion(result: .Success(subscription))
+                }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-            completion(subscription: .Failure(error))
+                if let completion = completion {
+                    completion(result: .Failure(error))
+                }
         })
     }
     
-    func unsubscribe(subscription: Any, completion: (result: EmptyResult) -> Void ) {
+    func unsubscribe(subscription: Any, completion: ((result: EmptyResult) -> Void)? = nil) {
         let subscription: Subscription! = subscription as? Subscription
         if subscription == nil {
-            completion(result: .Failure(createError("Failure using subscription object passed in")))
+            if let completion = completion {
+                completion(result: .Failure(createError("Failure using subscription object passed in")))
+            }
             return
         }
         
         let parameters = UPnPEventUnsubscribeRequestSerializer.Parameters(subscriptionID: subscription.subscriptionID)
         
         _unsubscribeSessionManager.UNSUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-            dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
-                self._subscriptions.removeValueForKey(subscription.subscriptionID)
-                self.startStopHTTPServerIfNeeded()
-                completion(result: .Success)
+            self.remove(subscription: subscription, completion: { () -> Void in
+                if let completion = completion {
+                    completion(result: .Success)
+                }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-            completion(result: .Failure(error))
+                if let completion = completion {
+                    completion(result: .Failure(error))
+                }
         })
     }
     
     /// TODO: parse event data
     internal func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
-        if let subscription = (_subscriptions.values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!).first as? Subscription {
-            subscription.subscriber.handleEvent(self, eventInfo: [:])
+        if let subscription = (subscriptions().values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!).first as? Subscription {
+            subscription.subscriber?.handleEvent(self, eventInfo: [:])
         }
     }
     
@@ -146,20 +195,75 @@ internal class UPnPEventSubscriptionManager {
             _httpServer.stop()
         }
         
-        /// TODO: unsubscribe from all events and backup subscriptions
+        /// backup subscriptions and unsubscribe from all events
+        let subscriptions = self.subscriptions().values.array
+        _backupSubscriptions = subscriptions
+        
+        for subscription in subscriptions {
+            unsubscribe(subscription)
+        }
     }
     
     @objc private func applicationWillEnterForeground(notification: NSNotification){
         startStopHTTPServerIfNeeded()
         
-        /// TODO: resubscribe to all backedup subscriptions
+        /// resubscribe to all backed up subscriptions
+        let subscriptions = _backupSubscriptions
+        _backupSubscriptions.removeAll(keepCapacity: false)
+        
+        for subscription in subscriptions {
+            if let subscriber = subscription.subscriber {
+                subscribe(subscriber, eventURL: NSURL(string: subscription.eventURLString)!)
+            }
+        }
+    }
+    
+    private func add(#subscription: Subscription, completion: (() -> Void)? = nil) {
+        let originalQueue = NSOperationQueue.currentQueue()
+        dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
+            if let previousSubscription = self._subscriptions[subscription.eventURLString] {
+                previousSubscription.invalidate()
+            }
+            
+            self._subscriptions[subscription.eventURLString] = subscription
+            self.startStopHTTPServerIfNeeded()
+            
+            // kick the completion back onto original queue
+            if let completion = completion {
+                originalQueue?.addOperationWithBlock(completion)
+            }
+        })
+    }
+    
+    private func remove(#subscription: Subscription, completion: (() -> Void)? = nil) {
+        let originalQueue = NSOperationQueue.currentQueue()
+        dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
+            self._subscriptions.removeValueForKey(subscription.eventURLString)?.invalidate()
+            self.startStopHTTPServerIfNeeded()
+            
+            // kick the completion back onto original queue
+            if let completion = completion {
+                originalQueue?.addOperationWithBlock(completion)
+            }
+        })
+    }
+    
+    private func subscriptions() -> [String: Subscription] {
+        var subscriptions: [String: Subscription]!
+        dispatch_sync(_concurrentSubscriptionQueue, { () -> Void in
+            // Dictionaries are structures and therefore copied when assigned to a new constant or variable
+            subscriptions = self._subscriptions
+        })
+        return subscriptions
     }
     
     private func startStopHTTPServerIfNeeded() {
-        if _subscriptions.count == 0 {
+        let subscriptions = self.subscriptions()
+        
+        if subscriptions.count == 0 {
             _httpServer.stop()
         }
-        else if _subscriptions.count > 0 && !_httpServer.isRunning() {
+        else if subscriptions.count > 0 && !_httpServer.isRunning() {
             var error: NSError?
             if !_httpServer.start(&error) {
                 error != nil ? println("Error starting HTTP server: \(error!.localizedDescription)") : println("Error starting HTTP server")
@@ -167,29 +271,59 @@ internal class UPnPEventSubscriptionManager {
         }
     }
     
-    private func renewSubscription(subscription: Subscription, completion: (subscription: Result<Any>) -> Void) {
+    private func renewSubscription(subscription: Subscription, completion: ((result: Result<Any>) -> Void)? = nil) {
+        let subscriber: UPnPEventSubscriber! = subscription.subscriber
+        if subscriber == nil {
+            if let completion = completion {
+                completion(result: .Failure(createError("Subscriber doesn't exist anymore")))
+            }
+            return
+        }
+        
         let parameters = UPnPEventRenewSubscriptionRequestSerializer.Parameters(subscriptionID: subscription.subscriptionID, timeout: _defaultSubscriptionTimeout)
         
         _renewSubscriptionSessionManager.SUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             let response: UPnPEventRenewSubscriptionResponseSerializer.Response! = responseObject as? UPnPEventRenewSubscriptionResponseSerializer.Response
             if response == nil {
-                completion(subscription: .Failure(createError("Failure serializing event subscribe response")))
+                if let completion = completion {
+                    completion(result: .Failure(createError("Failure serializing event subscribe response")))
+                }
                 return
             }
             
             let now = NSDate()
             let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
             
-            let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscription.subscriber, eventURLString: subscription.eventURLString)
+            let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: subscription.eventURLString, manager: self)
             
-            dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
-                self._subscriptions[subscription.subscriptionID] = subscription
-                self.startStopHTTPServerIfNeeded()
-                completion(subscription: .Success(subscription))
+            self.add(subscription: subscription, completion: { () -> Void in
+                if let completion = completion {
+                    completion(result: .Success(subscription))
+                }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                completion(subscription: .Failure(error))
+                if let completion = completion {
+                    completion(result: .Failure(error))
+                }
         })
+    }
+    
+    private func subscriptionNeedsRenewal(subscription: Subscription) {
+        self.renewSubscription(subscription)
+    }
+    
+    private func subscriptionDidExpire(subscription: Subscription) {
+        // if subscriber still exists then re-subscribe, else remove subscription
+        if let subscriber = subscription.subscriber {
+            self.subscribe(subscriber, eventURL: NSURL(string: subscription.eventURLString)!, completion: { [unowned self] (result: Result<Any>) -> Void in
+                if result.failed {
+                    self.remove(subscription: subscription)
+                }
+            })
+        }
+        else {
+            self.remove(subscription: subscription)
+        }
     }
 }
 
@@ -234,6 +368,7 @@ extension AFHTTPSessionManager {
             }
             else {
                 if let success = success {
+                    /// TODO: check if dataTask can be referenced this way
                     success(task: dataTask, responseObject: responseObject)
                 }
             }

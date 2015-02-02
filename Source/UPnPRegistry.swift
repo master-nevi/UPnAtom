@@ -13,7 +13,7 @@ import Foundation
     var rootDevices: [AbstractUPnPDevice] {
         var rootDevices: [AbstractUPnPDevice]!
         dispatch_sync(_concurrentDeviceQueue, { () -> Void in
-            rootDevices = Array(self._rootDevices.values)
+            rootDevices = self._rootDevices.values.array
         })
         return rootDevices
     }
@@ -21,7 +21,7 @@ import Foundation
     
     // private
     private let _concurrentDeviceQueue = dispatch_queue_create("com.upnatom.upnp-registry.device-queue", DISPATCH_QUEUE_CONCURRENT)
-    lazy private var _rootDevices = [UniqueServiceName: AbstractUPnPDevice]()
+    lazy private var _rootDevices = [UniqueServiceName: AbstractUPnPDevice]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService]()
     
     init(ssdpDB: SSDPDB_ObjC) {
@@ -129,6 +129,7 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
         })
     }
     
+    /// MARK: Must be called within dispatch_barrier_async()
     private func process(devicesToAdd: [AbstractUPnPDevice], devicesToKeep: [AbstractUPnPDevice]) {
         let devices = self._rootDevices
         let devicesSet = NSMutableSet(array: Array(devices.values))
@@ -150,6 +151,7 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
         }
     }
     
+    /// MARK: Must be called within dispatch_barrier_async()
     private func process(servicesToAdd: [AbstractUPnPService], servicesToKeep: [AbstractUPnPService]) {
         let services = self._rootDeviceServices
         let servicesSet = NSMutableSet(array: Array(services.values))

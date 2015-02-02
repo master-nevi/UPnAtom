@@ -179,3 +179,27 @@ func getIFAddresses() -> [String: String] {
     
     return addresses
 }
+
+extension NSTimer {
+    private class NSTimerClosureHandler {
+        var closure: () -> Void
+        
+        init(closure: () -> Void) {
+            self.closure = closure
+        }
+        
+        dynamic func fire() {
+            closure()
+        }
+    }
+    
+    convenience init(timeInterval: NSTimeInterval, repeats: Bool, closure: (() -> Void)) {
+        let closureHandler = NSTimerClosureHandler(closure: closure)
+        self.init(timeInterval: timeInterval, target: closureHandler, selector: "fire", userInfo: nil, repeats: repeats)
+    }
+    
+    class func scheduledTimerWithTimeInterval(timeInterval: NSTimeInterval, repeats: Bool, closure: (() -> Void)) -> NSTimer {
+        let closureHandler = NSTimerClosureHandler(closure: closure)
+        return self.scheduledTimerWithTimeInterval(timeInterval, target: closureHandler, selector: "fire", userInfo: nil, repeats: repeats)
+    }
+}

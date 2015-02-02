@@ -37,7 +37,7 @@ class AbstractUPnPService: AbstractUPnP {
     private let _relativeEventURL: NSURL!
     
     // MARK: UPnP Event handling related
-    lazy private var _eventObservers = [EventObserver]()
+    lazy private var _eventObservers = [EventObserver]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     private var _concurrentEventObserverQueue: dispatch_queue_t!
     private var _eventSubscription: Any?
     
@@ -72,6 +72,18 @@ class AbstractUPnPService: AbstractUPnP {
         else { return nil }
         
         _concurrentEventObserverQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
+    }
+    
+    deinit {
+        var eventObservers: [EventObserver]!
+        /// TODO: is dispatch_sync necessary for accessing if self is being dealloced?
+        dispatch_sync(_concurrentEventObserverQueue, { () -> Void in
+            eventObservers = self._eventObservers
+        })
+        
+        for eventObserver in eventObservers {
+            NSNotificationCenter.defaultCenter().removeObserver(eventObserver.notificationCenterObserver)
+        }
     }
 }
 
