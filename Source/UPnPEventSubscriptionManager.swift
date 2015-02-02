@@ -177,9 +177,11 @@ internal class UPnPEventSubscriptionManager {
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                if let completion = completion {
-                    completion(result: .Failure(error))
-                }
+                self.remove(subscription: subscription, completion: { () -> Void in
+                    if let completion = completion {
+                        completion(result: .Failure(error))
+                    }
+                })
         })
     }
     
