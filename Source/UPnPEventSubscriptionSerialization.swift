@@ -22,6 +22,7 @@
 //  SOFTWARE.
 
 import Foundation
+import AFNetworking
 
 class UPnPEventSubscribeRequestSerializer: AFHTTPRequestSerializer {
     class Parameters {

@@ -22,15 +22,16 @@
 //  SOFTWARE.
 
 import Foundation
+import upnpx
 
 private let _UPnPManagerSharedInstance = UPnPManager_Swift()
 
-@objc class UPnPManager_Swift {
-    class var sharedInstance: UPnPManager_Swift {
+@objc public class UPnPManager_Swift {
+    public class var sharedInstance: UPnPManager_Swift {
         return _UPnPManagerSharedInstance
     }
     let ssdp = SSDPDB_ObjC()
-    let upnpRegistry: UPnPRegistry
+    public let upnpRegistry: UPnPRegistry
     internal let eventSubscriptionManager: UPnPEventSubscriptionManager
     
     init() {

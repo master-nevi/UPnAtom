@@ -1,0 +1,6 @@
+framework module upnpx {
+  umbrella header "Pods-upnpx-umbrella.h"
+
+  export *
+  module * { export * }
+}

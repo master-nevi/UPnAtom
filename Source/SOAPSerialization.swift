@@ -25,6 +25,7 @@
 //  SOFTWARE.
 
 import Foundation
+import AFNetworking
 
 class SOAPRequestSerializer: AFHTTPRequestSerializer {
     class Parameters {

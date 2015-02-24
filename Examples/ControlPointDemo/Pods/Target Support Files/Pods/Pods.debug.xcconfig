@@ -1,8 +1,9 @@
-CLANG_CXX_LANGUAGE_STANDARD = c++0x
-CLANG_CXX_LIBRARY = libstdc++
+FRAMEWORK_SEARCH_PATHS = "$PODS_FRAMEWORK_BUILD_PATH"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/AFNetworking" "${PODS_ROOT}/Headers/Public/CocoaAsyncSocket" "${PODS_ROOT}/Headers/Public/CocoaHTTPServer" "${PODS_ROOT}/Headers/Public/CocoaLumberjack" "${PODS_ROOT}/Headers/Public/Ono" "${PODS_ROOT}/Headers/Public/upnpx" "$(SDKROOT)/usr/include/libxml2"
-OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/AFNetworking" -isystem "${PODS_ROOT}/Headers/Public/CocoaAsyncSocket" -isystem "${PODS_ROOT}/Headers/Public/CocoaHTTPServer" -isystem "${PODS_ROOT}/Headers/Public/CocoaLumberjack" -isystem "${PODS_ROOT}/Headers/Public/Ono" -isystem "${PODS_ROOT}/Headers/Public/upnpx"
-OTHER_LDFLAGS = $(inherited) -ObjC -weak_library /usr/lib/libstdc++.dylib -l"Pods-AFNetworking" -l"Pods-CocoaAsyncSocket" -l"Pods-CocoaHTTPServer" -l"Pods-CocoaLumberjack" -l"Pods-Ono" -l"Pods-upnpx" -l"stdc++" -l"xml2" -framework "CFNetwork" -framework "CoreGraphics" -framework "MobileCoreServices" -framework "Security" -framework "SystemConfiguration"
+LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
+OTHER_CFLAGS = $(inherited) -iquote "$PODS_FRAMEWORK_BUILD_PATH/AFNetworking.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/CocoaAsyncSocket.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/CocoaHTTPServer.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/CocoaLumberjack.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/Ono.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/UPnAtom.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/upnpx.framework/Headers"
+OTHER_LDFLAGS = $(inherited) -ObjC -framework "AFNetworking" -framework "CocoaAsyncSocket" -framework "CocoaHTTPServer" -framework "CocoaLumberjack" -framework "Ono" -framework "UPnAtom" -framework "upnpx"
 OTHER_LIBTOOLFLAGS = $(OTHER_LDFLAGS)
+OTHER_SWIFT_FLAGS = "-D COCOAPODS"
+PODS_FRAMEWORK_BUILD_PATH = $(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Pods
 PODS_ROOT = ${SRCROOT}/Pods

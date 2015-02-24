@@ -22,13 +22,14 @@
 //  SOFTWARE.
 
 import Foundation
+import upnpx
 
-@objc class AbstractUPnP: ExtendedPrintable {
+@objc public class AbstractUPnP: ExtendedPrintable {
     let uuid: String!
     let urn: String!
     let usn: UniqueServiceName!
     let xmlLocation: NSURL!
-    var baseURL: NSURL! {
+    public var baseURL: NSURL! {
         return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
     }
     
@@ -56,8 +57,8 @@ import Foundation
 }
 
 extension AbstractUPnP: ExtendedPrintable {
-    var className: String { return "AbstractUPnP" }
-    var description: String {
+    public var className: String { return "AbstractUPnP" }
+    public var description: String {
         var properties = PropertyPrinter()
         properties.add("uuid", property: uuid)
         properties.add("urn", property: urn)

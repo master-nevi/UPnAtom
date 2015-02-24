@@ -22,6 +22,7 @@
 //  SOFTWARE.
 
 import Foundation
+import ifaddrs
 
 func returnIfContainsElements<T: _CollectionType>(x: T?) -> T? {
     if let x = x {

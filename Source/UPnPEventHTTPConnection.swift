@@ -22,6 +22,7 @@
 //  SOFTWARE.
 
 import Foundation
+import CocoaHTTPServer
 
 @objc class UPnPEventHTTPConnection: HTTPConnection {
     let bodyData = NSMutableData()

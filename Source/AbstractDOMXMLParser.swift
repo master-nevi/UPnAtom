@@ -22,6 +22,7 @@
 //  SOFTWARE.
 
 import Foundation
+import Ono
 
 class AbstractDOMXMLParser {
     func parse(#data: NSData) -> EmptyResult {

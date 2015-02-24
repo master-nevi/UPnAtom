@@ -22,6 +22,7 @@
 //  SOFTWARE.
 
 import Foundation
+import Ono
 
 class SOAPResponseParser: AbstractDOMXMLParser {
     private var _responseParameters = [String: String]()

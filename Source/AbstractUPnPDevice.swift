@@ -22,6 +22,7 @@
 //  SOFTWARE.
 
 import Foundation
+import upnpx
 
 class AbstractUPnPDevice: AbstractUPnP {
     struct IconDescription: Printable {

@@ -22,6 +22,8 @@
 //  SOFTWARE.
 
 import Foundation
+import AFNetworking
+import CocoaHTTPServer
 
 protocol UPnPEventSubscriber: class {
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventInfo: [String: String])

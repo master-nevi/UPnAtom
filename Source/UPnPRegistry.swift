@@ -22,8 +22,9 @@
 //  SOFTWARE.
 
 import Foundation
+import upnpx
 
-@objc class UPnPRegistry {
+@objc public class UPnPRegistry {
     // public
     var rootDevices: [AbstractUPnPDevice] {
         var rootDevices: [AbstractUPnPDevice]!
@@ -75,37 +76,37 @@ import Foundation
 
 /// Extension used for defining notification constants. Functions are used since class constants are not supported in swift yet
 extension UPnPRegistry {
-    class func UPnPDeviceAddedNotification() -> String {
+    public class func UPnPDeviceAddedNotification() -> String {
         return "UPnPDeviceAddedNotification"
     }
     
-    class func UPnPDeviceRemovedNotification() -> String {
+    public class func UPnPDeviceRemovedNotification() -> String {
         return "UPnPDeviceRemovedNotification"
     }
     
-    class func UPnPDeviceKey() -> String {
+    public class func UPnPDeviceKey() -> String {
         return "UPnPDeviceKey"
     }
     
-    class func UPnPServiceAddedNotification() -> String {
+    public class func UPnPServiceAddedNotification() -> String {
         return "UPnPServiceAddedNotification"
     }
     
-    class func UPnPServiceRemovedNotification() -> String {
+    public class func UPnPServiceRemovedNotification() -> String {
         return "UPnPServiceRemovedNotification"
     }
     
-    class func UPnPServiceKey() -> String {
+    public class func UPnPServiceKey() -> String {
         return "UPnPServiceKey"
     }
 }
 
 extension UPnPRegistry: SSDPDB_ObjC_Observer {
-    internal func SSDPDBWillUpdate(sender: SSDPDB_ObjC!) {
+    public func SSDPDBWillUpdate(sender: SSDPDB_ObjC!) {
         
     }
     
-    internal func SSDPDBUpdated(sender: SSDPDB_ObjC!) {
+    public func SSDPDBUpdated(sender: SSDPDB_ObjC!) {
         let ssdpDevices = sender.SSDPObjCDevices.copy() as [SSDPDBDevice_ObjC]
         dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
             let devices = self._rootDevices

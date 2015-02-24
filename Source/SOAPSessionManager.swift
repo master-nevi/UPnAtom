@@ -22,12 +22,9 @@
 //  SOFTWARE.
 
 import Foundation
+import AFNetworking
 
-class SOAPSessionManager: AFHTTPSessionManager {
-    override init!(baseURL url: NSURL!) {
-        super.init(baseURL: url)
-    }
-    
+class SOAPSessionManager: AFHTTPSessionManager {    
     override init!(baseURL url: NSURL!, sessionConfiguration configuration: NSURLSessionConfiguration!) {
         super.init(baseURL: url, sessionConfiguration: configuration)
         

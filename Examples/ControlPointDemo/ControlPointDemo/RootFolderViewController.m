@@ -26,7 +26,7 @@
 #import <upnpx/UPnPManager.h>
 #import "PlayBack.h"
 #import "FolderViewController.h"
-#import "ControlPointDemo-Swift.h"
+#import <UPnAtom/UPnAtom-Swift.h>
 
 @interface RootFolderViewController () <UITableViewDataSource, UITableViewDelegate, UPnPDBObserver>
 @property (nonatomic) IBOutlet UITableView *tableView;

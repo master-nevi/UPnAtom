@@ -22,8 +22,9 @@
 //  SOFTWARE.
 
 import Foundation
+import upnpx
 
-class AbstractUPnPService: AbstractUPnP {
+public class AbstractUPnPService: AbstractUPnP {
     // public
     var serviceType: String {
         return urn
@@ -38,7 +39,7 @@ class AbstractUPnPService: AbstractUPnP {
     var eventURL: NSURL {
         return NSURL(string: _relativeEventURL.absoluteString!, relativeToURL: baseURL)!
     }
-    override var baseURL: NSURL! {
+    override public var baseURL: NSURL! {
         if let baseURL = _baseURLFromXML {
             return baseURL
         }
@@ -188,8 +189,8 @@ private func ==(lhs: AbstractUPnPService.EventObserver, rhs: AbstractUPnPService
 }
 
 extension AbstractUPnPService: ExtendedPrintable {
-    override var className: String { return "AbstractUPnPService" }
-    override var description: String {
+    override public var className: String { return "AbstractUPnPService" }
+    override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
         properties.add("serviceType", property: serviceType)

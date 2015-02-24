@@ -22,6 +22,7 @@
 //  SOFTWARE.
 
 import Foundation
+import upnpx
 
 class UPnPFactory {
     class func createDeviceFrom(ssdpDevice: SSDPDBDevice_ObjC) -> AbstractUPnPDevice? {
