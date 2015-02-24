@@ -50,7 +50,7 @@ SPEC CHECKSUMS:
   CocoaHTTPServer: 217df4cba4e48803db2480f97b805aaad2230dd1
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   Ono: 2c9f6c8c50af1b40e988ff85a3f200574ee445cd
-  UPnAtom: 6f9be5139dcf6c4a443d7c80d9a9de35461e336a
+  UPnAtom: 281caabefaf63fe011752060e8563e2e0f26fe34
   upnpx: 258c2dc821ea224bfed3f983fbec06c636465f0f
 
 COCOAPODS: 0.36.0.beta.2

@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.homepage     = 'https://github.com/master-nevi/UPnAtom'
   s.authors      = { 'David Robles' => 'master-nevi@users.noreply.github.com' }
   s.source       = { :git => 'git@github.com:master-nevi/UPnAtom.git', :tag => s.version.to_s } # TODO: switch out to https on release
-  s.source_files = 'Source/*.swift'
+  s.source_files = 'Source/**/*.swift'
   s.resources = 'Source/*.modulemap'
 
   s.xcconfig = { 'SWIFT_INCLUDE_PATHS' => '../../../Source'} # TODO: verify the non dev pod path

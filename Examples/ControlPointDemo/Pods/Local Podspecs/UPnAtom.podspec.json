@@ -14,7 +14,7 @@
     "git": "git@github.com:master-nevi/UPnAtom.git",
     "tag": "0.0.1"
   },
-  "source_files": "Source/*.swift",
+  "source_files": "Source/**/*.swift",
   "resources": "Source/*.modulemap",
   "xcconfig": {
     "SWIFT_INCLUDE_PATHS": "../../../Source"
