@@ -26,18 +26,17 @@ import Foundation
 class SOAPResponseParser: AbstractDOMXMLParser {
     private var _responseParameters = [String: String]()
     
-    override func parse(#document: GDataXMLDocument) -> EmptyResult {
-        var result: EmptyResult!
-        document.enumerateNodes("/s:Envelope/s:Body/*/*", closure: { (node: GDataXMLNode) -> Void in
-//            println("name: \(node.name()) string value: \(node.stringValue())")
-            if node.name() != nil && node.stringValue() != nil && countElements(node.name()) > 0 && countElements(node.stringValue()) > 0 {
-                self._responseParameters[node.name()] = node.stringValue()
+    override func parse(#document: ONOXMLDocument) -> EmptyResult {
+        var result: EmptyResult = .Success
+        document.enumerateElementsWithXPath("/s:Envelope/s:Body/*/*", usingBlock: { (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+            if element.tag != nil && element.stringValue() != nil && countElements(element.tag) > 0 && countElements(element.stringValue()) > 0 {
+//                println("name: \(element.tag) string value: \(element.stringValue())")
+                self._responseParameters[element.tag] = element.stringValue()
             }
             
             result = .Success
-            }, failure: { (error: NSError) -> Void in
-            result = .Failure(error)
         })
+
         return result
     }
     
