@@ -1,4 +1,9 @@
-module ifaddrs [system] {
+/*module ifaddrs [system] {
     header "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/ifaddrs.h"
+    export *
+}*/
+
+module NetworkTools {
+    header "Obj-C Tools/NetworkTools.h"
     export *
 }
