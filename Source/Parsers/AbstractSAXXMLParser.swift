@@ -25,9 +25,6 @@ import Foundation
 
 // Subclassing NSObject in order to be a NSXMLParserDelegate
 class AbstractSAXXMLParser: NSObject {
-    // public
-    
-    // private
     private let _supportNamespaces: Bool
     lazy private var _elementStack = [String]()
     lazy private var _elementObservations = [SAXXMLParserElementObservation]()
@@ -155,7 +152,7 @@ class AbstractSAXXMLParser: NSObject {
 }
 
 extension AbstractSAXXMLParser: NSXMLParserDelegate {
-    internal func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
+    func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
         _elementStack += [elementName]
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {
@@ -165,7 +162,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         }
     }
     
-    internal func parser(parser: NSXMLParser!, didEndElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!) {
+    func parser(parser: NSXMLParser!, didEndElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!) {
         if let elementObservation = elementObservationForElementStack(_elementStack) {
             let foundInnerText = elementObservation.foundInnerText
             let innerText = elementObservation.innerText
@@ -187,7 +184,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         }
     }
     
-    internal func parser(parser: NSXMLParser!, foundCharacters string: String!) {
+    func parser(parser: NSXMLParser!, foundCharacters string: String!) {
         // The parser object may send the delegate several parser:foundCharacters: messages to report the characters of an element. Because string may be only part of the total character content for the current element, you should append it to the current accumulation of characters until the element changes.
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {

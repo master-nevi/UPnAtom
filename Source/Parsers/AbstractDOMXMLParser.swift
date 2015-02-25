@@ -47,7 +47,7 @@ class AbstractDOMXMLParser {
         return parserResult
     }
     
-    internal func parse(#document: ONOXMLDocument) -> EmptyResult {
+    func parse(#document: ONOXMLDocument) -> EmptyResult {
         fatalError("Implement in subclass")
     }
     

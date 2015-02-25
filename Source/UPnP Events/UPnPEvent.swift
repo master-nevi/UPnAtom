@@ -23,8 +23,8 @@
 
 import Foundation
 
-@objc class UPnPEvent {
-    let rawEventInfo: [String: String]
+@objc public class UPnPEvent {
+    public let rawEventInfo: [String: String]
     init(rawEventInfo: [String: String]) {
         self.rawEventInfo = rawEventInfo
     }

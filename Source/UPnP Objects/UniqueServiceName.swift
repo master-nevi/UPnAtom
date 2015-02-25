@@ -23,7 +23,7 @@
 
 import Foundation
 
-struct UniqueServiceName {
+public struct UniqueServiceName {
     let uuid, urn: String
     var rawValue: String {
         if let customRawValue = _customRawValue {
@@ -45,17 +45,17 @@ struct UniqueServiceName {
 }
 
 extension UniqueServiceName: Printable {
-    var description: String {
+    public var description: String {
         return rawValue
     }
 }
 
 extension UniqueServiceName: Hashable {
-    var hashValue: Int {
+    public var hashValue: Int {
         return uuid.hashValue ^ urn.hashValue
     }
 }
 
-func ==(lhs: UniqueServiceName, rhs: UniqueServiceName) -> Bool {
+public func ==(lhs: UniqueServiceName, rhs: UniqueServiceName) -> Bool {
     return lhs.uuid == rhs.uuid && lhs.urn == rhs.urn
 }

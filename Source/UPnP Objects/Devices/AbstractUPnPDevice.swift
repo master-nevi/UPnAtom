@@ -24,28 +24,36 @@
 import Foundation
 import upnpx
 
-class AbstractUPnPDevice: AbstractUPnP {
-    struct IconDescription: Printable {
-        let relativeURL: NSURL
-        let width, height, depth: Int
-        let mimeType: String
-        var description: String {
+public class AbstractUPnPDevice: AbstractUPnP {
+    @objc public class IconDescription: Printable {
+        public let relativeURL: NSURL
+        public let width, height, depth: Int
+        public let mimeType: String
+        public var description: String {
             return "\(relativeURL.absoluteString!) (\(mimeType):\(width)x\(height))"
+        }
+        
+        init(relativeURL: NSURL, width: Int, height: Int, depth: Int, mimeType: String) {
+            self.relativeURL = relativeURL
+            self.width = width
+            self.height = height
+            self.depth = depth
+            self.mimeType = mimeType
         }
     }
     
     // public
-    let udn: String!
-    let friendlyName: String!
-    let manufacturer: String!
-    let manufacturerURL: NSURL?
-    let modelDescription: String?
-    let modelName: String!
-    let modelNumber: String?
-    let modelURL: NSURL?
-    let serialNumber: String?
-    let iconDescriptions: [IconDescription]?
-    override var baseURL: NSURL! {
+    public let udn: String!
+    public let friendlyName: String!
+    public let manufacturer: String!
+    public let manufacturerURL: NSURL?
+    public let modelDescription: String?
+    public let modelName: String!
+    public let modelNumber: String?
+    public let modelURL: NSURL?
+    public let serialNumber: String?
+    public let iconDescriptions: [IconDescription]?
+    override public var baseURL: NSURL! {
         if let baseURL = _baseURLFromXML {
             return baseURL
         }
@@ -96,8 +104,8 @@ class AbstractUPnPDevice: AbstractUPnP {
 }
 
 extension AbstractUPnPDevice: ExtendedPrintable {
-    override var className: String { return "AbstractUPnPDevice" }
-    override var description: String {
+    override public var className: String { return "AbstractUPnPDevice" }
+    override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
         properties.add("udn", property: udn)

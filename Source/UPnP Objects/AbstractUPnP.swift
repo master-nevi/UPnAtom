@@ -25,10 +25,10 @@ import Foundation
 import upnpx
 
 @objc public class AbstractUPnP: ExtendedPrintable {
-    let uuid: String!
-    let urn: String!
-    let usn: UniqueServiceName!
-    let xmlLocation: NSURL!
+    public let uuid: String!
+    public let urn: String!
+    public let usn: UniqueServiceName!
+    public let xmlLocation: NSURL!
     public var baseURL: NSURL! {
         return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
     }

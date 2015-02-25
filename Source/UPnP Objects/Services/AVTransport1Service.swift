@@ -23,13 +23,13 @@
 
 import Foundation
 
-class AVTransport1Service: AbstractUPnPService {
+public class AVTransport1Service: AbstractUPnPService {
     
 }
 
 extension AVTransport1Service: ExtendedPrintable {
-    override var className: String { return "AVTransport1Service" }
-    override var description: String {
+    override public var className: String { return "AVTransport1Service" }
+    override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
         return properties.description

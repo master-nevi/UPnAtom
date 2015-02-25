@@ -26,17 +26,17 @@ import upnpx
 
 public class AbstractUPnPService: AbstractUPnP {
     // public
-    var serviceType: String {
+    public var serviceType: String {
         return urn
     }
-    let serviceID: String!
-    var descriptionURL: NSURL {
+    public let serviceID: String!
+    public var descriptionURL: NSURL {
         return NSURL(string: _relativeDescriptionURL.absoluteString!, relativeToURL: baseURL)!
     }
-    var controlURL: NSURL {
+    public var controlURL: NSURL {
         return NSURL(string: _relativeControlURL.absoluteString!, relativeToURL: baseURL)!
     }
-    var eventURL: NSURL {
+    public var eventURL: NSURL {
         return NSURL(string: _relativeEventURL.absoluteString!, relativeToURL: baseURL)!
     }
     override public var baseURL: NSURL! {

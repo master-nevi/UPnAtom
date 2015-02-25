@@ -24,7 +24,7 @@
 import Foundation
 
 class SAXXMLParserElementObservation {
-    // public
+    // internal
     let didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?
     let didEndParsingElement: ((elementName: String) -> Void)?
     let foundInnerText: ((elementName: String, text: String) -> Void)?

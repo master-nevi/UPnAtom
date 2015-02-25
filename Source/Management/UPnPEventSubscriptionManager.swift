@@ -29,7 +29,7 @@ protocol UPnPEventSubscriber: class {
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventInfo: [String: String])
 }
 
-internal class UPnPEventSubscriptionManager {
+class UPnPEventSubscriptionManager {
     // Subclasses NSObject in order to filter collections of this class using NSPredicate
     private class Subscription: NSObject {
         let subscriptionID: String
@@ -73,7 +73,7 @@ internal class UPnPEventSubscriptionManager {
         }
     }
     
-    // public
+    // internal
     let eventCallBackPath = "/Event"
     
     // private
@@ -203,7 +203,7 @@ internal class UPnPEventSubscriptionManager {
     }
     
     /// TODO: parse event data
-    internal func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
+    func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
         if let subscription = (subscriptions().values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!).first as? Subscription {
             subscription.subscriber?.handleEvent(self, eventInfo: [:])
         }
