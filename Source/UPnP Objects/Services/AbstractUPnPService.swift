@@ -60,6 +60,7 @@ public class AbstractUPnPService: AbstractUPnP {
     override init?(ssdpDevice: SSDPDBDevice_ObjC) {
         super.init(ssdpDevice: ssdpDevice)
         
+        _concurrentEventObserverQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
         let serviceParser = UPnPServiceParser(upnpService: self)
         let parsedService = serviceParser.parse().value
         
@@ -86,11 +87,14 @@ public class AbstractUPnPService: AbstractUPnP {
             self._relativeEventURL = relativeEventURL
         }
         else { return nil }
-        
-        _concurrentEventObserverQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
     }
     
     deinit {
+        // deinit may be called during init if init returns nil, queue var may not be set
+        if _concurrentEventObserverQueue == nil {
+            return
+        }
+        
         var eventObservers: [EventObserver]!
         /// TODO: is dispatch_sync necessary for accessing if self is being dealloced?
         dispatch_sync(_concurrentEventObserverQueue, { () -> Void in
