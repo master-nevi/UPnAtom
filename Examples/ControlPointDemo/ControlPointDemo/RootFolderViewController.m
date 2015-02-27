@@ -189,8 +189,11 @@
                 
             }];
             
-            [contentDirectoryService browse:@"0" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" success:^(NSString *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID) {
-                NSLog(@"browse: %@\nnumberReturned: %@\ntotalMatches: %@\nupdateID: %@", result, numberReturned, totalMatches, updateID);
+            [contentDirectoryService browse:@"0$7" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" success:^(NSArray *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID) {
+                NSLog(@"numberReturned: %@\ntotalMatches: %@\nupdateID: %@", numberReturned, totalMatches, updateID);
+                for (ContentDirectory1Object *resultObject in result) {
+                    NSLog(@"resultObject: %@", resultObject.description);
+                }
             } failure:^(NSError *error) {
                 
             }];

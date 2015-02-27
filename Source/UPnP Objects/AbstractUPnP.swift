@@ -24,7 +24,7 @@
 import Foundation
 import upnpx
 
-@objc public class AbstractUPnP: ExtendedPrintable {
+@objc public class AbstractUPnP {
     public let uuid: String!
     public let urn: String!
     public let usn: UniqueServiceName!

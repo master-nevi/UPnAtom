@@ -44,7 +44,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
         })
     }
     
-    public func browse(objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, success: (result: String?, numberReturned: String?, totalMatches: String?, updateID: String?) -> Void, failure: (error: NSError?) -> Void) {
+    public func browse(objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, success: (result: [ContentDirectory1Object]?, numberReturned: String?, totalMatches: String?, updateID: String?) -> Void, failure: (error: NSError?) -> Void) {
         let arguments = [
             "ObjectID" : objectID,
             "BrowseFlag" : browseFlag,
@@ -57,7 +57,13 @@ public class ContentDirectory1Service: AbstractUPnPService {
         
         _sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
-            success(result: responseObject?["Result"], numberReturned: responseObject?["NumberReturned"], totalMatches: responseObject?["TotalMatches"], updateID: responseObject?["UpdateID"])
+            
+            var result: [ContentDirectory1Object]?
+            if let resultString = responseObject?["Result"] {
+                result = MediaServerBrowseResultParser().parse(browseResultData: resultString.dataUsingEncoding(NSUTF8StringEncoding)!).value
+            }
+            
+            success(result: result, numberReturned: responseObject?["NumberReturned"], totalMatches: responseObject?["TotalMatches"], updateID: responseObject?["UpdateID"])
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
         })
