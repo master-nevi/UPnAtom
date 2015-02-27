@@ -24,7 +24,17 @@
 import Foundation
 
 public class MediaRenderer1Device_Swift: AbstractUPnPDevice {
+    func avTransportService() -> AVTransport1Service? {
+        return serviceFor(urn: "urn:schemas-upnp-org:service:AVTransport:1") as? AVTransport1Service
+    }
     
+    func connectionManagerService() -> ConnectionManager1Service? {
+        return serviceFor(urn: "urn:schemas-upnp-org:service:ConnectionManager:1") as? ConnectionManager1Service
+    }
+    
+    func renderingControlService() -> RenderingControl1Service? {
+        return serviceFor(urn: "urn:schemas-upnp-org:service:RenderingControl:1") as? RenderingControl1Service
+    }
 }
 
 extension MediaRenderer1Device_Swift: ExtendedPrintable {

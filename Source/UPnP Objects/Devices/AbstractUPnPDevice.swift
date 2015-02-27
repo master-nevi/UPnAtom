@@ -101,6 +101,10 @@ public class AbstractUPnPDevice: AbstractUPnP {
         self.serialNumber = parsedDevice?.serialNumber
         self.iconDescriptions = parsedDevice?.iconDescriptions
     }
+    
+    func serviceFor(#urn: String) -> AbstractUPnPService? {
+        return UPnPManager_Swift.sharedInstance.upnpRegistry.serviceFor(usn: UniqueServiceName(uuid: uuid, urn: urn))
+    }
 }
 
 extension AbstractUPnPDevice: ExtendedPrintable {

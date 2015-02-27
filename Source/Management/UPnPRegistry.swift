@@ -28,7 +28,7 @@ import upnpx
     // internal
     var rootDevices: [AbstractUPnPDevice] {
         var rootDevices: [AbstractUPnPDevice]!
-        dispatch_sync(_concurrentDeviceQueue, { () -> Void in
+        dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in
             rootDevices = self._rootDevices.values.array
         })
         return rootDevices
@@ -36,15 +36,25 @@ import upnpx
     let ssdpDB: SSDPDB_ObjC
     
     // private
-    private let _concurrentDeviceQueue = dispatch_queue_create("com.upnatom.upnp-registry.device-queue", DISPATCH_QUEUE_CONCURRENT)
+    private let _concurrentUPnPObjectQueue = dispatch_queue_create("com.upnatom.upnp-registry.upnp-object-queue", DISPATCH_QUEUE_CONCURRENT)
     lazy private var _rootDevices = [UniqueServiceName: AbstractUPnPDevice]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
-    lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService]()
+    lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     
     init(ssdpDB: SSDPDB_ObjC) {
         self.ssdpDB = ssdpDB
         ssdpDB.addObserver(self)
     }
     
+    func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
+        var service: AbstractUPnPService?
+        dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in
+            service = self._rootDeviceServices[usn]
+        })
+        
+        return service
+    }
+    
+    /// MARK: unused method consider deleting
     func ssdpServicesFor(uuid: String) -> [SSDPDBDevice_ObjC] {
         ssdpDB.lock()
         
@@ -65,7 +75,7 @@ import upnpx
     
     /// MARK: unused method consider deleting
     private func addRootDevice(device: AbstractUPnPDevice) {
-        dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
+        dispatch_barrier_async(_concurrentUPnPObjectQueue, { () -> Void in
             self._rootDevices[device.usn] = device
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry.UPnPDeviceKey(): device])
@@ -109,32 +119,32 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
     
     /// Ideally this should be internal, however it needs to be called from the upnpx lib
     public func SSDPDBUpdated(sender: SSDPDB_ObjC!) {
-        let ssdpDevices = sender.SSDPObjCDevices.copy() as [SSDPDBDevice_ObjC]
-        dispatch_barrier_async(_concurrentDeviceQueue, { () -> Void in
+        let ssdpObjects = sender.SSDPObjCDevices.copy() as [SSDPDBDevice_ObjC]
+        dispatch_barrier_async(_concurrentUPnPObjectQueue, { () -> Void in
             let devices = self._rootDevices
             var devicesToAdd = [AbstractUPnPDevice]()
             var devicesToKeep = [AbstractUPnPDevice]()
             let services = self._rootDeviceServices
             var servicesToAdd = [AbstractUPnPService]()
             var servicesToKeep = [AbstractUPnPService] ()
-            for ssdpDevice in ssdpDevices {
-                if ssdpDevice.uuid != nil && ssdpDevice.urn != nil {
-                    if ssdpDevice.isdevice {
-                        if let foundDevice = devices[UniqueServiceName(uuid: ssdpDevice.uuid, urn: ssdpDevice.urn)] {
+            for ssdpObject in ssdpObjects {
+                if ssdpObject.uuid != nil && ssdpObject.urn != nil {
+                    if ssdpObject.isdevice {
+                        if let foundDevice = devices[UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn)] {
                             devicesToKeep.append(foundDevice)
                         }
                         else {
-                            if let newDevice = UPnPFactory.createDeviceFrom(ssdpDevice) {
+                            if let newDevice = UPnPFactory.createDeviceFrom(ssdpObject) {
                                 devicesToAdd.append(newDevice)
                             }
                         }
                     }
-                    else if ssdpDevice.isservice {
-                        if let foundService = services[UniqueServiceName(uuid: ssdpDevice.uuid, urn: ssdpDevice.urn)] {
+                    else if ssdpObject.isservice {
+                        if let foundService = services[UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn)] {
                             servicesToKeep.append(foundService)
                         }
                         else {
-                            if let newService = UPnPFactory.createServiceFrom(ssdpDevice) {
+                            if let newService = UPnPFactory.createServiceFrom(ssdpObject) {
                                 servicesToAdd.append(newService)
                             }
                         }
@@ -142,13 +152,13 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
                 }
             }
             
-            self.process(devicesToAdd, devicesToKeep: devicesToKeep)
-            self.process(servicesToAdd, servicesToKeep: servicesToKeep)
+            self.process(devicesToAdd: devicesToAdd, devicesToKeep: devicesToKeep)
+            self.process(servicesToAdd: servicesToAdd, servicesToKeep: servicesToKeep)
         })
     }
     
     /// MARK: Must be called within dispatch_barrier_async()
-    private func process(devicesToAdd: [AbstractUPnPDevice], devicesToKeep: [AbstractUPnPDevice]) {
+    private func process(#devicesToAdd: [AbstractUPnPDevice], devicesToKeep: [AbstractUPnPDevice]) {
         let devices = self._rootDevices
         let devicesSet = NSMutableSet(array: Array(devices.values))
         devicesSet.minusSet(NSSet(array: devicesToKeep))
@@ -170,7 +180,7 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
     }
     
     /// MARK: Must be called within dispatch_barrier_async()
-    private func process(servicesToAdd: [AbstractUPnPService], servicesToKeep: [AbstractUPnPService]) {
+    private func process(#servicesToAdd: [AbstractUPnPService], servicesToKeep: [AbstractUPnPService]) {
         let services = self._rootDeviceServices
         let servicesSet = NSMutableSet(array: Array(services.values))
         servicesSet.minusSet(NSSet(array: servicesToKeep))
