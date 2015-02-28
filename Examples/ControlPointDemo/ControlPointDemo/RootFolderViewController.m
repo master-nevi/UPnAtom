@@ -109,8 +109,7 @@
 
 #pragma mark - UITableViewDelegate methods
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     BasicUPnPDevice *device = [self devices][indexPath.row];
     if([[device urn] isEqualToString:@"urn:schemas-upnp-org:device:MediaServer:1"]){
         MediaServer1Device *server = (MediaServer1Device*)device;
@@ -122,25 +121,30 @@
         [targetViewController configureWithDevice:server header:@"root" rootId:@"0"];
         
         [[self navigationController] pushViewController:targetViewController animated:YES];
-        [[PlayBack GetInstance] setServer:server];
         
-        UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
-        for (AbstractUPnPDevice *atomDevice in db2.rootDevices) {
-            if ([atomDevice.usn.rawValue isEqualToString: device.usn]) {
-                [[PlayBack GetInstance] setAtomServer:atomDevice];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [[PlayBack GetInstance] setServer:server];
+            
+            UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
+            for (AbstractUPnPDevice *atomDevice in db2.rootDevices) {
+                if ([atomDevice.usn.rawValue isEqualToString: device.usn]) {
+                    [[PlayBack GetInstance] setAtomServer:atomDevice];
+                }
             }
-        }
+        });
     } else if([[device urn] isEqualToString:@"urn:schemas-upnp-org:device:MediaRenderer:1"]){
         [[self toolbarLabel] setText:[device friendlyName]];
-        MediaRenderer1Device *render = (MediaRenderer1Device*)device;
-        [[PlayBack GetInstance] setRenderer:render];
-        
-        UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
-        for (AbstractUPnPDevice *atomDevice in db2.rootDevices) {
-            if ([atomDevice.usn.rawValue isEqualToString: device.usn]) {
-                [[PlayBack GetInstance] setAtomRenderer:atomDevice];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            MediaRenderer1Device *render = (MediaRenderer1Device*)device;
+            [[PlayBack GetInstance] setRenderer:render];
+            
+            UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
+            for (AbstractUPnPDevice *atomDevice in db2.rootDevices) {
+                if ([atomDevice.usn.rawValue isEqualToString: device.usn]) {
+                    [[PlayBack GetInstance] setAtomRenderer:atomDevice];
+                }
             }
-        }
+        });
     }
 }
 

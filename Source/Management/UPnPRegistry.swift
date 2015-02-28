@@ -26,6 +26,7 @@ import upnpx
 
 @objc public class UPnPRegistry {
     // public
+    // TODO: Make this accessible from the main thread without hanging
     public var rootDevices: [AbstractUPnPDevice] {
         var rootDevices: [AbstractUPnPDevice]!
         dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in

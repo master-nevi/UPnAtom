@@ -137,14 +137,6 @@
         
         [[self navigationController] pushViewController:targetViewController animated:YES];
     }else{
-        MediaServer1ItemObject *item = _playlist[indexPath.row];
-        
-        MediaServer1ItemRes *resource = nil;
-        NSEnumerator *e = [[item resources] objectEnumerator];
-        while((resource = (MediaServer1ItemRes*)[e nextObject])){
-            NSLog(@"%@ - %d, %@, %d, %lld, %d, %@", [item title], [resource bitrate], [resource duration], [resource nrAudioChannels], [resource size],  [resource durationInSeconds],  [resource protocolInfo] );
-        }
-        
         [[PlayBack GetInstance] Play:_playlist position:indexPath.row];
     }
 }

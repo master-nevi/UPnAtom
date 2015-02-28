@@ -84,9 +84,9 @@ static PlayBack *_playback = nil;
     [self setPlaylist:playList];
     
     //Lazy Observer attach
-    if([[renderer avTransportService] isObserver:(BasicUPnPServiceObserver*)self] == NO){
-        [[renderer avTransportService] addObserver:(BasicUPnPServiceObserver*)self]; 
-    }
+//    if([[renderer avTransportService] isObserver:(BasicUPnPServiceObserver*)self] == NO){
+//        [[renderer avTransportService] addObserver:(BasicUPnPServiceObserver*)self]; 
+//    }
     
     //Play
     return [self Play:position];
@@ -124,40 +124,40 @@ static PlayBack *_playback = nil;
         
         
         //Find the right URI & Instance ID
-        NSMutableString *Source = [NSMutableString new];
-        NSMutableString *Sink = [NSMutableString new];
-        [[renderer connectionManager] GetProtocolInfoWithOutSource:Source OutSink:Sink];
+//        NSMutableString *Source = [NSMutableString new];
+//        NSMutableString *Sink = [NSMutableString new];
+//        [[renderer connectionManager] GetProtocolInfoWithOutSource:Source OutSink:Sink];
 //        NSArray *SinkArr = [Sink componentsSeparatedByString:@","];
         
-        NSMutableString *RendererOutConnectionIDs = [NSMutableString new];
-        [[renderer connectionManager] GetCurrentConnectionIDsWithOutConnectionIDs:RendererOutConnectionIDs];
-        
-        NSMutableString *OutRcsID = [NSMutableString new];
-        NSMutableString *OutAVTransportID = [NSMutableString new];
-        NSMutableString *OutProtocolInfo = [NSMutableString string];
-        NSMutableString *OutPeerConnectionManager = [NSMutableString new];
-        NSMutableString *OutPeerConnectionID = [NSMutableString new];
-        NSMutableString *OutDirection = [NSMutableString string];
-        NSMutableString *OutStatus = [NSMutableString string];
-        [[renderer connectionManager] GetCurrentConnectionInfoWithConnectionID:RendererOutConnectionIDs OutRcsID:OutRcsID OutAVTransportID:OutAVTransportID OutProtocolInfo:OutProtocolInfo OutPeerConnectionManager:OutPeerConnectionManager OutPeerConnectionID:OutPeerConnectionID OutDirection:OutDirection OutStatus:OutStatus];
+//        NSMutableString *RendererOutConnectionIDs = [NSMutableString new];
+//        [[renderer connectionManager] GetCurrentConnectionIDsWithOutConnectionIDs:RendererOutConnectionIDs];
+//        
+//        NSMutableString *OutRcsID = [NSMutableString new];
+//        NSMutableString *OutAVTransportID = [NSMutableString new];
+//        NSMutableString *OutProtocolInfo = [NSMutableString string];
+//        NSMutableString *OutPeerConnectionManager = [NSMutableString new];
+//        NSMutableString *OutPeerConnectionID = [NSMutableString new];
+//        NSMutableString *OutDirection = [NSMutableString string];
+//        NSMutableString *OutStatus = [NSMutableString string];
+//        [[renderer connectionManager] GetCurrentConnectionInfoWithConnectionID:RendererOutConnectionIDs OutRcsID:OutRcsID OutAVTransportID:OutAVTransportID OutProtocolInfo:OutProtocolInfo OutPeerConnectionManager:OutPeerConnectionManager OutPeerConnectionID:OutPeerConnectionID OutDirection:OutDirection OutStatus:OutStatus];
         
         NSString *uri = [item uri];
         NSString *iid = @"0";//OutAVTransportID2;
         
         //Play
-        NSMutableString *OutActions = [NSMutableString string];
-        [[renderer avTransport] GetCurrentTransportActionsWithInstanceID:@"0" OutActions:OutActions];
-
-        NSMutableString *OutNrTracks = [NSMutableString string];
-        NSMutableString *OutMediaDuration = [NSMutableString string];
-        NSMutableString *OutCurrentURI = [NSMutableString string];
-        NSMutableString *OutCurrentURIMetaData = [NSMutableString string];
-        NSMutableString *OutNextURI = [NSMutableString string];
-        NSMutableString *OutNextURIMetaData = [NSMutableString string];
-        NSMutableString *OutPlayMedium = [NSMutableString string];
-        NSMutableString *OutRecordMedium = [NSMutableString string];
-        NSMutableString *OutWriteStatus = [NSMutableString string];
-        [[renderer avTransport] GetMediaInfoWithInstanceID:iid OutNrTracks:OutNrTracks OutMediaDuration:OutMediaDuration OutCurrentURI:OutCurrentURI OutCurrentURIMetaData:OutCurrentURIMetaData OutNextURI:OutNextURI OutNextURIMetaData:OutNextURIMetaData OutPlayMedium:OutPlayMedium OutRecordMedium:OutRecordMedium OutWriteStatus:OutWriteStatus];
+//        NSMutableString *OutActions = [NSMutableString string];
+//        [[renderer avTransport] GetCurrentTransportActionsWithInstanceID:@"0" OutActions:OutActions];
+//
+//        NSMutableString *OutNrTracks = [NSMutableString string];
+//        NSMutableString *OutMediaDuration = [NSMutableString string];
+//        NSMutableString *OutCurrentURI = [NSMutableString string];
+//        NSMutableString *OutCurrentURIMetaData = [NSMutableString string];
+//        NSMutableString *OutNextURI = [NSMutableString string];
+//        NSMutableString *OutNextURIMetaData = [NSMutableString string];
+//        NSMutableString *OutPlayMedium = [NSMutableString string];
+//        NSMutableString *OutRecordMedium = [NSMutableString string];
+//        NSMutableString *OutWriteStatus = [NSMutableString string];
+//        [[renderer avTransport] GetMediaInfoWithInstanceID:iid OutNrTracks:OutNrTracks OutMediaDuration:OutMediaDuration OutCurrentURI:OutCurrentURI OutCurrentURIMetaData:OutCurrentURIMetaData OutNextURI:OutNextURI OutNextURIMetaData:OutNextURIMetaData OutPlayMedium:OutPlayMedium OutRecordMedium:OutRecordMedium OutWriteStatus:OutWriteStatus];
         
         
 //        [[renderer avTransport] StopWithInstanceID:iid];
@@ -201,7 +201,7 @@ static PlayBack *_playback = nil;
         if([newState isEqualToString:@"STOPPED"]){
             //Do your stuff, play next song etc...
             NSLog(@"Event: 'STOPPED', Play next track of playlist.");
-           [self Play:pos+1]; //Next
+//           [self Play:pos+1]; //Next
         }
     }
 }
