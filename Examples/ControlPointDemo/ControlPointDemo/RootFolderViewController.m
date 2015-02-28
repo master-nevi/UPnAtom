@@ -123,10 +123,24 @@
         
         [[self navigationController] pushViewController:targetViewController animated:YES];
         [[PlayBack GetInstance] setServer:server];
+        
+        UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
+        for (AbstractUPnPDevice *atomDevice in db2.rootDevices) {
+            if ([atomDevice.usn.rawValue isEqualToString: device.usn]) {
+                [[PlayBack GetInstance] setAtomServer:atomDevice];
+            }
+        }
     } else if([[device urn] isEqualToString:@"urn:schemas-upnp-org:device:MediaRenderer:1"]){
         [[self toolbarLabel] setText:[device friendlyName]];
         MediaRenderer1Device *render = (MediaRenderer1Device*)device;
         [[PlayBack GetInstance] setRenderer:render];
+        
+        UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
+        for (AbstractUPnPDevice *atomDevice in db2.rootDevices) {
+            if ([atomDevice.usn.rawValue isEqualToString: device.usn]) {
+                [[PlayBack GetInstance] setAtomRenderer:atomDevice];
+            }
+        }
     }
 }
 
@@ -189,7 +203,7 @@
                 
             }];
             
-            [contentDirectoryService browse:@"0$7" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" success:^(NSArray *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID) {
+            [contentDirectoryService browseWithObjectID:@"0$7" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" success:^(NSArray *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID) {
                 NSLog(@"numberReturned: %@\ntotalMatches: %@\nupdateID: %@", numberReturned, totalMatches, updateID);
                 for (ContentDirectory1Object *resultObject in result) {
                     NSLog(@"resultObject: %@", resultObject.description);

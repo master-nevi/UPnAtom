@@ -23,9 +23,9 @@
 
 import Foundation
 
-public struct UniqueServiceName {
-    let uuid, urn: String
-    var rawValue: String {
+@objc public class UniqueServiceName {
+    public let uuid, urn: String
+    public var rawValue: String {
         if let customRawValue = _customRawValue {
             return customRawValue
         }

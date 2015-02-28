@@ -44,7 +44,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
         })
     }
     
-    public func browse(objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, success: (result: [ContentDirectory1Object]?, numberReturned: String?, totalMatches: String?, updateID: String?) -> Void, failure: (error: NSError?) -> Void) {
+    public func browse(#objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, success: (result: [ContentDirectory1Object]?, numberReturned: String?, totalMatches: String?, updateID: String?) -> Void, failure: (error: NSError?) -> Void) {
         let arguments = [
             "ObjectID" : objectID,
             "BrowseFlag" : browseFlag,

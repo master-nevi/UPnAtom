@@ -23,6 +23,7 @@
 
 #import "PlayBack.h"
 #import "NSString+UPnPExtentions.h"
+#import <UPnAtom/UPnAtom-Swift.h>
 
 static PlayBack *_playback = nil;
 
@@ -31,6 +32,8 @@ static PlayBack *_playback = nil;
 @synthesize renderer;
 @synthesize server;
 @synthesize playlist;
+@synthesize atomRenderer;
+@synthesize atomServer;
 
 - (id)init
 {
@@ -161,9 +164,25 @@ static PlayBack *_playback = nil;
 //        NSString *escapedMetaData = [metaData XMLEscape];
         
         NSDate *start = [NSDate date];
-        [[renderer avTransport] SetAVTransportURIWithInstanceID:iid CurrentURI:uri CurrentURIMetaData:@""];
-        NSLog(@"duration: %f", [start timeIntervalSinceNow]);
-        [[renderer avTransport] PlayWithInstanceID:iid Speed:@"1"];
+        
+        MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)self.atomRenderer;
+        [[aRenderer avTransportService] setAVTransportURIWithInstanceID:iid currentURI:uri currentURIMetadata:@"" success:^{
+            NSLog(@"Succeeded!");
+            
+            [[aRenderer avTransportService] playWithInstanceID:iid speed:@"1" success:^{
+                NSLog(@"Succeeded!");
+            } failure:^(NSError *error) {
+                NSLog(@"Failed: %@", error.localizedDescription);
+            }];
+        } failure:^(NSError *error) {
+            NSLog(@"Failed: %@", error.localizedDescription);
+        }];
+        
+        
+        
+//        [[renderer avTransport] SetAVTransportURIWithInstanceID:iid CurrentURI:uri CurrentURIMetaData:@""];
+//        NSLog(@"duration: %f", [start timeIntervalSinceNow]);
+//        [[renderer avTransport] PlayWithInstanceID:iid Speed:@"1"];
     }
     
     return 0;

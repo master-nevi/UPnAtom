@@ -25,14 +25,16 @@ import Foundation
 import upnpx
 
 @objc public class UPnPRegistry {
-    // internal
-    var rootDevices: [AbstractUPnPDevice] {
+    // public
+    public var rootDevices: [AbstractUPnPDevice] {
         var rootDevices: [AbstractUPnPDevice]!
         dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in
             rootDevices = self._rootDevices.values.array
         })
         return rootDevices
     }
+    
+    // internal
     let ssdpDB: SSDPDB_ObjC
     
     // private
