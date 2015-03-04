@@ -41,7 +41,7 @@ import AFNetworking
     }
     
     // public
-    // TODO: Make this accessible from the main thread without hanging
+    /// Calling this on the main thread is not recommended as it will block until completed, blocking the main thread is a no-no
     public var rootDevices: [AbstractUPnPDevice] {
         var rootDevices: [AbstractUPnPDevice]!
         dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in
@@ -68,6 +68,16 @@ import AFNetworking
         ssdpDB.addObserver(self)
     }
     
+    /// Safe to call from main thread
+    public func rootDevices(closure: (rootDevices: [AbstractUPnPDevice]) -> Void) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+            let rootDevices = self.rootDevices
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                closure(rootDevices: rootDevices)
+            })
+        })
+    }
+    
     func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
         var service: AbstractUPnPService?
         dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in
@@ -75,35 +85,6 @@ import AFNetworking
         })
         
         return service
-    }
-    
-    /// MARK: unused method consider deleting
-    func ssdpServicesFor(uuid: String) -> [SSDPDBDevice_ObjC] {
-        ssdpDB.lock()
-        
-        var services = [SSDPDBDevice_ObjC]()
-        
-        for ssdpDevice in ssdpDB.SSDPObjCDevices {
-            if let ssdpDevice = ssdpDevice as? SSDPDBDevice_ObjC {
-                if ssdpDevice.isservice && ssdpDevice.uuid == uuid {
-                    services.append(ssdpDevice)
-                }
-            }
-        }
-        
-        ssdpDB.unlock()
-        
-        return services
-    }
-    
-    /// MARK: unused method consider deleting
-    private func addRootDevice(device: AbstractUPnPDevice) {
-        dispatch_barrier_async(_concurrentUPnPObjectQueue, { () -> Void in
-            self._rootDevices[device.usn] = device
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry.UPnPDeviceKey(): device])
-            })
-        })
     }
 }
 
@@ -192,6 +173,7 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
         }
     }
     
+    /// Must be called within dispatch_barrier_async()
     private func addUPnPObject<T: AbstractUPnP>(forSSDPObject ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData, inout upnpObjects: [UniqueServiceName: T], notificationType: UPnPObjectNotificationType) {
         // ignore if already in db
         let usn = UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn)
@@ -212,7 +194,7 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
         }
     }
     
-    /// MARK: Must be called within dispatch_barrier_async()
+    /// Must be called within dispatch_barrier_async()
     private func process<T: AbstractUPnP>(#upnpObjectsToKeep: [T], inout upnpObjects: [UniqueServiceName: T], notificationType: UPnPObjectNotificationType) {
         let upnpObjectsSet = NSMutableSet(array: Array(upnpObjects.values))
         upnpObjectsSet.minusSet(NSSet(array: upnpObjectsToKeep))
