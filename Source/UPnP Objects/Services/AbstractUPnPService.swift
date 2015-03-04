@@ -187,7 +187,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     
     /// overridable by service subclasses
     func createEvent(eventXML: NSData) -> UPnPEvent {
-        return UPnPEvent(eventXML: eventXML)
+        return UPnPEvent(eventXML: eventXML, service: self)
     }
 }
 

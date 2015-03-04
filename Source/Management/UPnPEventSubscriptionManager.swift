@@ -222,7 +222,6 @@ class UPnPEventSubscriptionManager {
         })
     }
     
-    /// TODO: parse event data
     func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
         if let subscription = (subscriptions().values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!).first as? Subscription {
             subscription.subscriber?.handleEvent(self, eventXML: eventData)

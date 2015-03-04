@@ -25,7 +25,9 @@ import Foundation
 
 @objc public class UPnPEvent {
     public let eventXML: NSData
-    init(eventXML: NSData) {
+    public weak var service: AbstractUPnPService?
+    init(eventXML: NSData, service: AbstractUPnPService) {
         self.eventXML = eventXML
+        self.service = service
     }
 }
