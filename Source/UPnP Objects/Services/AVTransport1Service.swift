@@ -53,6 +53,18 @@ public class AVTransport1Service: AbstractUPnPService {
                 failure(error: error)
         })
     }
+    
+    public func pause(#instanceID: String, success: () -> Void, failure:(error: NSError?) -> Void) {
+        let arguments = ["InstanceID" : instanceID]
+        
+        let parameters = SOAPRequestSerializer.Parameters(soapAction: "Pause", serviceURN: urn, arguments: arguments)
+        
+        sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+            success()
+            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                failure(error: error)
+        })
+    }
 }
 
 extension AVTransport1Service: ExtendedPrintable {
