@@ -54,7 +54,7 @@ import Ono
         }
         else { return nil }
         
-        if let albumArtURLString = xmlElement.firstChildWithTag("albumArtURI").stringValue() {
+        if let albumArtURLString = xmlElement.firstChildWithTag("albumArtURI")?.stringValue() {
             albumArtURL = NSURL(string: albumArtURLString)
         }
     }
