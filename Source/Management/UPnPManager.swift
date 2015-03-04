@@ -34,11 +34,33 @@ private let _UPnPManagerSharedInstance = UPnPManager_Swift()
     public let upnpRegistry: UPnPRegistry
     
     // internal
-    let ssdp = SSDPDB_ObjC()
+    let ssdpDB = SSDPDB_ObjC()
     let eventSubscriptionManager: UPnPEventSubscriptionManager
     
     init() {
-        upnpRegistry = UPnPRegistry(ssdpDB: ssdp)
+        upnpRegistry = UPnPRegistry(ssdpDB: ssdpDB)
         eventSubscriptionManager = UPnPEventSubscriptionManager()
+        
+        ssdpDB.startSSDP()
+    }
+    
+    deinit {
+        ssdpDB.stopSSDP()
+    }
+    
+    public func searchForAll() {
+        ssdpDB.searchSSDP()
+    }
+    
+    public func searchForMediaServer() {
+        ssdpDB.searchForMediaServer()
+    }
+    
+    public func searchForMediaRenderer() {
+        ssdpDB.searchForMediaRenderer()
+    }
+    
+    public func searchForContentDirectory() {
+        ssdpDB.searchForContentDirectory()
     }
 }
