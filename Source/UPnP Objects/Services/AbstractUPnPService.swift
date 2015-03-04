@@ -46,6 +46,9 @@ public class AbstractUPnPService: AbstractUPnP {
         return super.baseURL
     }
     
+    // protected = 🔰
+    let sessionManager🔰: SOAPSessionManager!
+    
     // private
     private let _baseURLFromXML: NSURL?
     private let _relativeDescriptionURL: NSURL!
@@ -57,11 +60,13 @@ public class AbstractUPnPService: AbstractUPnP {
     private var _concurrentEventObserverQueue: dispatch_queue_t!
     private var _eventSubscription: Any?
     
-    override init?(ssdpDevice: SSDPDBDevice_ObjC) {
-        super.init(ssdpDevice: ssdpDevice)
+    override init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
+        super.init(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+        
+        sessionManager🔰 = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
         
         _concurrentEventObserverQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
-        let serviceParser = UPnPServiceParser(upnpService: self)
+        let serviceParser = UPnPServiceParser(upnpService: self, upnpDescriptionXML: upnpDescriptionXML)
         let parsedService = serviceParser.parse().value
         
         if let baseURL = parsedService?.baseURL {
@@ -121,14 +126,14 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         return "UPnPEventReceivedNotification.\(usn.rawValue)"
     }
     
-    private class func UPnPEventInfoKey() -> String {
-        return "UPnPEventInfoKey"
+    private class func UPnPEventKey() -> String {
+        return "UPnPEventKey"
     }
     
-    func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent) -> Void) -> AnyObject {
+    /// Use callBackBlock for event notifications. While the notifications are backed by NSNotifications for broadcasting, they should only be used internally in order to keep track of how many subscribers there are.
+    public func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent) -> Void) -> AnyObject {
         let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
-            if let rawEventInfo = notification.userInfo?[AbstractUPnPService.UPnPEventInfoKey()] as? [String: String] {
-                let event = self.createEvent(rawEventInfo)
+            if let event = notification.userInfo?[AbstractUPnPService.UPnPEventKey()] as? UPnPEvent {
                 callBackBlock(event: event)
             }
         })
@@ -136,7 +141,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         dispatch_barrier_async(_concurrentEventObserverQueue, { () -> Void in
             self._eventObservers.append(observer)
             
-            if self._eventObservers.count == 1 {
+            if self._eventObservers.count >= 1 {
                 // subscribe
                 UPnPManager_Swift.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<Any>) -> Void in
                     switch subscription {
@@ -176,13 +181,13 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         })
     }
     
-    func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventInfo: [String: String]) {
-        NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService.UPnPEventInfoKey(): eventInfo])
+    func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventXML: NSData) {
+        NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService.UPnPEventKey(): self.createEvent(eventXML)])
     }
     
     /// overridable by service subclasses
-    func createEvent(rawEventInfo: [String: String]) -> UPnPEvent {
-        return UPnPEvent(rawEventInfo: rawEventInfo)
+    func createEvent(eventXML: NSData) -> UPnPEvent {
+        return UPnPEvent(eventXML: eventXML)
     }
 }
 

@@ -179,8 +179,8 @@
 
 - (void)deviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
-//        AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-//        NSLog(@"Added device: %@ %@", upnpObject.className, upnpObject.description);
+        AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
+        NSLog(@"Added device: %@ %@", upnpObject.className, upnpObject.description);
     }
 }
 

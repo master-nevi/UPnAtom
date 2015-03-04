@@ -55,13 +55,15 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
     }
     
     private unowned let _upnpDevice: AbstractUPnPDevice
+    private let _upnpDescriptionXML: NSData
     private var _deviceStack = [ParserUPnPDevice]() // first is root device
     private var _foundDevice: ParserUPnPDevice?
     private var _baseURL: NSURL?
     private lazy var _numberFormatter = NSNumberFormatter()
     
-    init(supportNamespaces: Bool, upnpDevice: AbstractUPnPDevice) {
+    init(supportNamespaces: Bool, upnpDevice: AbstractUPnPDevice, upnpDescriptionXML: NSData) {
         self._upnpDevice = upnpDevice
+        self._upnpDescriptionXML = upnpDescriptionXML
         super.init(supportNamespaces: supportNamespaces)
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
@@ -168,12 +170,12 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         }))
     }
     
-    convenience init(upnpDevice: AbstractUPnPDevice) {
-        self.init(supportNamespaces: false, upnpDevice: upnpDevice)
+    convenience init(upnpDevice: AbstractUPnPDevice, upnpDescriptionXML: NSData) {
+        self.init(supportNamespaces: false, upnpDevice: upnpDevice, upnpDescriptionXML: upnpDescriptionXML)
     }
     
     func parse() -> Result<ParserUPnPDevice> {
-        switch super.parse(contentsOfURL: _upnpDevice.xmlLocation) {
+        switch super.parse(data: _upnpDescriptionXML) {
         case .Success:
             if let foundDevice = _foundDevice {
                 foundDevice.baseURL = _baseURL

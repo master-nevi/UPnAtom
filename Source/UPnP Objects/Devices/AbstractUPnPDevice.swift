@@ -63,10 +63,10 @@ public class AbstractUPnPDevice: AbstractUPnP {
     // private
     private let _baseURLFromXML: NSURL?
     
-    override init?(ssdpDevice: SSDPDBDevice_ObjC) {
-        super.init(ssdpDevice: ssdpDevice)
+    override init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
+        super.init(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
         
-        let deviceParser = UPnPDeviceParser(upnpDevice: self)
+        let deviceParser = UPnPDeviceParser(upnpDevice: self, upnpDescriptionXML: upnpDescriptionXML)
         let parsedDevice = deviceParser.parse().value
         
         if let udn = parsedDevice?.udn {

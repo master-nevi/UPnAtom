@@ -32,7 +32,7 @@ static PlayBack *_playback = nil;
 @synthesize renderer;
 @synthesize server;
 @synthesize playlist;
-@synthesize atomRenderer;
+@synthesize atomRenderer = _atomRenderer;
 @synthesize atomServer;
 
 - (id)init
@@ -58,27 +58,35 @@ static PlayBack *_playback = nil;
 
 -(void)setRenderer:(MediaRenderer1Device*)rend{
     
-    MediaRenderer1Device* old = renderer;
+//    MediaRenderer1Device* old = renderer;
     
     //Remove the Old Observer, if any
-    if(old!=nil){
-         if([[old avTransportService] isObserver:(BasicUPnPServiceObserver*)self] == YES){
-             [[old avTransportService] removeObserver:(BasicUPnPServiceObserver*)self]; 
-         }
-    }
+//    if(old!=nil){
+//         if([[old avTransportService] isObserver:(BasicUPnPServiceObserver*)self] == YES){
+//             [[old avTransportService] removeObserver:(BasicUPnPServiceObserver*)self]; 
+//         }
+//    }
 
     renderer = rend;
 
     //Add New Observer, if any
-    if(renderer!=nil){
-        if([[renderer avTransportService] isObserver:(BasicUPnPServiceObserver*)self] == NO){
-            [[renderer avTransportService] addObserver:(BasicUPnPServiceObserver*)self]; 
-        }
-    }
+//    if(renderer!=nil){
+//        if([[renderer avTransportService] isObserver:(BasicUPnPServiceObserver*)self] == NO){
+//            [[renderer avTransportService] addObserver:(BasicUPnPServiceObserver*)self]; 
+//        }
+//    }
     
     
 }
 
+- (void)setAtomRenderer:(AbstractUPnPDevice *)atomRenderer {
+    _atomRenderer = atomRenderer;
+    
+    MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)self.atomRenderer;
+    [[aRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
+        NSLog(@"Event: %@", [[NSString alloc] initWithData:event.eventXML encoding:NSUTF8StringEncoding]);
+    }];
+}
 
 -(int)Play:(NSMutableArray*)playList position:(NSInteger)position{
     [self setPlaylist:playList];
@@ -163,7 +171,7 @@ static PlayBack *_playback = nil;
 //        [[renderer avTransport] StopWithInstanceID:iid];
 //        NSString *escapedMetaData = [metaData XMLEscape];
         
-        NSDate *start = [NSDate date];
+//        NSDate *start = [NSDate date];
         
         MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)self.atomRenderer;
         [[aRenderer avTransportService] setAVTransportURIWithInstanceID:iid currentURI:uri currentURIMetadata:@"" success:^{
@@ -205,10 +213,5 @@ static PlayBack *_playback = nil;
         }
     }
 }
-
-
-
-
-
 
 @end

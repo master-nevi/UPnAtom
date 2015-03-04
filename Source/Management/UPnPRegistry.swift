@@ -23,8 +23,23 @@
 
 import Foundation
 import upnpx
+import AFNetworking
 
 @objc public class UPnPRegistry {
+    private enum UPnPObjectNotificationType {
+        case Device
+        case Service
+        
+        func notificationComponents() -> (objectAddedNotificationName: String, objectRemoveNotificationName: String, objectKey: String) {
+            switch self {
+            case Device:
+                return ("UPnPDeviceAddedNotification", "UPnPDeviceRemovedNotification", "UPnPDeviceKey")
+            case Service:
+                return ("UPnPServiceAddedNotification", "UPnPServiceRemovedNotification", "UPnPServiceKey")
+            }
+        }
+    }
+    
     // public
     // TODO: Make this accessible from the main thread without hanging
     public var rootDevices: [AbstractUPnPDevice] {
@@ -42,8 +57,13 @@ import upnpx
     private let _concurrentUPnPObjectQueue = dispatch_queue_create("com.upnatom.upnp-registry.upnp-object-queue", DISPATCH_QUEUE_CONCURRENT)
     lazy private var _rootDevices = [UniqueServiceName: AbstractUPnPDevice]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    lazy private var _ssdpObjectCache = [SSDPDBDevice_ObjC]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    private let _upnpObjectDescriptionSessionManager = AFHTTPSessionManager()
     
     init(ssdpDB: SSDPDB_ObjC) {
+        _upnpObjectDescriptionSessionManager.requestSerializer = AFHTTPRequestSerializer()
+        _upnpObjectDescriptionSessionManager.responseSerializer = AFHTTPResponseSerializer()
+        
         self.ssdpDB = ssdpDB
         ssdpDB.addObserver(self)
     }
@@ -90,27 +110,27 @@ import upnpx
 /// Extension used for defining notification constants. Functions are used since class constants are not supported in swift yet
 public extension UPnPRegistry {
     class func UPnPDeviceAddedNotification() -> String {
-        return "UPnPDeviceAddedNotification"
+        return UPnPObjectNotificationType.Device.notificationComponents().objectAddedNotificationName
     }
     
     class func UPnPDeviceRemovedNotification() -> String {
-        return "UPnPDeviceRemovedNotification"
+        return UPnPObjectNotificationType.Device.notificationComponents().objectRemoveNotificationName
     }
     
     class func UPnPDeviceKey() -> String {
-        return "UPnPDeviceKey"
+        return UPnPObjectNotificationType.Device.notificationComponents().objectKey
     }
     
     class func UPnPServiceAddedNotification() -> String {
-        return "UPnPServiceAddedNotification"
+        return UPnPObjectNotificationType.Service.notificationComponents().objectAddedNotificationName
     }
     
     class func UPnPServiceRemovedNotification() -> String {
-        return "UPnPServiceRemovedNotification"
+        return UPnPObjectNotificationType.Service.notificationComponents().objectRemoveNotificationName
     }
     
     class func UPnPServiceKey() -> String {
-        return "UPnPServiceKey"
+        return UPnPObjectNotificationType.Service.notificationComponents().objectKey
     }
 }
 
@@ -124,82 +144,86 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
     public func SSDPDBUpdated(sender: SSDPDB_ObjC!) {
         let ssdpObjects = sender.SSDPObjCDevices.copy() as [SSDPDBDevice_ObjC]
         dispatch_barrier_async(_concurrentUPnPObjectQueue, { () -> Void in
-            let devices = self._rootDevices
-            var devicesToAdd = [AbstractUPnPDevice]()
+            self._ssdpObjectCache = ssdpObjects
             var devicesToKeep = [AbstractUPnPDevice]()
-            let services = self._rootDeviceServices
-            var servicesToAdd = [AbstractUPnPService]()
-            var servicesToKeep = [AbstractUPnPService] ()
+            var servicesToKeep = [AbstractUPnPService]()
             for ssdpObject in ssdpObjects {
                 if ssdpObject.uuid != nil && ssdpObject.urn != nil {
-                    if ssdpObject.isdevice {
-                        if let foundDevice = devices[UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn)] {
-                            devicesToKeep.append(foundDevice)
-                        }
-                        else {
-                            if let newDevice = UPnPFactory.createDeviceFrom(ssdpObject) {
-                                devicesToAdd.append(newDevice)
-                            }
-                        }
+                    let usn = UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn)
+                    if let foundDevice = self._rootDevices[usn] {
+                        devicesToKeep.append(foundDevice)
                     }
-                    else if ssdpObject.isservice {
-                        if let foundService = services[UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn)] {
-                            servicesToKeep.append(foundService)
-                        }
-                        else {
-                            if let newService = UPnPFactory.createServiceFrom(ssdpObject) {
-                                servicesToAdd.append(newService)
-                            }
-                        }
+                    else if let foundService = self._rootDeviceServices[usn] {
+                        servicesToKeep.append(foundService)
+                    }
+                    else {
+                        self.getUPnPDescription(forSSDPObject: ssdpObject)
                     }
                 }
             }
             
-            self.process(devicesToAdd: devicesToAdd, devicesToKeep: devicesToKeep)
-            self.process(servicesToAdd: servicesToAdd, servicesToKeep: servicesToKeep)
+            self.process(upnpObjectsToKeep: devicesToKeep, upnpObjects: &self._rootDevices, notificationType: .Device)
+            self.process(upnpObjectsToKeep: servicesToKeep, upnpObjects: &self._rootDeviceServices, notificationType: .Service)
         })
     }
     
-    /// MARK: Must be called within dispatch_barrier_async()
-    private func process(#devicesToAdd: [AbstractUPnPDevice], devicesToKeep: [AbstractUPnPDevice]) {
-        let devices = self._rootDevices
-        let devicesSet = NSMutableSet(array: Array(devices.values))
-        devicesSet.minusSet(NSSet(array: devicesToKeep))
-        let devicesToRemove = devicesSet.allObjects as [AbstractUPnPDevice] // casting from [AnyObject]
-        
-        for deviceToRemove in devicesToRemove {
-            self._rootDevices.removeValueForKey(deviceToRemove.usn)
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPDeviceRemovedNotification(), object: self, userInfo: [UPnPRegistry.UPnPDeviceKey(): deviceToRemove])
-            })
-        }
-        
-        for deviceToAdd in devicesToAdd {
-            self._rootDevices[deviceToAdd.usn] = deviceToAdd
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPDeviceAddedNotification(), object: self, userInfo: [UPnPRegistry.UPnPDeviceKey(): deviceToAdd])
+    private func getUPnPDescription(forSSDPObject ssdpObject: SSDPDBDevice_ObjC) {
+        if let xmlLocation = returnIfContainsElements(ssdpObject.location) {
+            self._upnpObjectDescriptionSessionManager.GET(xmlLocation, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject?) -> Void in
+                dispatch_barrier_async(self._concurrentUPnPObjectQueue, { () -> Void in
+                    if let xmlData = responseObject as? NSData {
+                        // if ssdp object is not in cache then discard
+                        let ssdpObjectFromCache: SSDPDBDevice_ObjC? = (self._ssdpObjectCache as NSArray).firstUsingPredicate(NSPredicate(format: "usn = %@", ssdpObject.usn)!)
+                        if ssdpObjectFromCache == nil {
+                            return
+                        }
+                        
+                        if ssdpObject.isdevice {
+                            self.addUPnPObject(forSSDPObject: ssdpObject, upnpDescriptionXML: xmlData, upnpObjects: &self._rootDevices, notificationType: .Device)
+                        }
+                        else if ssdpObject.isservice {
+                            self.addUPnPObject(forSSDPObject: ssdpObject, upnpDescriptionXML: xmlData, upnpObjects: &self._rootDeviceServices, notificationType: .Service)
+                        }
+                    }
+                })
+                }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
+                    // log
             })
         }
     }
     
-    /// MARK: Must be called within dispatch_barrier_async()
-    private func process(#servicesToAdd: [AbstractUPnPService], servicesToKeep: [AbstractUPnPService]) {
-        let services = self._rootDeviceServices
-        let servicesSet = NSMutableSet(array: Array(services.values))
-        servicesSet.minusSet(NSSet(array: servicesToKeep))
-        let servicesToRemove = servicesSet.allObjects as [AbstractUPnPService] // casting from [AnyObject]
-        
-        for serviceToRemove in servicesToRemove {
-            self._rootDeviceServices.removeValueForKey(serviceToRemove.usn)
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPServiceRemovedNotification(), object: self, userInfo: [UPnPRegistry.UPnPServiceKey(): serviceToRemove])
-            })
+    private func addUPnPObject<T: AbstractUPnP>(forSSDPObject ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData, inout upnpObjects: [UniqueServiceName: T], notificationType: UPnPObjectNotificationType) {
+        // ignore if already in db
+        let usn = UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn)
+        if let foundObject = upnpObjects[usn] {
+            return
         }
+        else {
+            if let newObject = UPnPFactory.createUPnPObject(ssdpObject, upnpDescriptionXML: upnpDescriptionXML) {
+                if let newObject = newObject as? T {
+                    upnpObjects[usn] = newObject
+                    
+                    let notificationComponents = notificationType.notificationComponents()
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectAddedNotificationName, object: self, userInfo: [notificationComponents.objectKey: newObject])
+                    })
+                }
+            }
+        }
+    }
+    
+    /// MARK: Must be called within dispatch_barrier_async()
+    private func process<T: AbstractUPnP>(#upnpObjectsToKeep: [T], inout upnpObjects: [UniqueServiceName: T], notificationType: UPnPObjectNotificationType) {
+        let upnpObjectsSet = NSMutableSet(array: Array(upnpObjects.values))
+        upnpObjectsSet.minusSet(NSSet(array: upnpObjectsToKeep))
+        let upnpObjectsToRemove = upnpObjectsSet.allObjects as [T] // casting from [AnyObject]
         
-        for serviceToAdd in servicesToAdd {
-            self._rootDeviceServices[serviceToAdd.usn] = serviceToAdd
+        for upnpObjectToRemove in upnpObjectsToRemove {
+            upnpObjects.removeValueForKey(upnpObjectToRemove.usn)
+            
+            let notificationComponents = notificationType.notificationComponents()
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPServiceAddedNotification(), object: self, userInfo: [UPnPRegistry.UPnPServiceKey(): serviceToAdd])
+                NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectRemoveNotificationName, object: self, userInfo: [notificationComponents.objectKey: upnpObjectToRemove])
             })
         }
     }

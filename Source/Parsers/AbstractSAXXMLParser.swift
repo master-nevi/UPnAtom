@@ -103,20 +103,6 @@ class AbstractSAXXMLParser: NSObject {
         return parserResult
     }
     
-    func parse(#contentsOfURL: NSURL) -> EmptyResult {
-        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
-        autoreleasepool { () -> () in
-            if let data = NSData(contentsOfURL: contentsOfURL) {
-                if let validData = self.validateForParsing(data) {
-                    let parser = NSXMLParser(data: validData)
-                    parserResult = self.startParser(parser)
-                }
-            }
-        }
-        
-        return parserResult
-    }
-    
     // MARK: - Internal lib
     
     private func startParser(parser: NSXMLParser) -> EmptyResult {

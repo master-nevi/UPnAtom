@@ -33,23 +33,23 @@ import upnpx
         return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
     }
     
-    init?(ssdpDevice: SSDPDBDevice_ObjC) {
-        if let uuid = returnIfContainsElements(ssdpDevice.uuid) {
+    init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
+        if let uuid = returnIfContainsElements(ssdpObject.uuid) {
             self.uuid = uuid
         }
         else { return nil }
         
-        if let urn = returnIfContainsElements(ssdpDevice.urn) {
+        if let urn = returnIfContainsElements(ssdpObject.urn) {
             self.urn = urn
         }
         else { return nil }
         
-        if let usn = returnIfContainsElements(ssdpDevice.usn) {
+        if let usn = returnIfContainsElements(ssdpObject.usn) {
             self.usn = UniqueServiceName(uuid: uuid, urn: urn, customRawValue: usn)
         }
         else { return nil }
         
-        if let xmlLocation = returnIfContainsElements(ssdpDevice.location) {
+        if let xmlLocation = returnIfContainsElements(ssdpObject.location) {
             self.xmlLocation = NSURL(string: xmlLocation)
         }
         else { return nil }

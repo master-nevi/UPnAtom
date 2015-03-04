@@ -36,17 +36,6 @@ class AbstractDOMXMLParser {
         return parserResult
     }
     
-    func parse(#contentsOfURL: NSURL) -> EmptyResult {
-        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
-        autoreleasepool { () -> () in
-            if let data = NSData(contentsOfURL: contentsOfURL) {
-                parserResult = self.parse(data: data)
-            }
-        }
-        
-        return parserResult
-    }
-    
     func parse(#document: ONOXMLDocument) -> EmptyResult {
         fatalError("Implement in subclass")
     }

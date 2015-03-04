@@ -25,14 +25,6 @@ import Foundation
 import upnpx
 
 public class AVTransport1Service: AbstractUPnPService {
-    private let _sessionManager: SOAPSessionManager!
-    
-    override init?(ssdpDevice: SSDPDBDevice_ObjC) {
-        super.init(ssdpDevice: ssdpDevice)
-        
-        _sessionManager = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
-    }
-    
     public func setAVTransportURI(#instanceID: String, currentURI: String, currentURIMetadata: String, success: () -> Void, failure:(error: NSError?) -> Void) {
         let arguments = [
             "InstanceID" : instanceID,
@@ -41,7 +33,7 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "SetAVTransportURI", serviceURN: urn, arguments: arguments)
         
-        _sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             success()
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
@@ -55,7 +47,7 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Play", serviceURN: urn, arguments: arguments)
         
-        _sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in            
+        sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in            
             success()
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)

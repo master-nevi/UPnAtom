@@ -34,12 +34,14 @@ class UPnPServiceParser: AbstractSAXXMLParser {
     }
     
     private unowned let _upnpService: AbstractUPnPService
+    private let _upnpDescriptionXML: NSData
     private var _baseURL: NSURL?
     private var _currentParserService: ParserUPnPService?
     private var _foundParserService: ParserUPnPService?
     
-    init(supportNamespaces: Bool, upnpService: AbstractUPnPService) {
+    init(supportNamespaces: Bool, upnpService: AbstractUPnPService, upnpDescriptionXML: NSData) {
         self._upnpService = upnpService
+        self._upnpDescriptionXML = upnpDescriptionXML
         super.init(supportNamespaces: supportNamespaces)
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
@@ -82,12 +84,12 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         }))
     }
     
-    convenience init(upnpService: AbstractUPnPService) {
-        self.init(supportNamespaces: false, upnpService: upnpService)
+    convenience init(upnpService: AbstractUPnPService, upnpDescriptionXML: NSData) {
+        self.init(supportNamespaces: false, upnpService: upnpService, upnpDescriptionXML: upnpDescriptionXML)
     }
     
     func parse() -> Result<ParserUPnPService> {
-        switch super.parse(contentsOfURL: _upnpService.xmlLocation) {
+        switch super.parse(data: _upnpDescriptionXML) {
         case .Success:
             if let foundParserService = _foundParserService {
                 foundParserService.baseURL = _baseURL

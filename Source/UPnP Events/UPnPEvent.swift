@@ -24,8 +24,8 @@
 import Foundation
 
 @objc public class UPnPEvent {
-    public let rawEventInfo: [String: String]
-    init(rawEventInfo: [String: String]) {
-        self.rawEventInfo = rawEventInfo
+    public let eventXML: NSData
+    init(eventXML: NSData) {
+        self.eventXML = eventXML
     }
 }

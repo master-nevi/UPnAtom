@@ -24,19 +24,11 @@
 import Foundation
 import upnpx
 
-public class ContentDirectory1Service: AbstractUPnPService {
-    private let _sessionManager: SOAPSessionManager!
-    
-    override init?(ssdpDevice: SSDPDBDevice_ObjC) {
-        super.init(ssdpDevice: ssdpDevice)
-        
-        _sessionManager = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
-    }
-    
+public class ContentDirectory1Service: AbstractUPnPService {    
     public func getSortCapabilities(success: (sortCapabilities: String?) -> Void, failure:(error: NSError?) -> Void) {
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetSortCapabilities", serviceURN: urn, arguments: nil)
         
-        _sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
             success(sortCapabilities: responseObject?["SortCaps"])
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
@@ -55,7 +47,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Browse", serviceURN: urn, arguments: arguments)
         
-        _sessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
             
             var result: [ContentDirectory1Object]?

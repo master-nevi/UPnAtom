@@ -229,3 +229,15 @@ extension NSTimer {
         return self.scheduledTimerWithTimeInterval(timeInterval, target: closureHandler, selector: "fire", userInfo: nil, repeats: repeats)
     }
 }
+
+extension NSArray {
+    func firstUsingPredicate<T>(predicate: NSPredicate) -> T? {
+        return self.filteredArrayUsingPredicate(predicate).first as? T
+    }
+}
+
+extension NSUUID {
+    var dashlessUUIDString: String {
+        return self.UUIDString.stringByReplacingOccurrencesOfString("-", replacement: "")
+    }
+}
