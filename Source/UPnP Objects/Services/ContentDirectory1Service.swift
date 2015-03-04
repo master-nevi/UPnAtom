@@ -48,14 +48,18 @@ public class ContentDirectory1Service: AbstractUPnPService {
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Browse", serviceURN: urn, arguments: arguments)
         
         sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
-            let responseObject = responseObject as? [String: String]
-            
-            var result: [ContentDirectory1Object]?
-            if let resultString = responseObject?["Result"] {
-                result = MediaServerBrowseResultParser().parse(browseResultData: resultString.dataUsingEncoding(NSUTF8StringEncoding)!).value
-            }
-            
-            success(result: result, numberReturned: responseObject?["NumberReturned"], totalMatches: responseObject?["TotalMatches"], updateID: responseObject?["UpdateID"])
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                let responseObject = responseObject as? [String: String]
+                
+                var result: [ContentDirectory1Object]?
+                if let resultString = responseObject?["Result"] {
+                    result = MediaServerBrowseResultParser().parse(browseResultData: resultString.dataUsingEncoding(NSUTF8StringEncoding)!).value
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    success(result: result, numberReturned: responseObject?["NumberReturned"], totalMatches: responseObject?["TotalMatches"], updateID: responseObject?["UpdateID"])
+                })
+            })
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
         })
