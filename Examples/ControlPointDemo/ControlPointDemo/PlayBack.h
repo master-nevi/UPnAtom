@@ -22,32 +22,19 @@
 //  SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import <upnpx/Pods-upnpx-umbrella.h>
 #import <UPnAtom/UPnAtom-Swift.h>
 
-@interface PlayBack : NSObject <BasicUPnPServiceObserver> {
-    MediaRenderer1Device *__weak renderer;
-    MediaServer1Device *server;
-    NSMutableArray *playlist; //MediaServer1BasicObject (can be: MediaServer1ContainerObject, MediaServer1ItemObject)
-    NSInteger pos;
-}
+@interface PlayBack : NSObject
 
-+(PlayBack*)GetInstance;
++ (PlayBack *)sharedInstance;
 
--(void)setRenderer:(MediaRenderer1Device*)rend;
--(int)Play:(NSMutableArray*)playList position:(NSInteger)position;
--(int)Play:(NSInteger)position;
+- (int)play:(NSArray *)playList position:(NSInteger)position;
+- (int)play:(NSInteger)position;
 - (void)pause;
 
-//BasicUPnPServiceObserver
--(void)UPnPEvent:(BasicUPnPService*)sender events:(NSDictionary*)events;
-
-@property (strong) MediaServer1Device *server;
-@property (weak, readonly) MediaRenderer1Device *renderer;
-@property (strong) NSMutableArray *playlist;
-
-@property (nonatomic) AbstractUPnPDevice *atomServer;
-@property (nonatomic) AbstractUPnPDevice *atomRenderer;
+@property (strong) NSArray *playlist;
+@property (nonatomic) AbstractUPnPDevice *server;
+@property (nonatomic) AbstractUPnPDevice *renderer;
 
 @end
 

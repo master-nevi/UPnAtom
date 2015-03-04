@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8JJ-b2-OSK">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8JJ-b2-OSK">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
         <!--Root Folder View Controller-->
@@ -33,7 +33,13 @@
                             <constraint firstAttribute="bottom" secondItem="hfZ-G8-fZD" secondAttribute="bottom" id="svF-sw-aBC"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="kSz-D7-l8z"/>
+                    <navigationItem key="navigationItem" id="kSz-D7-l8z">
+                        <barButtonItem key="rightBarButtonItem" title="SSDP Search" id="GRq-eu-G6E">
+                            <connections>
+                                <action selector="ssdpSearchButtonTapped:" destination="8jp-ob-YlT" id="VQY-PP-Y5l"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="hfZ-G8-fZD" id="f6m-XY-8Eo"/>
                     </connections>

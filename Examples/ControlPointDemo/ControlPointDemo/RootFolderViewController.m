@@ -22,30 +22,24 @@
 //  SOFTWARE.
 
 #import "RootFolderViewController.h"
-#import <upnpx/UPnPDB.h>
-#import <upnpx/UPnPManager.h>
 #import "PlayBack.h"
 #import "FolderViewController.h"
 #import <UPnAtom/UPnAtom-Swift.h>
 
-@interface RootFolderViewController () <UITableViewDataSource, UITableViewDelegate, UPnPDBObserver>
+@interface RootFolderViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic) IBOutlet UITableView *tableView;
 @end
 
 @implementation RootFolderViewController {
     BOOL _hasSearchedForContentDirectories;
+    NSArray *_devices;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    UPnPDB* db = [[UPnPManager GetInstance] DB];
-    UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
-    NSLog(@"%@", db2);
-    [db addObserver:self];
     
     //Search for UPnP Devices
-    [[[UPnPManager GetInstance] SSDP] searchSSDP];
+    [self performSSDPSearch];
     
     self.title = @"Control Point Demo";
     
@@ -71,12 +65,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasRemoved:) name:[UPnPRegistry UPnPServiceRemovedNotification] object:nil];
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-}
+#pragma mark - IBActions
 
-- (void)dealloc {
-    
+- (IBAction)ssdpSearchButtonTapped:(id)sender {
+    [self performSSDPSearch];
 }
 
 #pragma mark - UITableViewDataSource methods
@@ -86,7 +78,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[self devices] count];
+    return _devices.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -98,11 +90,10 @@
     }
     
     // Configure the cell.
-    BasicUPnPDevice *device = [self devices][indexPath.row];
+    AbstractUPnPDevice *device = _devices[indexPath.row];
     [[cell textLabel] setText:[device friendlyName]];
     
-    BOOL isMediaServer = [device.urn isEqualToString:@"urn:schemas-upnp-org:device:MediaServer:1"];
-    cell.accessoryType = isMediaServer ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+    cell.accessoryType = [device isMediaServer1Device] ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
     
     return cell;
 }
@@ -110,69 +101,30 @@
 #pragma mark - UITableViewDelegate methods
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    BasicUPnPDevice *device = [self devices][indexPath.row];
-    if([[device urn] isEqualToString:@"urn:schemas-upnp-org:device:MediaServer:1"]){
-        MediaServer1Device *server = (MediaServer1Device*)device;
-        if (![server contentDirectory]) {
+    AbstractUPnPDevice *device = _devices[indexPath.row];
+    if([device isMediaServer1Device]){
+        MediaServer1Device_Swift *server = (MediaServer1Device_Swift *)device;
+        if (![server contentDirectoryService]) {
             return;
         }
+        
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         FolderViewController *targetViewController = [storyboard instantiateViewControllerWithIdentifier:@"FolderViewControllerScene"];
         [targetViewController configureWithDevice:server header:@"root" rootId:@"0"];
         
         [[self navigationController] pushViewController:targetViewController animated:YES];
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [[PlayBack GetInstance] setServer:server];
-            
-            UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
-            for (AbstractUPnPDevice *atomDevice in db2.rootDevices) {
-                if ([atomDevice.usn.rawValue isEqualToString: device.usn]) {
-                    [[PlayBack GetInstance] setAtomServer:atomDevice];
-                }
-            }
-        });
-    } else if([[device urn] isEqualToString:@"urn:schemas-upnp-org:device:MediaRenderer:1"]){
+        [[PlayBack sharedInstance] setServer:device];
+    } else if([device isMediaRenderer1Device]){
         [[self toolbarLabel] setText:[device friendlyName]];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            MediaRenderer1Device *render = (MediaRenderer1Device*)device;
-            [[PlayBack GetInstance] setRenderer:render];
-            
-            UPnPRegistry* db2 = [[UPnPManager_Swift sharedInstance] upnpRegistry];
-            for (AbstractUPnPDevice *atomDevice in db2.rootDevices) {
-                if ([atomDevice.usn.rawValue isEqualToString: device.usn]) {
-                    [[PlayBack GetInstance] setAtomRenderer:atomDevice];
-                }
-            }
-        });
+        [[PlayBack sharedInstance] setRenderer:device];
     }
-}
-
-#pragma mark - UPnPDBObserver methods
-
--(void)UPnPDBWillUpdate:(UPnPDB*)sender{
-    //    NSLog(@"UPnPDBWillUpdate %lu", (unsigned long)[mDevices count]);
-}
-
--(void)UPnPDBUpdated:(UPnPDB*)sender{
-    //    NSLog(@"UPnPDBUpdated %lu", (unsigned long)[mDevices count]);
-    if (!_hasSearchedForContentDirectories) {
-        _hasSearchedForContentDirectories = YES;
-        [self performSSDPSearch];
-    }
-    
-//    for (BasicUPnPDevice *device in [self devices]) {
-//        NSLog(@"Device: %@", device.description);
-//    }
-    
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadData];
-    }];
 }
 
 - (void)performSSDPSearch {
-    [[[UPnPManager GetInstance] SSDP] searchForContentDirectory];
-    [[[UPnPManager GetInstance] SSDP] searchForMediaRenderer];
+    [[UPnPManager_Swift sharedInstance] searchForAll];
+    [[UPnPManager_Swift sharedInstance] searchForContentDirectory];
+    [[UPnPManager_Swift sharedInstance] searchForMediaRenderer];
 }
 
 #pragma mark - NSNotification callbacks
@@ -182,6 +134,8 @@
         AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
         NSLog(@"Added device: %@ %@", upnpObject.className, upnpObject.description);
     }
+    
+    [self updateDataAndRefreshTableView];
 }
 
 - (void)deviceWasRemoved:(NSNotification *)notification {
@@ -189,33 +143,14 @@
         AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
         NSLog(@"Removed device: %@ %@", upnpObject.className, upnpObject.description);
     }
+    
+    [self updateDataAndRefreshTableView];
 }
 
 - (void)serviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
         NSLog(@"Added service: %@ %@", upnpObject.className, upnpObject.description);
-        if (![upnpObject.baseURL.absoluteString containsString:@":5001"]) {
-            return;
-        }
-        
-        if ([upnpObject.className isEqualToString:@"ContentDirectory1Service"]) {
-            ContentDirectory1Service *contentDirectoryService = (ContentDirectory1Service *)upnpObject;
-            [contentDirectoryService getSortCapabilities:^(NSString *sortCapabilities) {
-                NSLog(@"sort capabilities: %@", sortCapabilities);
-            } failure:^(NSError *error) {
-                
-            }];
-            
-            [contentDirectoryService browseWithObjectID:@"0$7" browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:@"" success:^(NSArray *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID) {
-                NSLog(@"numberReturned: %@\ntotalMatches: %@\nupdateID: %@", numberReturned, totalMatches, updateID);
-                for (ContentDirectory1Object *resultObject in result) {
-                    NSLog(@"resultObject: %@", resultObject.description);
-                }
-            } failure:^(NSError *error) {
-                
-            }];
-        }
     }
 }
 
@@ -228,9 +163,13 @@
 
 #pragma mark - Internal lib
 
-- (NSArray *)devices {
-    UPnPDB* db = [[UPnPManager GetInstance] DB];
-    return [db rootDevices];
+- (void)updateDataAndRefreshTableView {
+    UPnPRegistry *registry = [[UPnPManager_Swift sharedInstance] upnpRegistry];
+    [registry rootDevices:^(NSArray *rootDevices) {
+        _devices = rootDevices;
+        
+        [self.tableView reloadData];
+    }];
 }
 
 - (UILabel *)toolbarLabel {
