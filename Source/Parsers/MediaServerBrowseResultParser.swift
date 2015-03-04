@@ -32,7 +32,7 @@ class MediaServerBrowseResultParser: AbstractDOMXMLParser {
         document.definePrefix("didllite", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/")
         document.enumerateElementsWithXPath("/didllite:DIDL-Lite/*", usingBlock: { [unowned self] (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             switch element.firstChildWithTag("class").stringValue() {
-            case .Some(let rawType) where rawType == "object.container.storageFolder":
+            case .Some(let rawType) where rawType.rangeOfString("object.container") != nil: // some servers use object.container and some use object.container.storageFolder
                 if let contentDirectoryObject = ContentDirectory1Container(xmlElement: element) {
                     self._contentDirectoryObjects.append(contentDirectoryObject)
                 }
