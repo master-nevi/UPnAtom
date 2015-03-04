@@ -67,6 +67,13 @@ public class AVTransport1Service: AbstractUPnPService {
     }
 }
 
+/// for objective-c type checking
+extension AbstractUPnP {
+    public func isAVTransport1Service() -> Bool {
+        return self is AVTransport1Service
+    }
+}
+
 extension AVTransport1Service: ExtendedPrintable {
     override public var className: String { return "AVTransport1Service" }
     override public var description: String {

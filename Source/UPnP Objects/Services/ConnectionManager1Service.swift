@@ -27,6 +27,13 @@ public class ConnectionManager1Service: AbstractUPnPService {
     
 }
 
+/// for objective-c type checking
+extension AbstractUPnP {
+    public func isConnectionManager1Service() -> Bool {
+        return self is ConnectionManager1Service
+    }
+}
+
 extension ConnectionManager1Service: ExtendedPrintable {
     override public var className: String { return "ConnectionManager1Service" }
     override public var description: String {

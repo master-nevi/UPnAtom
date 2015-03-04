@@ -33,7 +33,7 @@ import Ono
     public let rawType: String!
     public let albumArtURL: NSURL?
     
-    init?(xmlElement: ONOXMLElement) {
+    init?(xmlElement: ONOXMLElement) {        
         if let objectID = xmlElement.valueForAttribute("id") as? String {
             self.objectID = objectID
         }
@@ -88,6 +88,12 @@ public class ContentDirectory1Container: ContentDirectory1Object {
     }
 }
 
+extension ContentDirectory1Object {
+    public func isContentDirectory1Container() -> Bool {
+        return self is ContentDirectory1Container
+    }
+}
+
 extension ContentDirectory1Container: ExtendedPrintable {
     override public var className: String { return "ContentDirectory1Container" }
     override public var description: String {
@@ -110,6 +116,12 @@ public class ContentDirectory1Item: ContentDirectory1Object {
             resourceURL = NSURL(string: resourceURLString)
         }
         else { return nil }
+    }
+}
+
+extension ContentDirectory1Object {
+    public func isContentDirectory1Item() -> Bool {
+        return self is ContentDirectory1Item
     }
 }
 
@@ -143,10 +155,8 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
             let durationComponents = durationString.componentsSeparatedByString(":")
             var count: Double = 0
             var duration: Double = 0
-            println("\(durationString)")
             for durationComponent in durationComponents.reverse() {
                 duration += (durationComponent as NSString).doubleValue * pow(60, count)
-                println("\(duration)")
                 count++
             }
             
@@ -167,6 +177,12 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
         sampleFrequency = (xmlElement.firstChildWithTag("res").valueForAttribute("sampleFrequency") as? String)?.toInt()
         
         size = (xmlElement.firstChildWithTag("res").valueForAttribute("size") as? String)?.toInt()
+    }
+}
+
+extension ContentDirectory1Object {
+    public func isContentDirectory1VideoItem() -> Bool {
+        return self is ContentDirectory1VideoItem
     }
 }
 

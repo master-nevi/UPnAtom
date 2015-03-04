@@ -62,6 +62,13 @@ public class ContentDirectory1Service: AbstractUPnPService {
     }
 }
 
+/// for objective-c type checking
+extension AbstractUPnP {
+    public func isContentDirectory1Service() -> Bool {
+        return self is ContentDirectory1Service
+    }
+}
+
 extension ContentDirectory1Service: ExtendedPrintable {
     override public var className: String { return "ContentDirectory1Service" }
     override public var description: String {

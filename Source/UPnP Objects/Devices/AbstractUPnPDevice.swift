@@ -107,6 +107,13 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
 }
 
+/// for objective-c type checking
+extension AbstractUPnP {
+    public func isAbstractUPnPDevice() -> Bool {
+        return self is AbstractUPnPDevice
+    }
+}
+
 extension AbstractUPnPDevice: ExtendedPrintable {
     override public var className: String { return "AbstractUPnPDevice" }
     override public var description: String {

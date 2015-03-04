@@ -27,6 +27,13 @@ public class RenderingControl1Service: AbstractUPnPService {
     
 }
 
+/// for objective-c type checking
+extension AbstractUPnP {
+    public func isRenderingControl1Service() -> Bool {
+        return self is RenderingControl1Service
+    }
+}
+
 extension RenderingControl1Service: ExtendedPrintable {
     override public var className: String { return "RenderingControl1Service" }
     override public var description: String {

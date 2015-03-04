@@ -197,6 +197,13 @@ private func ==(lhs: AbstractUPnPService.EventObserver, rhs: AbstractUPnPService
     return lhs.notificationCenterObserver === rhs.notificationCenterObserver
 }
 
+/// for objective-c type checking
+extension AbstractUPnP {
+    public func isAbstractUPnPService() -> Bool {
+        return self is AbstractUPnPService
+    }
+}
+
 extension AbstractUPnPService: ExtendedPrintable {
     override public var className: String { return "AbstractUPnPService" }
     override public var description: String {

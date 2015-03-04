@@ -37,6 +37,13 @@ public class MediaServer1Device_Swift: AbstractUPnPDevice {
     }
 }
 
+/// for objective-c type checking
+extension AbstractUPnP {
+    public func isMediaServer1Device() -> Bool {
+        return self is MediaServer1Device_Swift
+    }
+}
+
 extension MediaServer1Device_Swift: ExtendedPrintable {
     override public var className: String { return "MediaServer1Device_Swift" }
     override public var description: String {
