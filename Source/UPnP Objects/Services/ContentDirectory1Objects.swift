@@ -76,7 +76,7 @@ extension ContentDirectory1Object: ExtendedPrintable {
 // MARK: - ContentDirectory1Container
 
 public class ContentDirectory1Container: ContentDirectory1Object {
-    public let childCount: Int!
+    public let childCount: Int?
     
     override init?(xmlElement: ONOXMLElement) {
         super.init(xmlElement: xmlElement)
@@ -84,7 +84,6 @@ public class ContentDirectory1Container: ContentDirectory1Object {
         if let childCount = (xmlElement.valueForAttribute("childCount") as? String)?.toInt() {
             self.childCount = childCount
         }
-        else { return nil }
     }
 }
 
