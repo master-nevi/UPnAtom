@@ -23,7 +23,7 @@ import UPnAtom
 #### Contribute:
 Currently I'm only taking feature requests and bug fixes via [Github issue](https://github.com/master-nevi/UPnAtom/issues). Sorry no pull requests until the library is mature enough.
 
-Milestones:
+#### Milestones:
 * Swift 1.2
 * 3rd Party UPnP service & object class registration
 * Integrate LumberJack for better logging
