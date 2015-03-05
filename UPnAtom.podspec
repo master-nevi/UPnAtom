@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'UPnAtom'
-  s.version      = '0.0.1'
+  s.version      = '0.0.1.beta.1'
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
   s.summary      = 'A reimplementation of the upnpx library written in Swift.'
   s.homepage     = 'https://github.com/master-nevi/UPnAtom'
