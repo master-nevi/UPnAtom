@@ -45,7 +45,10 @@
     
     MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)self.renderer;
     [[aRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
-        NSLog(@"Event: %@", [[NSString alloc] initWithData:event.eventXML encoding:NSUTF8StringEncoding]);
+        if ([event.service isAVTransport1Service] && [event isAVTransport1Event]) {
+            AVTransport1Event *avTransportEvent = (AVTransport1Event *)event;
+            NSLog(@"Event: %@", avTransportEvent.instanceState);
+        }
     }];
 }
 

@@ -65,6 +65,10 @@ public class AVTransport1Service: AbstractUPnPService {
                 failure(error: error)
         })
     }
+    
+    override func createEvent(eventXML: NSData) -> UPnPEvent {
+        return AVTransport1Event(eventXML: eventXML, service: self)
+    }
 }
 
 /// for objective-c type checking

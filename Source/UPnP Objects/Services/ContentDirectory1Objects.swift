@@ -87,6 +87,7 @@ public class ContentDirectory1Container: ContentDirectory1Object {
     }
 }
 
+/// for objective-c type checking
 extension ContentDirectory1Object {
     public func isContentDirectory1Container() -> Bool {
         return self is ContentDirectory1Container
@@ -118,6 +119,7 @@ public class ContentDirectory1Item: ContentDirectory1Object {
     }
 }
 
+/// for objective-c type checking
 extension ContentDirectory1Object {
     public func isContentDirectory1Item() -> Bool {
         return self is ContentDirectory1Item
@@ -179,6 +181,7 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
     }
 }
 
+/// for objective-c type checking
 extension ContentDirectory1Object {
     public func isContentDirectory1VideoItem() -> Bool {
         return self is ContentDirectory1VideoItem
