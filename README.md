@@ -1,7 +1,7 @@
 UPnAtom
 =========
 
-An open source Universal Plug & Play library with a focus on local media streaming coordination; written in Swift but written for both Objective-C and Swift apps. Supports only iOS 8 and higher due to iOS 7's limitation of not supporting dynamic libraries via Clang module.
+An open source Universal Plug & Play library with a focus on local media streaming coordination; written in Swift but for both Objective-C and Swift apps. Supports only iOS 8 and higher due to iOS 7's limitation of not supporting dynamic libraries via Clang module.
 
 #### Install:
 Add following to Podfile (Currently not submitted to public PodSpec repo however if there's a demand I could):
