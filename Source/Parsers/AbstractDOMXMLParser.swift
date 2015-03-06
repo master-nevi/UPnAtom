@@ -26,6 +26,8 @@ import Ono
 
 class AbstractDOMXMLParser {
     func parse(#data: NSData) -> EmptyResult {
+        DDLogVerbose("Parsing XML:\nSTART\n\(NSString(data: data, encoding: NSUTF8StringEncoding))\nEND")
+        
         var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             var parseError: NSError?

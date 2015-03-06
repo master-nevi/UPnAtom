@@ -91,7 +91,6 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
     }
     
     func parse(#eventXML: NSData) -> Result<[String: AnyObject]> {
-        //        println("RESPONSE: \(NSString(data: browseResultData, encoding: NSUTF8StringEncoding))")
         switch super.parse(data: eventXML) {
         case .Success:
             return .Success(_instanceState)

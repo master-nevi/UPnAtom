@@ -149,7 +149,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                         self._eventSubscription = value
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown subscribe error")
-                        println("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
+                        DDLogError("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
                     }
                 })
             }
@@ -173,7 +173,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                         self._eventSubscription = nil
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown unsubscribe error")
-                        println("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")
+                        DDLogError("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")
                         self._eventSubscription = nil
                     }
                 })

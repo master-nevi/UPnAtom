@@ -51,7 +51,6 @@ class MediaServerBrowseResultParser: AbstractDOMXMLParser {
     }
     
     func parse(#browseResultData: NSData) -> Result<[ContentDirectory1Object]> {
-//        println("RESPONSE: \(NSString(data: browseResultData, encoding: NSUTF8StringEncoding))")
         switch super.parse(data: browseResultData) {
         case .Success:
             return .Success(_contentDirectoryObjects)

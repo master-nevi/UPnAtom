@@ -164,7 +164,7 @@ class UPnPEventSubscriptionManager {
             return
         }
         
-//        println("event callback url: \(_eventCallBackURL)")
+        DDLogInfo("event callback url: \(_eventCallBackURL!)")
         
         let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: _eventCallBackURL!, timeout: _defaultSubscriptionTimeout)
         
@@ -177,7 +177,7 @@ class UPnPEventSubscriptionManager {
                 return
             }
             
-//            println("subscription id: \(response.subscriptionID)  timeout: \(response.timeout)")
+            DDLogInfo("successful subscription id: \(response.subscriptionID)  timeout: \(response.timeout)")
             
             let now = NSDate()
             let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
@@ -295,7 +295,8 @@ class UPnPEventSubscriptionManager {
         else if subscriptions.count > 0 && !httpServer.isRunning() {
             var error: NSError?
             if !httpServer.start(&error) {
-                error != nil ? println("Error starting HTTP server: \(error!.localizedDescription)") : println("Error starting HTTP server")
+                let toAppend = error != nil && error?.localizedDescriptionOrNil != nil ? ": \(error!.localizedDescription)" : ""
+                DDLogError("Error starting HTTP server" + toAppend)
             }
         }
     }

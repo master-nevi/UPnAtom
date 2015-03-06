@@ -37,7 +37,7 @@ private let _UPnPManagerSharedInstance = UPnPManager_Swift()
     let ssdpDB = SSDPDB_ObjC()
     let eventSubscriptionManager: UPnPEventSubscriptionManager
     
-    init() {        
+    init() {
         upnpRegistry = UPnPRegistry(ssdpDB: ssdpDB)
         eventSubscriptionManager = UPnPEventSubscriptionManager()
         

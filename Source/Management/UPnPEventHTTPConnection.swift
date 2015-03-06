@@ -29,7 +29,7 @@ import CocoaAsyncSocket // required by the init method and therefore needed for 
     /// NOTE: Instances of HTTPConnection are recycled, make sure to reset property values at the end of every request i.e. HTTPConnection.httpResponseForMethod()
     
     override func supportsMethod(method: String!, atPath path: String!) -> Bool {
-        return method.lowercaseString == "notify"
+        return method.lowercaseString == "notify" && path == UPnPManager_Swift.sharedInstance.eventSubscriptionManager.eventCallBackPath
     }
     
     override func expectsRequestBodyFromMethod(method: String!, atPath path: String!) -> Bool {
@@ -40,9 +40,8 @@ import CocoaAsyncSocket // required by the init method and therefore needed for 
         if method.lowercaseString == "notify" && path == UPnPManager_Swift.sharedInstance.eventSubscriptionManager.eventCallBackPath {
             let request = _request()
             
-//            println("ALL HEADERS: \(request.allHeaderFields())")
-//            let eventDataString = NSString(data: request.body(), encoding: NSUTF8StringEncoding)
-//            println("FINAL DATA SIZE: \(request.body().length)\n\(eventDataString) \nEND")
+            DDLogInfo("NOTIFY request: All headers: \(request.allHeaderFields())")
+            DDLogVerbose("NOTIFY request: Final body with size: \(request.body().length)\nSTART\n\(NSString(data: request.body(), encoding: NSUTF8StringEncoding))\nEND")
             
             // TODO: this should be done via a delegate protocol however CocoaHTTPServer doesn't make this easy to do in Swift
             UPnPManager_Swift.sharedInstance.eventSubscriptionManager.handleIncomingEvent(subscriptionID: request.headerField("SID"), eventData: request.body())
@@ -54,18 +53,17 @@ import CocoaAsyncSocket // required by the init method and therefore needed for 
     }
     
     override func prepareForBodyWithSize(contentLength: UInt64) {
-//        println("body size: \(contentLength)")
+        DDLogVerbose("NOTIFY request: Body size: \(contentLength)")
     }
     
     override func processBodyData(postDataChunk: NSData!) {
-//        let eventDataString = NSString(data: postDataChunk, encoding: NSUTF8StringEncoding)
-//        println("\nAppend body with size: \(postDataChunk.length)\nDATA: \(eventDataString)\n\n")
+        DDLogVerbose("NOTIFY request: Append post body with size: \(postDataChunk.length)")
         
         _request().appendData(postDataChunk)
     }
     
     override func finishBody() {
-//        println("finished body")
+        DDLogVerbose("NOTIFY request: Finished body")
     }
     
     // HTTPConnection only exposes the request as an instance variable which Swift can't access directly

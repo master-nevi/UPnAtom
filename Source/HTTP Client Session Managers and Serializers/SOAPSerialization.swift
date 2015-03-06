@@ -76,7 +76,7 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
         }
         body += "</u:\(requestParameters.soapAction)>"
         body += "</s:Body></s:Envelope>"
-        //        println("swift: \(body)")
+        DDLogVerbose("SOAP request body: \(body)")
         
         mutableRequest.setValue("\(countElements(body.utf8))", forHTTPHeaderField: "Content-Length")
         

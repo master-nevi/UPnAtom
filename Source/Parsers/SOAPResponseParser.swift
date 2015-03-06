@@ -31,18 +31,18 @@ class SOAPResponseParser: AbstractDOMXMLParser {
         var result: EmptyResult = .Success
         document.enumerateElementsWithXPath("/s:Envelope/s:Body/*/*", usingBlock: { (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             if element.tag != nil && element.stringValue() != nil && countElements(element.tag) > 0 && countElements(element.stringValue()) > 0 {
-//                println("name: \(element.tag) string value: \(element.stringValue())")
                 self._responseParameters[element.tag] = element.stringValue()
             }
             
             result = .Success
-        })
+        })        
+        
+        DDLogVerbose("SOAP response values: \(prettyPrint(_responseParameters))")
 
         return result
     }
     
     func parse(#soapResponseData: NSData) -> Result<[String: String]> {
-//        println("RESPONSE: \(NSString(data: soapResponseData, encoding: NSUTF8StringEncoding))")
         switch super.parse(data: soapResponseData) {
         case .Success:
             return .Success(_responseParameters)
