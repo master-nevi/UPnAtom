@@ -7,10 +7,10 @@ Pod::Spec.new do |s|
   s.authors      = { 'David Robles' => 'master-nevi@users.noreply.github.com' }
   s.source       = { :git => 'git@github.com:master-nevi/UPnAtom.git', :tag => s.version.to_s } # TODO: switch out to https on release
   s.source_files = 'Source/**/*.{swift,h,m}'
-  s.private_header_files = 'Source/Obj-C Tools/*.{h,m}'
+  s.private_header_files = 'Source/Obj-C Tools/*.h'
   s.resources = 'Source/*.modulemap'
 
-  s.xcconfig = { 'SWIFT_INCLUDE_PATHS' => '../../../Source'} # TODO: verify the non dev pod path
+  s.xcconfig = { 'SWIFT_INCLUDE_PATHS' => '"../../../Source" "UPnAtom/Source"'} # First path is for development using example project, second is for pod in general
   s.requires_arc = true
   s.platform = :ios
   s.ios.deployment_target = '8.0'

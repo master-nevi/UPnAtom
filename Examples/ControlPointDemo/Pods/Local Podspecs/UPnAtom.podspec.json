@@ -1,6 +1,6 @@
 {
   "name": "UPnAtom",
-  "version": "0.0.1",
+  "version": "0.0.1.beta.1",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -12,13 +12,13 @@
   },
   "source": {
     "git": "git@github.com:master-nevi/UPnAtom.git",
-    "tag": "0.0.1"
+    "tag": "0.0.1.beta.1"
   },
   "source_files": "Source/**/*.{swift,h,m}",
-  "private_header_files": "Source/Obj-C Tools/*.{h,m}",
+  "private_header_files": "Source/Obj-C Tools/*.h",
   "resources": "Source/*.modulemap",
   "xcconfig": {
-    "SWIFT_INCLUDE_PATHS": "../../../Source"
+    "SWIFT_INCLUDE_PATHS": "\"../../../Source\" \"UPnAtom/Source\""
   },
   "requires_arc": true,
   "platforms": {

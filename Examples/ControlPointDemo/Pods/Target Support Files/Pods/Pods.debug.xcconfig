@@ -4,6 +4,6 @@ LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_pa
 OTHER_CFLAGS = $(inherited) -iquote "$PODS_FRAMEWORK_BUILD_PATH/AFNetworking.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/CocoaAsyncSocket.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/CocoaHTTPServer.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/CocoaLumberjack.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/Ono.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/UPnAtom.framework/Headers" -iquote "$PODS_FRAMEWORK_BUILD_PATH/upnpx.framework/Headers"
 OTHER_LDFLAGS = $(inherited) -ObjC -framework "AFNetworking" -framework "CocoaAsyncSocket" -framework "CocoaHTTPServer" -framework "CocoaLumberjack" -framework "Ono" -framework "UPnAtom" -framework "upnpx"
 OTHER_LIBTOOLFLAGS = $(OTHER_LDFLAGS)
-OTHER_SWIFT_FLAGS = "-D COCOAPODS"
+OTHER_SWIFT_FLAGS = "-D" "COCOAPODS"
 PODS_FRAMEWORK_BUILD_PATH = $(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Pods
 PODS_ROOT = ${SRCROOT}/Pods

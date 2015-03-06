@@ -1,1 +1,1 @@
-PODS_UPNATOM_SWIFT_INCLUDE_PATHS = ../../../Source
+PODS_UPNATOM_SWIFT_INCLUDE_PATHS = "../../../Source" "UPnAtom/Source"
