@@ -24,6 +24,9 @@
 #import "FolderViewController.h"
 #import "PlayBack.h"
 #import <UPnAtom/UPnAtom-Swift.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
+
+static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 
 @interface FolderViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic) IBOutlet UITableView *tableView;
@@ -47,10 +50,10 @@
             _playlist = result;
             [self.tableView reloadData];
         } failure:^(NSError *error) {
-            NSLog(@"failed to browse content directory");
+            DDLogError(@"failed to browse content directory");
         }];
     } failure:^(NSError *error) {
-        NSLog(@"failed to get sort capabilities");
+        DDLogError(@"failed to get sort capabilities");
     }];
     
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, self.navigationController.view.frame.size.width, 21.0f)];

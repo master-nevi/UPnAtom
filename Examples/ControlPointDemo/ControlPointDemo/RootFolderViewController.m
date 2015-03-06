@@ -25,6 +25,9 @@
 #import "PlayBack.h"
 #import "FolderViewController.h"
 #import <UPnAtom/UPnAtom-Swift.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
+
+static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 
 @interface RootFolderViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic) IBOutlet UITableView *tableView;
@@ -131,8 +134,9 @@
 
 - (void)deviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
-        AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-        NSLog(@"Added device: %@ %@", upnpObject.className, upnpObject.description);
+        AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
+        DDLogInfo(@"Added device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
+        DDLogVerbose(@"%@", upnpObject.description);
     }
     
     [self updateDataAndRefreshTableView];
@@ -140,8 +144,9 @@
 
 - (void)deviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
-        AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-        NSLog(@"Removed device: %@ %@", upnpObject.className, upnpObject.description);
+        AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
+        DDLogInfo(@"Removed device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
+        DDLogVerbose(@"%@", upnpObject.description);
     }
     
     [self updateDataAndRefreshTableView];
@@ -149,15 +154,17 @@
 
 - (void)serviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
-        AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-        NSLog(@"Added service: %@ %@", upnpObject.className, upnpObject.description);
+        AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
+        DDLogInfo(@"Added service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
+        DDLogVerbose(@"%@", upnpObject.description);
     }
 }
 
 - (void)serviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
-        AbstractUPnP *upnpObject = ((AbstractUPnP *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-        NSLog(@"Removed service: %@ %@", upnpObject.className, upnpObject.description);
+        AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
+        DDLogInfo(@"Removed service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
+        DDLogVerbose(@"%@", upnpObject.description);
     }
 }
 

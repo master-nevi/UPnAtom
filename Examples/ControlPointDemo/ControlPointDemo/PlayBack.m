@@ -24,6 +24,9 @@
 #import "PlayBack.h"
 #import "NSString+UPnPExtentions.h"
 #import <UPnAtom/UPnAtom-Swift.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
+
+static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 
 @implementation PlayBack {
     NSInteger _pos;
@@ -47,7 +50,7 @@
     [[aRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
         if ([event.service isAVTransport1Service] && [event isAVTransport1Event]) {
             AVTransport1Event *avTransportEvent = (AVTransport1Event *)event;
-            NSLog(@"Event: %@", avTransportEvent.instanceState);
+            DDLogInfo(@"%@ Event: %@", event.service.className, avTransportEvent.instanceState);
         }
     }];
 }
@@ -135,22 +138,16 @@
         
         MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)self.renderer;
         [[aRenderer avTransportService] setAVTransportURIWithInstanceID:iid currentURI:uri currentURIMetadata:@"" success:^{
-            NSLog(@"Succeeded!");
+            DDLogInfo(@"URI Set succeeded!");
             
             [[aRenderer avTransportService] playWithInstanceID:iid speed:@"1" success:^{
-                NSLog(@"Succeeded!");
+                DDLogInfo(@"Play command succeeded!");
             } failure:^(NSError *error) {
-                NSLog(@"Failed: %@", error.localizedDescription);
+                DDLogError(@"Play command failed: %@", error.localizedDescription);
             }];
         } failure:^(NSError *error) {
-            NSLog(@"Failed: %@", error.localizedDescription);
+            DDLogError(@"URI Set failed: %@", error.localizedDescription);
         }];
-        
-        
-        
-//        [[renderer avTransport] SetAVTransportURIWithInstanceID:iid CurrentURI:uri CurrentURIMetaData:@""];
-//        NSLog(@"duration: %f", [start timeIntervalSinceNow]);
-//        [[renderer avTransport] PlayWithInstanceID:iid Speed:@"1"];
     }
     
     return 0;
@@ -159,19 +156,5 @@
 - (void)pause {
 //    [[renderer avTransport] PauseWithInstanceID:@"0"];
 }
-
-////BasicUPnPServiceObserver
-//-(void)UPnPEvent:(BasicUPnPService*)sender events:(NSDictionary*)events{
-//    NSLog(@"Event: %@", events);
-//    if(sender == [renderer avTransportService]){
-//        NSString *newState = events[@"TransportState"];
-//        
-//        if([newState isEqualToString:@"STOPPED"]){
-//            //Do your stuff, play next song etc...
-//            NSLog(@"Event: 'STOPPED', Play next track of playlist.");
-////           [self Play:pos+1]; //Next
-//        }
-//    }
-//}
 
 @end
