@@ -18,4 +18,5 @@ Pod::Spec.new do |s|
   s.dependency 'AFNetworking', '~> 2.5.0'
   s.dependency 'CocoaHTTPServer', '~> 2.3'
   s.dependency 'Ono', '~> 1.2.0'
+  s.dependency 'CocoaLumberjack', '~> 2.0.0-rc2'
 end

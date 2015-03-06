@@ -23,6 +23,7 @@
 
 import Foundation
 import upnpx
+import CocoaLumberjack
 
 private let _UPnPManagerSharedInstance = UPnPManager_Swift()
 
@@ -38,6 +39,7 @@ private let _UPnPManagerSharedInstance = UPnPManager_Swift()
     let eventSubscriptionManager: UPnPEventSubscriptionManager
     
     init() {
+        DDLog.addLogger(DDTTYLogger.sharedInstance())        
         upnpRegistry = UPnPRegistry(ssdpDB: ssdpDB)
         eventSubscriptionManager = UPnPEventSubscriptionManager()
         
