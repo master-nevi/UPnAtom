@@ -33,7 +33,7 @@ import upnpx
         return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
     }
     
-    init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
+    required public init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
         if let uuid = returnIfContainsElements(ssdpObject.uuid) {
             self.uuid = uuid
         }

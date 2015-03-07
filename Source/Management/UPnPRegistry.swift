@@ -59,12 +59,21 @@ import AFNetworking
     lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     lazy private var _ssdpObjectCache = [SSDPDBDevice_ObjC]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     private let _upnpObjectDescriptionSessionManager = AFHTTPSessionManager()
+    private var _upnpClasses = [String: AbstractUPnP.Type]()
     
     init(ssdpDB: SSDPDB_ObjC) {
         _upnpObjectDescriptionSessionManager.requestSerializer = AFHTTPRequestSerializer()
         _upnpObjectDescriptionSessionManager.responseSerializer = AFHTTPResponseSerializer()
         
-        self.ssdpDB = ssdpDB
+        self.ssdpDB = ssdpDB        
+        
+        register(upnpClass: MediaRenderer1Device_Swift.self, forURN: "urn:schemas-upnp-org:device:MediaRenderer:1")
+        register(upnpClass: MediaServer1Device_Swift.self, forURN: "urn:schemas-upnp-org:device:MediaServer:1")
+        register(upnpClass: AVTransport1Service.self, forURN: "urn:schemas-upnp-org:service:AVTransport:1")
+        register(upnpClass: ConnectionManager1Service.self, forURN: "urn:schemas-upnp-org:service:ConnectionManager:1")
+        register(upnpClass: ContentDirectory1Service.self, forURN: "urn:schemas-upnp-org:service:ContentDirectory:1")
+        register(upnpClass: RenderingControl1Service.self, forURN: "urn:schemas-upnp-org:service:RenderingControl:1")
+        
         ssdpDB.addObserver(self)
     }
     
@@ -78,6 +87,10 @@ import AFNetworking
         })
     }
     
+    public func register(#upnpClass: AbstractUPnP.Type, forURN urn: String) {
+        _upnpClasses[urn] = upnpClass
+    }
+    
     func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
         var service: AbstractUPnPService?
         dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in
@@ -85,6 +98,30 @@ import AFNetworking
         })
         
         return service
+    }
+    
+    private func createUPnPObject(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) -> AbstractUPnP? {
+        let urn: String! = returnIfContainsElements(ssdpObject.urn)
+        if urn == nil {
+            return nil
+        }
+        
+        if let registeredClass = _upnpClasses[urn] {
+            DDLogInfo("creating registered class for urn: \(urn)")
+            return registeredClass(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+        }
+        else if urn.rangeOfString("urn:schemas-upnp-org:device") != nil {
+            DDLogInfo("creating AbstractUPnPDevice for urn: \(urn)")
+            return AbstractUPnPDevice(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+        }
+        else if urn.rangeOfString("urn:schemas-upnp-org:service") != nil {
+            DDLogInfo("creating AbstractUPnPService for urn: \(urn)")
+            return AbstractUPnPService(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+        }
+        else {
+            DDLogInfo("creating AbstractUPnP for urn: \(urn)")
+            return AbstractUPnP(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+        }
     }
 }
 
@@ -181,7 +218,7 @@ extension UPnPRegistry: SSDPDB_ObjC_Observer {
             return
         }
         else {
-            if let newObject = UPnPFactory.createUPnPObject(ssdpObject, upnpDescriptionXML: upnpDescriptionXML) {
+            if let newObject = createUPnPObject(ssdpObject, upnpDescriptionXML: upnpDescriptionXML) {
                 if let newObject = newObject as? T {
                     upnpObjects[usn] = newObject
                     

@@ -136,7 +136,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
         AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
         DDLogInfo(@"Added device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
-        DDLogVerbose(@"%@", upnpObject.description);
+        DDLogVerbose(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
     
     [self updateDataAndRefreshTableView];
@@ -146,7 +146,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
         AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
         DDLogInfo(@"Removed device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
-        DDLogVerbose(@"%@", upnpObject.description);
+        DDLogVerbose(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
     
     [self updateDataAndRefreshTableView];
@@ -156,7 +156,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
         DDLogInfo(@"Added service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
-        DDLogVerbose(@"%@", upnpObject.description);
+        DDLogVerbose(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
 }
 
@@ -164,7 +164,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
         DDLogInfo(@"Removed service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
-        DDLogVerbose(@"%@", upnpObject.description);
+        DDLogVerbose(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
 }
 
