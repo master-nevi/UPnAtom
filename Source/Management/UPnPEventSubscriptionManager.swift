@@ -101,7 +101,6 @@ class UPnPEventSubscriptionManager {
     private let _renewSubscriptionSessionManager = AFHTTPSessionManager()
     private let _unsubscribeSessionManager = AFHTTPSessionManager()
     private let _defaultSubscriptionTimeout: Int = 300
-    private var _backupSubscriptions = [Subscription]()
     private var _eventCallBackURL: NSURL? {
         let wifiInterface = "en0"
         if let address = getIFAddresses()[wifiInterface] {
@@ -177,12 +176,12 @@ class UPnPEventSubscriptionManager {
                 return
             }
             
-            DDLogInfo("successful subscription id: \(response.subscriptionID)  timeout: \(response.timeout)")
-            
             let now = NSDate()
             let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
             
             let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: eventURL.absoluteString!, manager: self)
+            
+            DDLogInfo("Successfully subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
             
             self.add(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
@@ -190,6 +189,7 @@ class UPnPEventSubscriptionManager {
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                DDLogError("Failed to subscribe to event URL: \(eventURL.absoluteString!)\nerror: \(error)")
                 if let completion = completion {
                     completion(result: .Failure(error))
                 }
@@ -208,12 +208,15 @@ class UPnPEventSubscriptionManager {
         let parameters = UPnPEventUnsubscribeRequestSerializer.Parameters(subscriptionID: subscription.subscriptionID)
         
         _unsubscribeSessionManager.UNSUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
+            DDLogInfo("Successfully unsubscribed: \(subscription)")
+            
             self.remove(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
                     completion(result: .Success)
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                DDLogError("Failed to unsubscribe: \(subscription)\nerror: \(error)")
                 self.remove(subscription: subscription, completion: { () -> Void in
                     if let completion = completion {
                         completion(result: .Failure(error))
@@ -232,21 +235,17 @@ class UPnPEventSubscriptionManager {
         if _httpServer.isRunning() {
             _httpServer.stop()
         }
-        
-        /// backup subscriptions and unsubscribe from all events
-        let subscriptions = self.subscriptions().values.array
-        _backupSubscriptions = subscriptions
-        
-        for subscription in subscriptions {
-            unsubscribe(subscription)
-        }
     }
     
     @objc private func applicationWillEnterForeground(notification: NSNotification){
-        /// resubscribe to all backed up subscriptions
-        let subscriptions = _backupSubscriptions
-        _backupSubscriptions.removeAll(keepCapacity: false)
+        let subscriptions = self.subscriptions().values.array
         
+        // unsubscribe to all subscriptions
+        for subscription in subscriptions {
+            unsubscribe(subscription)
+        }
+        
+        // resubscribe to all subscriptions        
         for subscription in subscriptions {
             resubscribe(subscription)
         }
@@ -325,6 +324,8 @@ class UPnPEventSubscriptionManager {
             
             subscription.update(response.subscriptionID, expiration: expiration)
             
+            DDLogInfo("Successfully renewed subscription with timeout: \(response.timeout/60) mins: \(subscription)")
+            
             // read just in case it was removed
             self.add(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
@@ -332,6 +333,7 @@ class UPnPEventSubscriptionManager {
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                DDLogError("Failed to renew subscription: \(subscription)\nerror: \(error)")
                 if let completion = completion {
                     completion(result: .Failure(error))
                 }
@@ -366,12 +368,15 @@ class UPnPEventSubscriptionManager {
             
             subscription.update(response.subscriptionID, expiration: expiration)
             
+            DDLogInfo("Successfully re-subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
+            
             self.add(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
                     completion(result: .Success(subscription))
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                DDLogError("Failed to re-subscribe: \(subscription)\nerror: \(error)")
                 if let completion = completion {
                     completion(result: .Failure(error))
                 }
@@ -391,6 +396,17 @@ extension UPnPEventSubscriptionManager.Subscription: Equatable { }
 
 internal func ==(lhs: UPnPEventSubscriptionManager.Subscription, rhs: UPnPEventSubscriptionManager.Subscription) -> Bool {
     return lhs.subscriptionID == rhs.subscriptionID
+}
+
+extension UPnPEventSubscriptionManager.Subscription: ExtendedPrintable {
+    var className: String { return "Subscription" }
+    override var description: String {
+        var properties = PropertyPrinter()
+        properties.add("subscriptionID", property: subscriptionID)
+        properties.add("expiration", property: expiration)
+        properties.add("eventURLString", property: eventURLString)
+        return properties.description
+    }
 }
 
 extension AFHTTPSessionManager {
@@ -428,7 +444,6 @@ extension AFHTTPSessionManager {
             }
             else {
                 if let success = success {
-                    /// TODO: check if dataTask can be referenced this way
                     success(task: dataTask, responseObject: responseObject)
                 }
             }
