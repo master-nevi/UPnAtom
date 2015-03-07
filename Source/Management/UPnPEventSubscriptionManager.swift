@@ -27,6 +27,7 @@ import CocoaHTTPServer
 
 protocol UPnPEventSubscriber: class {
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventXML: NSData)
+    func subscriptionDidFail(eventSubscriptionManager: UPnPEventSubscriptionManager)
 }
 
 class UPnPEventSubscriptionManager {
@@ -245,6 +246,13 @@ class UPnPEventSubscriptionManager {
         if _httpServer.isRunning() {
             _httpServer.stop()
         }
+        
+        subscriptions { [unowned self] (subscriptions: [String: Subscription]) -> Void in
+            // invalidate all timers before being backgrounded as the will be trashed upon foregrounding anyways
+            for (eventURL, subscription) in subscriptions {
+                subscription.invalidate()
+            }
+        }
     }
     
     @objc private func applicationWillEnterForeground(notification: NSNotification) {
@@ -254,8 +262,7 @@ class UPnPEventSubscriptionManager {
                 self.unsubscribe(subscription, completion: { (result) -> Void in
                     self.resubscribe(subscription)
                 })
-            }
-            
+            }            
         }
     }
     
@@ -386,6 +393,9 @@ class UPnPEventSubscriptionManager {
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 DDLogError("Failed to re-subscribe: \(subscription)\nerror: \(error)")
+                
+                subscription.subscriber?.subscriptionDidFail(self)
+                
                 if let completion = completion {
                     completion(result: .Failure(error))
                 }

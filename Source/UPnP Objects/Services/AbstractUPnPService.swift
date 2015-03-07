@@ -185,6 +185,10 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService.UPnPEventKey(): self.createEvent(eventXML)])
     }
     
+    func subscriptionDidFail(eventSubscriptionManager: UPnPEventSubscriptionManager) {
+        DDLogWarn("Event subscription did fail for service: \(self)")
+    }
+    
     /// overridable by service subclasses
     func createEvent(eventXML: NSData) -> UPnPEvent {
         return UPnPEvent(eventXML: eventXML, service: self)
