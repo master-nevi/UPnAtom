@@ -31,7 +31,6 @@
 		11553560D5614A515F1EBF4B /* MediaServer1ContainerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = EDEAA3DE2B27AA16B48CD379 /* MediaServer1ContainerObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		11A54E474D964EF95751E1E9 /* WANConnection1Device.h in Headers */ = {isa = PBXBuildFile; fileRef = B880656F39DD9A3A691237EE /* WANConnection1Device.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		11FABC22F076E3A0F1C24F35 /* SoapActionsRendering.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F48CE06F27B125A74317660 /* SoapActionsRendering.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		13BADDA7C9558FE3CAC27D78 /* MediaServerBrowseResultParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA7A28E7019978BD9D87AF2 /* MediaServerBrowseResultParser.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		14093306665204BC6AD6BDA5 /* BasicParserAsset.h in Headers */ = {isa = PBXBuildFile; fileRef = BAE03F686B51212970CB0F14 /* BasicParserAsset.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		162AEFA8DB57E769C34FCF93 /* UPnPEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 0721FA90DA41D17533374472 /* UPnPEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1646EB538C597381C131009D /* Pods-Ono-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF5D6D4534CCC21DA4825FF /* Pods-Ono-dummy.m */; };
@@ -246,7 +245,6 @@
 		A2E83C8479CB0C0026518D28 /* DigitalSecurityCamera1Device.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E0ADD8A39784E2D19932589 /* DigitalSecurityCamera1Device.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A2F776C7AD9037F8BD78A1D7 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ACBD7015A41D27AACCC71C3 /* ONOXMLDocument.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		A366189CB05D4F9F40ABF2F6 /* BasicDeviceParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F3135948631709ED44EBC582 /* BasicDeviceParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
-		A3A09CCF444D4DFBFACB68E9 /* SOAPResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B344F9848F2D8283635939 /* SOAPResponseParser.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		A4D1939E2C7CE57378189013 /* tools.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BE3EA0818B3A14E8364989F /* tools.h */; };
 		A5B43119E3B6F350E1E35BB4 /* SoapActionsLANHostConfigManagement1.h in Headers */ = {isa = PBXBuildFile; fileRef = 09E9898E910BC5A864D42AC9 /* SoapActionsLANHostConfigManagement1.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A9D35D6C70D9BC3BFF479AC9 /* ssdpmessage.h in Headers */ = {isa = PBXBuildFile; fileRef = B3DF5C06EA85A46588D21996 /* ssdpmessage.h */; };
@@ -755,7 +753,6 @@
 		B6BAED5E1BA9645A65C39B6A /* ssdpnotifyalive.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ssdpnotifyalive.h; path = src/ssdp/ssdpnotifyalive.h; sourceTree = "<group>"; };
 		B6FFFAB06CFF698591BA6A11 /* ConnectionManager1Service.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConnectionManager1Service.swift; sourceTree = "<group>"; };
 		B7B33A2B64851606AE4207AE /* Pods-CocoaAsyncSocket-Private.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CocoaAsyncSocket-Private.xcconfig"; sourceTree = "<group>"; };
-		B7B344F9848F2D8283635939 /* SOAPResponseParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SOAPResponseParser.swift; sourceTree = "<group>"; };
 		B880656F39DD9A3A691237EE /* WANConnection1Device.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = WANConnection1Device.h; path = src/api/WANConnection1Device.h; sourceTree = "<group>"; };
 		B8B292DE1709D321FB843DC2 /* HTTPDynamicFileResponse.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = HTTPDynamicFileResponse.h; path = Core/Responses/HTTPDynamicFileResponse.h; sourceTree = "<group>"; };
 		B8FD74D940E860CE548BB629 /* SoapAction.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SoapAction.m; path = src/upnp/SoapAction.m; sourceTree = "<group>"; };
@@ -847,7 +844,6 @@
 		EB597F65E69FFC4DD1B74B04 /* WANConnection2Device.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = WANConnection2Device.m; path = src/upnp/WANConnection2Device.m; sourceTree = "<group>"; };
 		EBB91550312183DB180B8CB3 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EBC9D9B54D2AC0A3BFCBE7D7 /* Pods-CocoaAsyncSocket-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-CocoaAsyncSocket-umbrella.h"; sourceTree = "<group>"; };
-		ECA7A28E7019978BD9D87AF2 /* MediaServerBrowseResultParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MediaServerBrowseResultParser.swift; sourceTree = "<group>"; };
 		ED69E3CB8870C36483809475 /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDAsyncUdpSocket.m; path = GCD/GCDAsyncUdpSocket.m; sourceTree = "<group>"; };
 		EDEAA3DE2B27AA16B48CD379 /* MediaServer1ContainerObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MediaServer1ContainerObject.m; path = src/upnp/MediaServer1ContainerObject.m; sourceTree = "<group>"; };
 		EED4A06F9111DC6D4D1A58C3 /* InternetGateway2Device.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = InternetGateway2Device.m; path = src/upnp/InternetGateway2Device.m; sourceTree = "<group>"; };
@@ -1573,9 +1569,7 @@
 			children = (
 				85FEADFC25E666A68F3865AD /* AbstractDOMXMLParser.swift */,
 				7FC869E071FDE4014A970E68 /* AbstractSAXXMLParser.swift */,
-				ECA7A28E7019978BD9D87AF2 /* MediaServerBrowseResultParser.swift */,
 				6DEA942077968ECC38E6D95A /* SAXXMLParserElementObservation.swift */,
-				B7B344F9848F2D8283635939 /* SOAPResponseParser.swift */,
 				6771286A001EF65376742D21 /* UPnPDeviceParser.swift */,
 				11F24C82655B890DE8D153F5 /* UPnPServiceParser.swift */,
 			);
@@ -2160,13 +2154,11 @@
 				3D043CDD63A518481FC5C5E1 /* GlobalLib.swift in Sources */,
 				CD1570AEF1AF1FA5E4D4A476 /* MediaRenderer1Device.swift in Sources */,
 				444D72F4A3BEDC99C28D2BAF /* MediaServer1Device.swift in Sources */,
-				13BADDA7C9558FE3CAC27D78 /* MediaServerBrowseResultParser.swift in Sources */,
 				E90424A91ABAA4D945139152 /* NetworkTools.m in Sources */,
 				513C912E6CF579A483AD3434 /* Pods-UPnAtom-dummy.m in Sources */,
 				8BFC9D71918C19D3B2DAED40 /* PropertyPrinter.swift in Sources */,
 				2B7C30F18F8EE2593CB95B2D /* RenderingControl1Service.swift in Sources */,
 				078FCA351AF9E7D5A1EFEC41 /* SAXXMLParserElementObservation.swift in Sources */,
-				A3A09CCF444D4DFBFACB68E9 /* SOAPResponseParser.swift in Sources */,
 				BF9FA1777412DEDE8756044B /* SOAPSerialization.swift in Sources */,
 				EEEDAF2392E26658544BBAF8 /* SOAPSessionManager.swift in Sources */,
 				323BB209318CD7EDCBE453B9 /* UPnPDeviceParser.swift in Sources */,

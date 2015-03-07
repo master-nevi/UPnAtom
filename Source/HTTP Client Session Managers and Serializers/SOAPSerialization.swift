@@ -26,6 +26,7 @@
 
 import Foundation
 import AFNetworking
+import Ono
 
 class SOAPRequestSerializer: AFHTTPRequestSerializer {
     class Parameters {
@@ -110,5 +111,33 @@ class SOAPResponseSerializer: AFXMLParserResponseSerializer {
         }
         
         return responseObject
+    }
+}
+
+class SOAPResponseParser: AbstractDOMXMLParser {
+    private var _responseParameters = [String: String]()
+    
+    override func parse(#document: ONOXMLDocument) -> EmptyResult {
+        var result: EmptyResult = .Success
+        document.enumerateElementsWithXPath("/s:Envelope/s:Body/*/*", usingBlock: { (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+            if element.tag != nil && element.stringValue() != nil && countElements(element.tag) > 0 && countElements(element.stringValue()) > 0 {
+                self._responseParameters[element.tag] = element.stringValue()
+            }
+            
+            result = .Success
+        })
+        
+        DDLogVerbose("SOAP response values: \(prettyPrint(_responseParameters))")
+        
+        return result
+    }
+    
+    func parse(#soapResponseData: NSData) -> Result<[String: String]> {
+        switch super.parse(data: soapResponseData) {
+        case .Success:
+            return .Success(_responseParameters)
+        case .Failure(let error):
+            return .Failure(error)
+        }
     }
 }

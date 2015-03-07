@@ -23,6 +23,7 @@
 
 import Foundation
 import upnpx
+import Ono
 
 public class ContentDirectory1Service: AbstractUPnPService {    
     public func getSortCapabilities(success: (sortCapabilities: String?) -> Void, failure:(error: NSError?) -> Void) {
@@ -53,7 +54,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                 
                 var result: [ContentDirectory1Object]?
                 if let resultString = responseObject?["Result"] {
-                    result = MediaServerBrowseResultParser().parse(browseResultData: resultString.dataUsingEncoding(NSUTF8StringEncoding)!).value
+                    result = ContentDirectoryBrowseResultParser().parse(browseResultData: resultString.dataUsingEncoding(NSUTF8StringEncoding)!).value
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -79,5 +80,41 @@ extension ContentDirectory1Service: ExtendedPrintable {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
         return properties.description
+    }
+}
+
+class ContentDirectoryBrowseResultParser: AbstractDOMXMLParser {
+    private var _contentDirectoryObjects = [ContentDirectory1Object]()
+    
+    override func parse(#document: ONOXMLDocument) -> EmptyResult {
+        let result: EmptyResult = .Success
+        document.definePrefix("didllite", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/")
+        document.enumerateElementsWithXPath("/didllite:DIDL-Lite/*", usingBlock: { [unowned self] (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+            switch element.firstChildWithTag("class").stringValue() {
+            case .Some(let rawType) where rawType.rangeOfString("object.container") != nil: // some servers use object.container and some use object.container.storageFolder
+                if let contentDirectoryObject = ContentDirectory1Container(xmlElement: element) {
+                    self._contentDirectoryObjects.append(contentDirectoryObject)
+                }
+            case .Some(let rawType) where rawType == "object.item.videoItem":
+                if let contentDirectoryObject = ContentDirectory1VideoItem(xmlElement: element) {
+                    self._contentDirectoryObjects.append(contentDirectoryObject)
+                }
+            default:
+                if let contentDirectoryObject = ContentDirectory1Object(xmlElement: element) {
+                    self._contentDirectoryObjects.append(contentDirectoryObject)
+                }
+            }
+        })
+        
+        return result
+    }
+    
+    func parse(#browseResultData: NSData) -> Result<[ContentDirectory1Object]> {
+        switch super.parse(data: browseResultData) {
+        case .Success:
+            return .Success(_contentDirectoryObjects)
+        case .Failure(let error):
+            return .Failure(error)
+        }
     }
 }
