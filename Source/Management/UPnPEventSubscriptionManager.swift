@@ -115,6 +115,15 @@ class UPnPEventSubscriptionManager {
         
         return nil
     }
+    /// Calling this on the main thread is not recommended as it will block until completed, blocking the main thread is a no-no
+    private var subscriptions: [String: Subscription] {
+        var subscriptions: [String: Subscription]!
+        dispatch_sync(_concurrentSubscriptionQueue, { () -> Void in
+            // Dictionaries are structures and therefore copied when assigned to a new constant or variable
+            subscriptions = self._subscriptions
+        })
+        return subscriptions
+    }
     
     init() {
         _httpServer.setPort(UInt16(_httpServerPort))
@@ -139,7 +148,8 @@ class UPnPEventSubscriptionManager {
             object: nil)
     }
     
-    func subscribe(subscriber: UPnPEventSubscriber, eventURL: NSURL, completion: ((result: Result<Any>) -> Void)? = nil) {
+    /// Subscribers should hold on to a weak reference of the subscription object returned. It's ok to call subscribe for a subscription that already exists, the subscription will simply be looked up and returned.
+    func subscribe(subscriber: UPnPEventSubscriber, eventURL: NSURL, completion: ((result: Result<AnyObject>) -> Void)? = nil) {
         let eventURLString: String! = eventURL.absoluteString
         if eventURLString == nil {
             if let completion = completion {
@@ -149,7 +159,7 @@ class UPnPEventSubscriptionManager {
         }
         
         // check if subscription for event URL already exists
-        if let subscription = self.subscriptions()[eventURLString] {
+        if let subscription = self.subscriptions[eventURLString] {
             if let completion = completion {
                 completion(result: .Success(subscription))
             }
@@ -226,28 +236,26 @@ class UPnPEventSubscriptionManager {
     }
     
     func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
-        if let subscription = (subscriptions().values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!).first as? Subscription {
+        if let subscription = (subscriptions.values.array as NSArray).filteredArrayUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!).first as? Subscription {
             subscription.subscriber?.handleEvent(self, eventXML: eventData)
         }
     }
     
-    @objc private func applicationDidEnterBackground(notification: NSNotification){
+    @objc private func applicationDidEnterBackground(notification: NSNotification) {
         if _httpServer.isRunning() {
             _httpServer.stop()
         }
     }
     
-    @objc private func applicationWillEnterForeground(notification: NSNotification){
-        let subscriptions = self.subscriptions().values.array
-        
-        // unsubscribe to all subscriptions
-        for subscription in subscriptions {
-            unsubscribe(subscription)
-        }
-        
-        // resubscribe to all subscriptions        
-        for subscription in subscriptions {
-            resubscribe(subscription)
+    @objc private func applicationWillEnterForeground(notification: NSNotification) {
+        subscriptions { [unowned self] (subscriptions: [String: Subscription]) -> Void in
+            // unsubscribe and re-subscribe for all event subscriptions
+            for (eventURL, subscription) in subscriptions {
+                self.unsubscribe(subscription, completion: { (result) -> Void in
+                    self.resubscribe(subscription)
+                })
+            }
+            
         }
     }
     
@@ -277,13 +285,14 @@ class UPnPEventSubscriptionManager {
         })
     }
     
-    private func subscriptions() -> [String: Subscription] {
-        var subscriptions: [String: Subscription]!
-        dispatch_sync(_concurrentSubscriptionQueue, { () -> Void in
-            // Dictionaries are structures and therefore copied when assigned to a new constant or variable
-            subscriptions = self._subscriptions
+    /// Safe to call from main thread
+    private func subscriptions(closure: (subscriptions: [String: Subscription]) -> Void) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+            let subscriptions = self.subscriptions
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                closure(subscriptions: subscriptions)
+            })
         })
-        return subscriptions
     }
     
     private func startStopHTTPServerIfNeeded(subscriptions: [String: Subscription]) {
@@ -300,7 +309,7 @@ class UPnPEventSubscriptionManager {
         }
     }
     
-    private func renewSubscription(subscription: Subscription, completion: ((result: Result<Any>) -> Void)? = nil) {
+    private func renewSubscription(subscription: Subscription, completion: ((result: Result<AnyObject>) -> Void)? = nil) {
         if subscription.subscriber == nil {
             if let completion = completion {
                 completion(result: .Failure(createError("Subscriber doesn't exist anymore")))
@@ -340,7 +349,7 @@ class UPnPEventSubscriptionManager {
         })
     }
     
-    private func resubscribe(subscription: Subscription, completion: ((result: Result<Any>) -> Void)? = nil) {
+    private func resubscribe(subscription: Subscription, completion: ((result: Result<AnyObject>) -> Void)? = nil) {
         // remove, just in case resubscription fails
         remove(subscription: subscription)
         

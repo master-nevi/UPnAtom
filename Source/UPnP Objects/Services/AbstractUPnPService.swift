@@ -58,7 +58,7 @@ public class AbstractUPnPService: AbstractUPnP {
     // MARK: UPnP Event handling related
     lazy private var _eventObservers = [EventObserver]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     private var _concurrentEventObserverQueue: dispatch_queue_t!
-    private var _eventSubscription: Any?
+    private weak var _eventSubscription: AnyObject?
     
     override init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
         super.init(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
@@ -143,10 +143,10 @@ extension AbstractUPnPService: UPnPEventSubscriber {
             
             if self._eventObservers.count >= 1 {
                 // subscribe
-                UPnPManager_Swift.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<Any>) -> Void in
+                UPnPManager_Swift.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
                     switch subscription {
                     case .Success(let value):
-                        self._eventSubscription = value
+                        self._eventSubscription = value()
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown subscribe error")
                         DDLogError("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
