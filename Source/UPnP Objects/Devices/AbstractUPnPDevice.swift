@@ -63,8 +63,8 @@ public class AbstractUPnPDevice: AbstractUPnP {
     // private
     private let _baseURLFromXML: NSURL?
     
-    required public init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
-        super.init(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+    required public init?(uuid: String, urn: String, usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
+        super.init(uuid: uuid, urn: urn, usn: usn, xmlLocation: xmlLocation, upnpDescriptionXML: upnpDescriptionXML)
         
         let deviceParser = UPnPDeviceParser(upnpDevice: self, upnpDescriptionXML: upnpDescriptionXML)
         let parsedDevice = deviceParser.parse().value

@@ -101,27 +101,37 @@ import AFNetworking
     }
     
     private func createUPnPObject(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) -> AbstractUPnP? {
+        let uuid: String! = returnIfContainsElements(ssdpObject.uuid)
         let urn: String! = returnIfContainsElements(ssdpObject.urn)
-        if urn == nil {
+        let usnRawValue: String! = returnIfContainsElements(ssdpObject.usn)
+        let xmlLocationString: String! = returnIfContainsElements(ssdpObject.location)
+
+        if uuid == nil || urn == nil || usnRawValue == nil || xmlLocationString == nil {
             return nil
         }
         
+        var upnpClass: AbstractUPnP.Type!
         if let registeredClass = _upnpClasses[urn] {
-            DDLogInfo("creating registered class for urn: \(urn)")
-            return registeredClass(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+            DDLogVerbose("creating registered class for urn: \(urn)")
+            upnpClass = registeredClass
         }
         else if urn.rangeOfString("urn:schemas-upnp-org:device") != nil {
-            DDLogInfo("creating AbstractUPnPDevice for urn: \(urn)")
-            return AbstractUPnPDevice(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+            DDLogVerbose("creating AbstractUPnPDevice for urn: \(urn)")
+            upnpClass = AbstractUPnPDevice.self
         }
         else if urn.rangeOfString("urn:schemas-upnp-org:service") != nil {
-            DDLogInfo("creating AbstractUPnPService for urn: \(urn)")
-            return AbstractUPnPService(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+            DDLogVerbose("creating AbstractUPnPService for urn: \(urn)")
+            upnpClass = AbstractUPnPService.self
         }
         else {
-            DDLogInfo("creating AbstractUPnP for urn: \(urn)")
-            return AbstractUPnP(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+            DDLogVerbose("creating AbstractUPnP for urn: \(urn)")
+            upnpClass = AbstractUPnP.self
         }
+        
+        let usn = UniqueServiceName(uuid: uuid, urn: urn, customRawValue: usnRawValue)
+        let xmlLocation = NSURL(string: xmlLocationString)!
+        
+        return upnpClass(uuid: uuid, urn: urn, usn: usn, xmlLocation: xmlLocation, upnpDescriptionXML: upnpDescriptionXML)
     }
 }
 

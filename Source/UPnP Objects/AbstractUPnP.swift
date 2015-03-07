@@ -25,34 +25,19 @@ import Foundation
 import upnpx
 
 @objc public class AbstractUPnP {
-    public let uuid: String!
-    public let urn: String!
-    public let usn: UniqueServiceName!
-    public let xmlLocation: NSURL!
+    public let uuid: String
+    public let urn: String
+    public let usn: UniqueServiceName
+    public let xmlLocation: NSURL
     public var baseURL: NSURL! {
         return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
     }
     
-    required public init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
-        if let uuid = returnIfContainsElements(ssdpObject.uuid) {
-            self.uuid = uuid
-        }
-        else { return nil }
-        
-        if let urn = returnIfContainsElements(ssdpObject.urn) {
-            self.urn = urn
-        }
-        else { return nil }
-        
-        if let usn = returnIfContainsElements(ssdpObject.usn) {
-            self.usn = UniqueServiceName(uuid: uuid, urn: urn, customRawValue: usn)
-        }
-        else { return nil }
-        
-        if let xmlLocation = returnIfContainsElements(ssdpObject.location) {
-            self.xmlLocation = NSURL(string: xmlLocation)
-        }
-        else { return nil }
+    required public init?(uuid: String, urn: String, usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
+        self.uuid = uuid
+        self.urn = urn
+        self.usn = usn
+        self.xmlLocation = xmlLocation
     }
 }
 

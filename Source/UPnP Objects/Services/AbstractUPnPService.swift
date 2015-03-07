@@ -60,8 +60,8 @@ public class AbstractUPnPService: AbstractUPnP {
     private var _concurrentEventObserverQueue: dispatch_queue_t!
     private weak var _eventSubscription: AnyObject?
     
-    required public init?(ssdpObject: SSDPDBDevice_ObjC, upnpDescriptionXML: NSData) {
-        super.init(ssdpObject: ssdpObject, upnpDescriptionXML: upnpDescriptionXML)
+    required public init?(uuid: String, urn: String, usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
+        super.init(uuid: uuid, urn: urn, usn: usn, xmlLocation: xmlLocation, upnpDescriptionXML: upnpDescriptionXML)
         
         sessionManager🔰 = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
         
