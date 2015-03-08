@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.platform = :ios
   s.ios.deployment_target = '8.0'
+  s.dependency 'CocoaSSDP', '~> 0.1.0'
   s.dependency 'upnpx', '~> 1.3.1'
   s.dependency 'AFNetworking', '~> 2.5.0'
   s.dependency 'CocoaHTTPServer', '~> 2.3'

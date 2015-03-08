@@ -25,6 +25,9 @@
     "ios": "8.0"
   },
   "dependencies": {
+    "CocoaSSDP": [
+      "~> 0.1.0"
+    ],
     "upnpx": [
       "~> 1.3.1"
     ],
