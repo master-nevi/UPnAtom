@@ -22,7 +22,6 @@
 //  SOFTWARE.
 
 import Foundation
-import upnpx
 
 public class AbstractUPnPService: AbstractUPnP {
     // public

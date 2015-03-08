@@ -22,7 +22,6 @@
 //  SOFTWARE.
 
 import Foundation
-import upnpx
 
 public class AbstractUPnPDevice: AbstractUPnP {
     @objc public class IconDescription: Printable {

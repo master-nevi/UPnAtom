@@ -22,7 +22,6 @@
 //  SOFTWARE.
 
 import Foundation
-import upnpx
 
 public class AVTransport1Service: AbstractUPnPService {
     public func setAVTransportURI(#instanceID: String, currentURI: String, currentURIMetadata: String, success: () -> Void, failure:(error: NSError?) -> Void) {

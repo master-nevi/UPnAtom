@@ -22,7 +22,6 @@
 //  SOFTWARE.
 
 import Foundation
-import upnpx
 
 @objc public class AbstractUPnP {
     public let uuid: String

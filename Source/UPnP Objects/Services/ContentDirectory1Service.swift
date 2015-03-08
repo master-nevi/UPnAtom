@@ -22,7 +22,6 @@
 //  SOFTWARE.
 
 import Foundation
-import upnpx
 import Ono
 
 public class ContentDirectory1Service: AbstractUPnPService {    
