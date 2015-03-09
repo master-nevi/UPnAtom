@@ -1,6 +1,0 @@
-framework module CocoaLumberjack {
-  umbrella header "Pods-CocoaLumberjack-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -1,8 +1,0 @@
-inhibit_all_warnings!
-use_frameworks!
-source 'git@github.com:master-nevi/MNPrivatePods.git'
-source 'https://github.com/CocoaPods/Specs.git'
-
-xcodeproj 'ControlPointDemo'
-
-pod 'UPnAtom', :path => '../..'
