@@ -22,7 +22,6 @@
 //  SOFTWARE.
 
 #import "PlayBack.h"
-#import "NSString+UPnPExtentions.h"
 #import <UPnAtom/UPnAtom-Swift.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
 

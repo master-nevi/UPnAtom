@@ -41,8 +41,6 @@ PODS:
     - CocoaLumberjack (~> 2.0.0-rc2)
     - CocoaSSDP (~> 0.1.0)
     - Ono (~> 1.2.0)
-    - upnpx (~> 1.3.1)
-  - upnpx (1.3.1)
 
 DEPENDENCIES:
   - UPnAtom (from `../..`)
@@ -58,7 +56,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 6027cd9a0665203a7df456c526e137f02cd547e1
   CocoaSSDP: 2ad6688b1475da6860651c2e0b43a102e8cd4b46
   Ono: 2c9f6c8c50af1b40e988ff85a3f200574ee445cd
-  UPnAtom: fc0338b1edf0030d525b7c7f7a30a04b16570328
-  upnpx: 258c2dc821ea224bfed3f983fbec06c636465f0f
+  UPnAtom: f62d75b0da2249b578398aae6dcd1df7ec634a8e
 
 COCOAPODS: 0.36.0.rc.1

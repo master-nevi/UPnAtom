@@ -103,9 +103,3 @@
 // Please contact the author.
 // Version: 0.0.1.beta.1.
 
-// upnpx
-#define COCOAPODS_POD_AVAILABLE_upnpx
-#define COCOAPODS_VERSION_MAJOR_upnpx 1
-#define COCOAPODS_VERSION_MINOR_upnpx 3
-#define COCOAPODS_VERSION_PATCH_upnpx 1
-

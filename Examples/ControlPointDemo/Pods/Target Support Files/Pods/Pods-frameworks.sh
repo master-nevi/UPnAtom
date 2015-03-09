@@ -55,7 +55,6 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'CocoaSSDP.framework'
   install_framework 'Ono.framework'
   install_framework 'UPnAtom.framework'
-  install_framework 'upnpx.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'AFNetworking.framework'
@@ -65,5 +64,4 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'CocoaSSDP.framework'
   install_framework 'Ono.framework'
   install_framework 'UPnAtom.framework'
-  install_framework 'upnpx.framework'
 fi
