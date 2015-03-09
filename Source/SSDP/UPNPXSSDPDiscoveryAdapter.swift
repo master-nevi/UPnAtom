@@ -26,15 +26,20 @@ import upnpx
 
 class UPNPXSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
     private let _ssdpDB = SSDPDB_ObjC()
-    private let _serialSSDPObjectQueue = dispatch_queue_create("com.upnatom.upnp-ssdp-discovery-adapter.ssdp-object-queue", DISPATCH_QUEUE_SERIAL)
+    private let _serialSSDPObjectQueue = dispatch_queue_create("com.upnatom.upnpx-ssdp-discovery-adapter.ssdp-object-queue", DISPATCH_QUEUE_SERIAL)
+    private var _discoveryStarted = false
     
     required init() {
         super.init()
         _ssdpDB.addObserver(self)
-        _ssdpDB.startSSDP()
     }
     
     override func start() {
+        if !_discoveryStarted {
+            _ssdpDB.startSSDP()
+            _discoveryStarted = true
+        }
+        
         _ssdpDB.searchSSDP()
         _ssdpDB.searchForMediaServer()
         _ssdpDB.searchForMediaRenderer()
@@ -43,13 +48,12 @@ class UPNPXSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
     
     override func stop() {
         _ssdpDB.stopSSDP()
+        _discoveryStarted = false
     }
 }
 
 extension UPNPXSSDPDiscoveryAdapter: SSDPDB_ObjC_Observer {
-    func SSDPDBWillUpdate(sender: SSDPDB_ObjC!) {
-        
-    }
+    func SSDPDBWillUpdate(sender: SSDPDB_ObjC!) { }
     
     func SSDPDBUpdated(sender: SSDPDB_ObjC!) {
         let ssdpObjectsUnadapted = sender.SSDPObjCDevices.copy() as [SSDPDBDevice_ObjC]

@@ -31,7 +31,6 @@ enum SSDPNotificationType {
     case Unknown
     
     init(notificationType: String) {
-        println("Notification type: \(notificationType)")
         if notificationType == "upnp:rootdevice" {
             self = .RootDevice
         }
@@ -44,8 +43,9 @@ enum SSDPNotificationType {
         else if notificationType.rangeOfString(":service:") != nil {
             self = .Service
         }
-        
-        self = .Unknown
+        else {
+            self = .Unknown
+        }
     }
 }
 
@@ -55,6 +55,15 @@ struct SSDPObject {
     let usn: String
     let xmlLocation: NSURL
     let notificationType: SSDPNotificationType
+    
+    static func uuid(usn: String) -> String? {
+        return usn.componentsSeparatedByString("::").first
+    }
+    
+    static func urn(usn: String) -> String? {
+        let usnComponents = usn.componentsSeparatedByString("::")
+        return (usnComponents.count >= 2 && usnComponents[1].rangeOfString("urn:") != nil) ? usnComponents[1] : nil
+    }
 }
 
 extension SSDPObject: Equatable { }

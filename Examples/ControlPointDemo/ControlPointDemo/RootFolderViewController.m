@@ -108,6 +108,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     if([device isMediaServer1Device]){
         MediaServer1Device_Swift *server = (MediaServer1Device_Swift *)device;
         if (![server contentDirectoryService]) {
+            DDLogInfo(@"%@ - has no content directory service", device.friendlyName);
             return;
         }
         
@@ -119,6 +120,12 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
         
         [[PlayBack sharedInstance] setServer:device];
     } else if([device isMediaRenderer1Device]){
+        MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)device;
+        if (![aRenderer avTransportService]) {
+            DDLogInfo(@"%@ - has no AV transport service", device.friendlyName);
+            return;
+        }
+        
         [[self toolbarLabel] setText:[device friendlyName]];
         [[PlayBack sharedInstance] setRenderer:device];
     }

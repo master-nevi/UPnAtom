@@ -38,7 +38,8 @@ private let _UPnPManagerSharedInstance = UPnPManager_Swift()
     
     init() {
         let adapterClass = UPnPManager_Swift.ssdpDiscoveryAdapterClass()
-        ssdpDiscoveryAdapter = adapterClass()
+        let adapter = adapterClass()
+        ssdpDiscoveryAdapter = adapter
         upnpRegistry = UPnPRegistry(ssdpDiscoveryAdapter: ssdpDiscoveryAdapter)
         eventSubscriptionManager = UPnPEventSubscriptionManager()
     }
@@ -61,6 +62,6 @@ private let _UPnPManagerSharedInstance = UPnPManager_Swift()
     
     /// Override to use a different SSDP adapter if another SSDP system is preferred over CocoaSSDP
     class func ssdpDiscoveryAdapterClass() -> AbstractSSDPDiscoveryAdapter.Type {
-        return UPNPXSSDPDiscoveryAdapter.self
+        return CocoaSSDPDiscoveryAdapter.self
     }
 }
