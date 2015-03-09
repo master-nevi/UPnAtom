@@ -23,11 +23,11 @@
 
 import Foundation
 
-private let _UPnPManagerSharedInstance = UPnPManager_Swift()
+private let _UPnPManagerSharedInstance = UPnPManager()
 
-@objc public class UPnPManager_Swift {
+@objc public class UPnPManager {
     // public
-    public class var sharedInstance: UPnPManager_Swift {
+    public class var sharedInstance: UPnPManager {
         return _UPnPManagerSharedInstance
     }
     public let upnpRegistry: UPnPRegistry
@@ -37,7 +37,7 @@ private let _UPnPManagerSharedInstance = UPnPManager_Swift()
     let eventSubscriptionManager: UPnPEventSubscriptionManager
     
     init() {
-        let adapterClass = UPnPManager_Swift.ssdpDiscoveryAdapterClass()
+        let adapterClass = UPnPManager.ssdpDiscoveryAdapterClass()
         let adapter = adapterClass()
         ssdpDiscoveryAdapter = adapter
         upnpRegistry = UPnPRegistry(ssdpDiscoveryAdapter: ssdpDiscoveryAdapter)

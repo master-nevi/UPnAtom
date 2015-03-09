@@ -45,7 +45,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 - (void)setRenderer:(AbstractUPnPDevice *)renderer {
     _renderer = renderer;
     
-    MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)self.renderer;
+    MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)self.renderer;
     [[aRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
         if ([event.service isAVTransport1Service] && [event isAVTransport1Event]) {
             AVTransport1Event *avTransportEvent = (AVTransport1Event *)event;
@@ -135,7 +135,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
         
 //        NSDate *start = [NSDate date];
         
-        MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)self.renderer;
+        MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)self.renderer;
         [[aRenderer avTransportService] setAVTransportURIWithInstanceID:iid currentURI:uri currentURIMetadata:@"" success:^{
             DDLogInfo(@"URI Set succeeded!");
             

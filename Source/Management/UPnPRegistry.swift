@@ -64,8 +64,8 @@ import AFNetworking
         
         _ssdpDiscoveryAdapter = ssdpDiscoveryAdapter
         
-        register(upnpClass: MediaRenderer1Device_Swift.self, forURN: "urn:schemas-upnp-org:device:MediaRenderer:1")
-        register(upnpClass: MediaServer1Device_Swift.self, forURN: "urn:schemas-upnp-org:device:MediaServer:1")
+        register(upnpClass: MediaRenderer1Device.self, forURN: "urn:schemas-upnp-org:device:MediaRenderer:1")
+        register(upnpClass: MediaServer1Device.self, forURN: "urn:schemas-upnp-org:device:MediaServer:1")
         register(upnpClass: AVTransport1Service.self, forURN: "urn:schemas-upnp-org:service:AVTransport:1")
         register(upnpClass: ConnectionManager1Service.self, forURN: "urn:schemas-upnp-org:service:ConnectionManager:1")
         register(upnpClass: ContentDirectory1Service.self, forURN: "urn:schemas-upnp-org:service:ContentDirectory:1")

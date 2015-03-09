@@ -29,7 +29,7 @@ import CocoaAsyncSocket // required by the init method and therefore needed for 
     /// NOTE: Instances of HTTPConnection are recycled, make sure to reset property values at the end of every request i.e. HTTPConnection.httpResponseForMethod()
     
     override func supportsMethod(method: String!, atPath path: String!) -> Bool {
-        return method.lowercaseString == "notify" && path == UPnPManager_Swift.sharedInstance.eventSubscriptionManager.eventCallBackPath
+        return method.lowercaseString == "notify" && path == UPnPManager.sharedInstance.eventSubscriptionManager.eventCallBackPath
     }
     
     override func expectsRequestBodyFromMethod(method: String!, atPath path: String!) -> Bool {
@@ -37,14 +37,14 @@ import CocoaAsyncSocket // required by the init method and therefore needed for 
     }
     
     override func httpResponseForMethod(method: String!, URI path: String!) -> NSObject! {
-        if method.lowercaseString == "notify" && path == UPnPManager_Swift.sharedInstance.eventSubscriptionManager.eventCallBackPath {
+        if method.lowercaseString == "notify" && path == UPnPManager.sharedInstance.eventSubscriptionManager.eventCallBackPath {
             let request = _request()
             
             DDLogInfo("NOTIFY request: All headers: \(request.allHeaderFields())")
             DDLogVerbose("NOTIFY request: Final body with size: \(request.body().length)\nSTART\n\(NSString(data: request.body(), encoding: NSUTF8StringEncoding))\nEND")
             
             // TODO: this should be done via a delegate protocol however CocoaHTTPServer doesn't make this easy to do in Swift
-            UPnPManager_Swift.sharedInstance.eventSubscriptionManager.handleIncomingEvent(subscriptionID: request.headerField("SID"), eventData: request.body())
+            UPnPManager.sharedInstance.eventSubscriptionManager.handleIncomingEvent(subscriptionID: request.headerField("SID"), eventData: request.body())
             
             return HTTPDataResponse(data: nil)
         }

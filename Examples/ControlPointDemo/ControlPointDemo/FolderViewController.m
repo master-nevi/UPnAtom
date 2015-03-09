@@ -34,7 +34,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 
 @implementation FolderViewController {
     NSString *_rootId;
-    MediaServer1Device_Swift *_device;
+    MediaServer1Device *_device;
     NSArray *_playlist;
 }
 
@@ -75,7 +75,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     self.navigationController.toolbarHidden = NO;
 }
 
-- (void)configureWithDevice:(MediaServer1Device_Swift *)device header:(NSString *)header rootId:(NSString *)rootId{
+- (void)configureWithDevice:(MediaServer1Device *)device header:(NSString *)header rootId:(NSString *)rootId{
     _device = device;
     _rootId = rootId;
     self.title = header;

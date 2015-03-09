@@ -42,7 +42,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     [super viewDidLoad];
     
     //Search for UPnP Devices
-    [[UPnPManager_Swift sharedInstance] startSSDPDiscovery];
+    [[UPnPManager sharedInstance] startSSDPDiscovery];
     
     self.title = @"Control Point Demo";
     
@@ -71,7 +71,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 #pragma mark - IBActions
 
 - (IBAction)ssdpSearchButtonTapped:(id)sender {
-    [[UPnPManager_Swift sharedInstance] restartSSDPDiscovery];
+    [[UPnPManager sharedInstance] restartSSDPDiscovery];
 }
 
 #pragma mark - UITableViewDataSource methods
@@ -106,7 +106,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     AbstractUPnPDevice *device = _devices[indexPath.row];
     if([device isMediaServer1Device]){
-        MediaServer1Device_Swift *server = (MediaServer1Device_Swift *)device;
+        MediaServer1Device *server = (MediaServer1Device *)device;
         if (![server contentDirectoryService]) {
             DDLogInfo(@"%@ - has no content directory service", device.friendlyName);
             return;
@@ -120,7 +120,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
         
         [[PlayBack sharedInstance] setServer:device];
     } else if([device isMediaRenderer1Device]){
-        MediaRenderer1Device_Swift *aRenderer = (MediaRenderer1Device_Swift *)device;
+        MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)device;
         if (![aRenderer avTransportService]) {
             DDLogInfo(@"%@ - has no AV transport service", device.friendlyName);
             return;
@@ -172,7 +172,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 #pragma mark - Internal lib
 
 - (void)updateDataAndRefreshTableView {
-    UPnPRegistry *registry = [[UPnPManager_Swift sharedInstance] upnpRegistry];
+    UPnPRegistry *registry = [[UPnPManager sharedInstance] upnpRegistry];
     [registry rootDevices:^(NSArray *rootDevices) {
         _devices = rootDevices;
         

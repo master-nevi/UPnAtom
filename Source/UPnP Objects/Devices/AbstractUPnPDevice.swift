@@ -102,7 +102,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
     
     func serviceFor(#urn: String) -> AbstractUPnPService? {
-        return UPnPManager_Swift.sharedInstance.upnpRegistry.serviceFor(usn: UniqueServiceName(uuid: uuid, urn: urn))
+        return UPnPManager.sharedInstance.upnpRegistry.serviceFor(usn: UniqueServiceName(uuid: uuid, urn: urn))
     }
 }
 

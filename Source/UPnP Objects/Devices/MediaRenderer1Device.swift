@@ -23,7 +23,7 @@
 
 import Foundation
 
-public class MediaRenderer1Device_Swift: AbstractUPnPDevice {
+public class MediaRenderer1Device: AbstractUPnPDevice {
     public func avTransportService() -> AVTransport1Service? {
         return serviceFor(urn: "urn:schemas-upnp-org:service:AVTransport:1") as? AVTransport1Service
     }
@@ -40,12 +40,12 @@ public class MediaRenderer1Device_Swift: AbstractUPnPDevice {
 /// for objective-c type checking
 extension AbstractUPnP {
     public func isMediaRenderer1Device() -> Bool {
-        return self is MediaRenderer1Device_Swift
+        return self is MediaRenderer1Device
     }
 }
 
-extension MediaRenderer1Device_Swift: ExtendedPrintable {
-    override public var className: String { return "MediaRenderer1Device_Swift" }
+extension MediaRenderer1Device: ExtendedPrintable {
+    override public var className: String { return "MediaRenderer1Device" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)

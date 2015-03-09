@@ -23,10 +23,10 @@
 
 #import <UIKit/UIKit.h>
 
-@class MediaServer1Device_Swift;
+@class MediaServer1Device;
 
 @interface FolderViewController : UIViewController
 
-- (void)configureWithDevice:(MediaServer1Device_Swift *)device header:(NSString *)header rootId:(NSString *)rootId;
+- (void)configureWithDevice:(MediaServer1Device *)device header:(NSString *)header rootId:(NSString *)rootId;
 
 @end
