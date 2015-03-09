@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.summary      = 'An open source Universal Plug & Play library with a focus on media streaming coordination (UPnP A/V Profile); written in Swift but for both Objective-C and Swift apps.'
   s.homepage     = 'https://github.com/master-nevi/UPnAtom'
   s.authors      = { 'David Robles' => 'master-nevi@users.noreply.github.com' }
-  s.source       = { :git => 'git@github.com:master-nevi/UPnAtom.git', :tag => s.version.to_s } # TODO: switch out to https on release
+  s.source       = { :git => 'https://github.com/master-nevi/UPnAtom.git', :tag => s.version.to_s }
   s.source_files = 'Source/**/*.{swift,h,m}'
   s.exclude_files = 'Source/SSDP/UPNPXSSDPDiscoveryAdapter.swift' # Available in case upnpx library is used for UPnP discovery using SSDP
   s.private_header_files = 'Source/Obj-C Tools/*.h'
