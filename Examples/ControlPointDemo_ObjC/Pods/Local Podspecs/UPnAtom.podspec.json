@@ -5,13 +5,13 @@
     "type": "MIT",
     "file": "LICENSE"
   },
-  "summary": "An open source Universal Plug & Play library with a focus on media streaming coordination (UPnP A/V Profile); written in Swift but for both Objective-C and Swift apps.",
+  "summary": "An open source Universal Plug & Play library with a focus on media streaming coordination (UPnP A/V Profile).",
   "homepage": "https://github.com/master-nevi/UPnAtom",
   "authors": {
     "David Robles": "master-nevi@users.noreply.github.com"
   },
   "source": {
-    "git": "git@github.com:master-nevi/UPnAtom.git",
+    "git": "https://github.com/master-nevi/UPnAtom.git",
     "tag": "0.0.1.beta.1"
   },
   "source_files": "Source/**/*.{swift,h,m}",
