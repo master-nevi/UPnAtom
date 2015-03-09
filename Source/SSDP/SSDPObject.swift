@@ -1,5 +1,5 @@
 //
-//  UniqueServiceName.swift
+//  AVTransport1Event.swift
 //
 //  Copyright (c) 2015 David Robles
 //
@@ -21,42 +21,44 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-import Foundation
+import UIKit
 
-/// Only supports USN's with an embedded URN string as that's all the library needs to know about for now.
-@objc public class UniqueServiceName {
-    public let uuid, urn: String
-    public var rawValue: String {
-        if let customRawValue = _customRawValue {
-            return customRawValue
-        }
-        return "\(uuid)::\(urn)"
-    }
-    init(uuid: String, urn: String, customRawValue: String) {
-        self.uuid = uuid
-        self.urn = urn
-        _customRawValue = customRawValue
-    }
-    init(uuid: String, urn: String) {
-        self.uuid = uuid
-        self.urn = urn
-    }
+enum SSDPNotificationType {
+    case RootDevice
+    case UUID
+    case Device
+    case Service
+    case Unknown
     
-    private let _customRawValue: String?
-}
-
-extension UniqueServiceName: Printable {
-    public var description: String {
-        return rawValue
+    init(notificationType: String) {
+        println("Notification type: \(notificationType)")
+        if notificationType == "upnp:rootdevice" {
+            self = .RootDevice
+        }
+        else if notificationType.rangeOfString("uuid:") != nil {
+            self = .UUID
+        }
+        else if notificationType.rangeOfString(":device:") != nil {
+            self = .Device
+        }
+        else if notificationType.rangeOfString(":service:") != nil {
+            self = .Service
+        }
+        
+        self = .Unknown
     }
 }
 
-extension UniqueServiceName: Hashable {
-    public var hashValue: Int {
-        return uuid.hashValue ^ urn.hashValue
-    }
+struct SSDPObject {
+    let uuid: String
+    let urn: String?
+    let usn: String
+    let xmlLocation: NSURL
+    let notificationType: SSDPNotificationType
 }
 
-public func ==(lhs: UniqueServiceName, rhs: UniqueServiceName) -> Bool {
-    return lhs.uuid == rhs.uuid && lhs.urn == rhs.urn
+extension SSDPObject: Equatable { }
+
+func ==(lhs: SSDPObject, rhs: SSDPObject) -> Bool {
+    return lhs.usn == rhs.usn
 }

@@ -1,5 +1,5 @@
 //
-//  UniqueServiceName.swift
+//  AVTransport1Event.swift
 //
 //  Copyright (c) 2015 David Robles
 //
@@ -21,42 +21,35 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-import Foundation
+import UIKit
 
-/// Only supports USN's with an embedded URN string as that's all the library needs to know about for now.
-@objc public class UniqueServiceName {
-    public let uuid, urn: String
-    public var rawValue: String {
-        if let customRawValue = _customRawValue {
-            return customRawValue
-        }
-        return "\(uuid)::\(urn)"
-    }
-    init(uuid: String, urn: String, customRawValue: String) {
-        self.uuid = uuid
-        self.urn = urn
-        _customRawValue = customRawValue
-    }
-    init(uuid: String, urn: String) {
-        self.uuid = uuid
-        self.urn = urn
+protocol SSDPDiscoveryDelegate: class {
+    func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didUpdateSSDPObjects ssdpObjects: [SSDPObject])
+    func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didFailWithError error: NSError)
+}
+
+protocol SSDPDiscoveryAdapter: class {
+    weak var delegate: SSDPDiscoveryDelegate? { get set }
+    func start()
+    func stop()
+    func restart()
+}
+
+class AbstractSSDPDiscoveryAdapter: SSDPDiscoveryAdapter {
+    weak var delegate: SSDPDiscoveryDelegate?
+    
+    required init() { }
+    
+    func start() {
+        fatalError("Implement in subclass")
     }
     
-    private let _customRawValue: String?
-}
-
-extension UniqueServiceName: Printable {
-    public var description: String {
-        return rawValue
+    func stop() {
+        fatalError("Implement in subclass")
     }
-}
-
-extension UniqueServiceName: Hashable {
-    public var hashValue: Int {
-        return uuid.hashValue ^ urn.hashValue
+    
+    func restart() {
+        stop()
+        start()
     }
-}
-
-public func ==(lhs: UniqueServiceName, rhs: UniqueServiceName) -> Bool {
-    return lhs.uuid == rhs.uuid && lhs.urn == rhs.urn
 }

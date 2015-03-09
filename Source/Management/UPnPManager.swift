@@ -22,7 +22,6 @@
 //  SOFTWARE.
 
 import Foundation
-import upnpx
 
 private let _UPnPManagerSharedInstance = UPnPManager_Swift()
 
@@ -34,33 +33,34 @@ private let _UPnPManagerSharedInstance = UPnPManager_Swift()
     public let upnpRegistry: UPnPRegistry
     
     // internal
-    let ssdpDB = SSDPDB_ObjC()
+    unowned let ssdpDiscoveryAdapter: SSDPDiscoveryAdapter
     let eventSubscriptionManager: UPnPEventSubscriptionManager
     
     init() {
-        upnpRegistry = UPnPRegistry(ssdpDB: ssdpDB)
+        let adapterClass = UPnPManager_Swift.ssdpDiscoveryAdapterClass()
+        ssdpDiscoveryAdapter = adapterClass()
+        upnpRegistry = UPnPRegistry(ssdpDiscoveryAdapter: ssdpDiscoveryAdapter)
         eventSubscriptionManager = UPnPEventSubscriptionManager()
-        
-        ssdpDB.startSSDP()
     }
     
     deinit {
-        ssdpDB.stopSSDP()
+        ssdpDiscoveryAdapter.stop()
     }
     
-    public func searchForAll() {
-        ssdpDB.searchSSDP()
+    public func startSSDPDiscovery() {
+        ssdpDiscoveryAdapter.start()
     }
     
-    public func searchForMediaServer() {
-        ssdpDB.searchForMediaServer()
+    public func stopSSDPDiscovery() {
+        ssdpDiscoveryAdapter.stop()
     }
     
-    public func searchForMediaRenderer() {
-        ssdpDB.searchForMediaRenderer()
+    public func restartSSDPDiscovery() {
+        ssdpDiscoveryAdapter.restart()
     }
     
-    public func searchForContentDirectory() {
-        ssdpDB.searchForContentDirectory()
+    /// Override to use a different SSDP adapter if another SSDP system is preferred over CocoaSSDP
+    class func ssdpDiscoveryAdapterClass() -> AbstractSSDPDiscoveryAdapter.Type {
+        return UPNPXSSDPDiscoveryAdapter.self
     }
 }

@@ -42,7 +42,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     [super viewDidLoad];
     
     //Search for UPnP Devices
-    [self performSSDPSearch];
+    [[UPnPManager_Swift sharedInstance] startSSDPDiscovery];
     
     self.title = @"Control Point Demo";
     
@@ -71,7 +71,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 #pragma mark - IBActions
 
 - (IBAction)ssdpSearchButtonTapped:(id)sender {
-    [self performSSDPSearch];
+    [[UPnPManager_Swift sharedInstance] restartSSDPDiscovery];
 }
 
 #pragma mark - UITableViewDataSource methods
@@ -122,12 +122,6 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
         [[self toolbarLabel] setText:[device friendlyName]];
         [[PlayBack sharedInstance] setRenderer:device];
     }
-}
-
-- (void)performSSDPSearch {
-    [[UPnPManager_Swift sharedInstance] searchForAll];
-    [[UPnPManager_Swift sharedInstance] searchForContentDirectory];
-    [[UPnPManager_Swift sharedInstance] searchForMediaRenderer];
 }
 
 #pragma mark - NSNotification callbacks
