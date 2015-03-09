@@ -24,7 +24,7 @@ import UPnAtom
 ```
 
 ### Contribute:
-Currently I'm only taking feature requests and bug fixes via [Github issue](https://github.com/master-nevi/UPnAtom/issues). Sorry no pull requests until the library is mature enough.
+Currently I'm only taking feature requests, bugs, and bug fixes via [Github issue](https://github.com/master-nevi/UPnAtom/issues). Sorry no pull requests for features or major changes until the library is mature enough.
 
 - If you'd like to **ask a general question**, use [Stack Overflow](http://stackoverflow.com/).
 - If you **found a bug**, open an issue.
