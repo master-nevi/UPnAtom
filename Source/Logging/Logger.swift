@@ -61,7 +61,7 @@ public struct LogLevel : RawOptionSetType {
     static var All: LogLevel { return self(UInt.max) }  // 1111...11111
 }
 
-public let defaultLogLevel = LogLevel.Verbose
+public let defaultLogLevel = LogLevel.Info
 
 public var logLevel = defaultLogLevel
 
@@ -71,7 +71,7 @@ public func resetDefaultDebugLevel() {
 
 public func SwiftLogMacro(isAsynchronous: Bool, level: LogLevel, flag: LogFlag, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, string: @autoclosure () -> String) {
     if level.rawValue & flag.rawValue != 0 {
-        NSLog(string())
+        println(string())
     }
 }
 

@@ -23,7 +23,7 @@
 
 import Foundation
 import AFNetworking
-import CocoaHTTPServer
+import GCDWebServer
 
 protocol UPnPEventSubscriber: class {
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventXML: NSData)
@@ -89,29 +89,20 @@ class UPnPEventSubscriptionManager {
         }
     }
     
-    // internal
-    let eventCallBackPath = "/Event/\(NSUUID().dashlessUUIDString)"
-    
     // private
     /// Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     private var _subscriptions = [String: Subscription]() /* [eventURLString: Subscription] */
     private let _concurrentSubscriptionQueue = dispatch_queue_create("com.upnatom.upnp-event-subscription-manager.subscription-queue", DISPATCH_QUEUE_CONCURRENT)
-    private let _httpServer = HTTPServer()
-    private let _httpServerPort = 52808
+    private let _httpServer = GCDWebServer()
+    private let _httpServerPort: UInt = 52808
     private let _subscribeSessionManager = AFHTTPSessionManager()
     private let _renewSubscriptionSessionManager = AFHTTPSessionManager()
     private let _unsubscribeSessionManager = AFHTTPSessionManager()
-    private let _defaultSubscriptionTimeout: Int = 300
+    private let _defaultSubscriptionTimeout: Int = 1800
+    private let _eventCallBackPath = "/Event/\(NSUUID().dashlessUUIDString)"
     private var _eventCallBackURL: NSURL? {
-        let wifiInterface = "en0"
-        if let address = getIFAddresses()[wifiInterface] {
-            var url = NSURLComponents()
-            url.scheme = "http"
-            url.port = _httpServerPort
-            url.path = eventCallBackPath
-            url.host = address
-
-            return url.URL!
+        if let serverURL = _httpServer.serverURL {
+            return NSURL(string: _eventCallBackPath, relativeToURL: serverURL)!
         }
         
         return nil
@@ -127,9 +118,6 @@ class UPnPEventSubscriptionManager {
     }
     
     init() {
-        _httpServer.setPort(UInt16(_httpServerPort))
-        _httpServer.setConnectionClass(UPnPEventHTTPConnection.self)
-        
         _subscribeSessionManager.requestSerializer = UPnPEventSubscribeRequestSerializer() as AFHTTPRequestSerializer
         _subscribeSessionManager.responseSerializer = UPnPEventSubscribeResponseSerializer()
         
@@ -147,6 +135,21 @@ class UPnPEventSubscriptionManager {
             selector: "applicationWillEnterForeground:",
             name: UIApplicationWillEnterForegroundNotification,
             object: nil)
+
+        _httpServer.addHandlerForMethod("NOTIFY", path: _eventCallBackPath, requestClass: GCDWebServerDataRequest.self) { (request: GCDWebServerRequest!) -> GCDWebServerResponse! in
+            if let dataRequest = request as? GCDWebServerDataRequest {
+                if let headers = dataRequest.headers as? [String: AnyObject] {
+                    if let data = dataRequest.data {
+                        LogVerbose("NOTIFY request: Final body with size: \(data.length)\nAll headers: \(headers)")
+                        if let sid = headers["SID"] as? String {
+                            self.handleIncomingEvent(subscriptionID: sid, eventData: data)
+                        }
+                    }
+                }
+            }
+            
+            return GCDWebServerResponse()
+        }
     }
     
     /// Subscribers should hold on to a weak reference of the subscription object returned. It's ok to call subscribe for a subscription that already exists, the subscription will simply be looked up and returned.
@@ -165,6 +168,10 @@ class UPnPEventSubscriptionManager {
                 completion(result: .Success(subscription))
             }
             return
+        }
+        
+        if !_httpServer.running {
+            _httpServer.startWithPort(_httpServerPort, bonjourName: nil)
         }
         
         if _eventCallBackURL == nil {
@@ -236,14 +243,14 @@ class UPnPEventSubscriptionManager {
         })
     }
     
-    func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
+    private func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
         if let subscription: Subscription = (subscriptions.values.array as NSArray).firstUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!) {
             subscription.subscriber?.handleEvent(self, eventXML: eventData)
         }
     }
     
     @objc private func applicationDidEnterBackground(notification: NSNotification) {
-        if _httpServer.isRunning() {
+        if _httpServer.running {
             _httpServer.stop()
         }
         
@@ -307,9 +314,9 @@ class UPnPEventSubscriptionManager {
         if subscriptions.count == 0 {
             httpServer.stop()
         }
-        else if subscriptions.count > 0 && !httpServer.isRunning() {
+        else if subscriptions.count > 0 && !httpServer.running {
             var error: NSError?
-            if !httpServer.start(&error) {
+            if !httpServer.startWithPort(_httpServerPort, bonjourName: nil) {
                 let toAppend = error != nil && error?.localizedDescriptionOrNil != nil ? ": \(error!.localizedDescription)" : ""
                 LogError("Error starting HTTP server" + toAppend)
             }
