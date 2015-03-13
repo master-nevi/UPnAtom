@@ -15,7 +15,7 @@ pod 'UPnAtom', '~> 0.0.1.beta.1'
 ### Usage:
 ######  Objective-C
 ```objective-c
-#import <UPnAtom/UPnAtom-Swift.h>
+@import UPnAtom;
 ```
 
 ###### Swift
@@ -31,11 +31,9 @@ Currently I'm only taking feature requests, bugs, and bug fixes via [Github issu
 - If you **have a feature request**, open an issue.
 
 ### Milestones:
-* [x] Usable in Objective-C projects via CocoaPod framework
+* [x] Usable in both Swift and Objective-C projects via CocoaPod framework
 * [x] Create your own service and device object via class registration
-* [x] Integrate LumberJack for better logging
 * [x] UPnP Version 1 Compliance
-* [ ] Usable in Swift projects via CocoaPod framework
 * [ ] Swift 1.2
 * [ ] OS X 10.9+ support
 * [ ] Feature parity with upnpx library
