@@ -47,10 +47,10 @@
             _playlist = result;
             [self.tableView reloadData];
         } failure:^(NSError *error) {
-            [UPnPLogger logError:@"failed to browse content directory"];
+            NSLog(@"failed to browse content directory");
         }];
     } failure:^(NSError *error) {
-        [UPnPLogger logError:@"failed to get sort capabilities"];
+        NSLog(@"failed to get sort capabilities");
     }];
     
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, self.navigationController.view.frame.size.width, 21.0f)];

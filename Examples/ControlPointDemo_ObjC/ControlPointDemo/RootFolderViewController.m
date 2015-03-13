@@ -105,7 +105,7 @@
     if([device isMediaServer1Device]){
         MediaServer1Device *server = (MediaServer1Device *)device;
         if (![server contentDirectoryService]) {
-            [UPnPLogger logInfo:[NSString stringWithFormat:@"%@ - has no content directory service", device.friendlyName]];
+            NSLog(@"%@ - has no content directory service", device.friendlyName);
             return;
         }
         
@@ -119,7 +119,7 @@
     } else if([device isMediaRenderer1Device]){
         MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)device;
         if (![aRenderer avTransportService]) {
-            [UPnPLogger logInfo:[NSString stringWithFormat:@"%@ - has no AV transport service", device.friendlyName]];
+            NSLog(@"%@ - has no AV transport service", device.friendlyName);
             return;
         }
         
@@ -133,8 +133,8 @@
 - (void)deviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
         AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-        [UPnPLogger logInfo:[NSString stringWithFormat:@"Added device: %@ - %@", upnpObject.className, upnpObject.friendlyName]];
-        [UPnPLogger logVerbose:[NSString stringWithFormat:@"%@ = %@", upnpObject.className, upnpObject.description]];
+        NSLog(@"Added device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
+//        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
     
     [self updateDataAndRefreshTableView];
@@ -143,8 +143,8 @@
 - (void)deviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
         AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-        [UPnPLogger logInfo:[NSString stringWithFormat:@"Removed device: %@ - %@", upnpObject.className, upnpObject.friendlyName]];
-        [UPnPLogger logVerbose:[NSString stringWithFormat:@"%@ = %@", upnpObject.className, upnpObject.description]];
+        NSLog(@"Removed device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
+//        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
     
     [self updateDataAndRefreshTableView];
@@ -153,16 +153,16 @@
 - (void)serviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-        [UPnPLogger logInfo:[NSString stringWithFormat:@"Added service: %@ - %@", upnpObject.className, upnpObject.descriptionURL]];
-        [UPnPLogger logVerbose:[NSString stringWithFormat:@"%@ = %@", upnpObject.className, upnpObject.description]];
+        NSLog(@"Added service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
+//        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
 }
 
 - (void)serviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-        [UPnPLogger logInfo:[NSString stringWithFormat:@"Removed service: %@ - %@", upnpObject.className, upnpObject.descriptionURL]];
-        [UPnPLogger logVerbose:[NSString stringWithFormat:@"%@ = %@", upnpObject.className, upnpObject.description]];
+        NSLog(@"Removed service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
+//        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
 }
 
