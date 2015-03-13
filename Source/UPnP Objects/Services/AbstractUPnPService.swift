@@ -148,7 +148,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                         self._eventSubscription = value()
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown subscribe error")
-                        DDLogError("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
+                        LogError("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
                     }
                 })
             }
@@ -172,7 +172,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                         self._eventSubscription = nil
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown unsubscribe error")
-                        DDLogError("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")
+                        LogError("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")
                         self._eventSubscription = nil
                     }
                 })
@@ -185,7 +185,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     }
     
     func subscriptionDidFail(eventSubscriptionManager: UPnPEventSubscriptionManager) {
-        DDLogWarn("Event subscription did fail for service: \(self)")
+        LogWarn("Event subscription did fail for service: \(self)")
     }
     
     /// overridable by service subclasses

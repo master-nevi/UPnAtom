@@ -25,9 +25,6 @@
 #import "PlayBack.h"
 #import "FolderViewController.h"
 #import <UPnAtom/UPnAtom-Swift.h>
-#import <CocoaLumberjack/CocoaLumberjack.h>
-
-static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 
 @interface RootFolderViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic) IBOutlet UITableView *tableView;
@@ -108,7 +105,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     if([device isMediaServer1Device]){
         MediaServer1Device *server = (MediaServer1Device *)device;
         if (![server contentDirectoryService]) {
-            DDLogInfo(@"%@ - has no content directory service", device.friendlyName);
+            [UPnPLogger logInfo:[NSString stringWithFormat:@"%@ - has no content directory service", device.friendlyName]];
             return;
         }
         
@@ -122,7 +119,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     } else if([device isMediaRenderer1Device]){
         MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)device;
         if (![aRenderer avTransportService]) {
-            DDLogInfo(@"%@ - has no AV transport service", device.friendlyName);
+            [UPnPLogger logInfo:[NSString stringWithFormat:@"%@ - has no AV transport service", device.friendlyName]];
             return;
         }
         
@@ -136,8 +133,8 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 - (void)deviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
         AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-        DDLogInfo(@"Added device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
-        DDLogVerbose(@"%@ = %@", upnpObject.className, upnpObject.description);
+        [UPnPLogger logInfo:[NSString stringWithFormat:@"Added device: %@ - %@", upnpObject.className, upnpObject.friendlyName]];
+        [UPnPLogger logVerbose:[NSString stringWithFormat:@"%@ = %@", upnpObject.className, upnpObject.description]];
     }
     
     [self updateDataAndRefreshTableView];
@@ -146,8 +143,8 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 - (void)deviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
         AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-        DDLogInfo(@"Removed device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
-        DDLogVerbose(@"%@ = %@", upnpObject.className, upnpObject.description);
+        [UPnPLogger logInfo:[NSString stringWithFormat:@"Removed device: %@ - %@", upnpObject.className, upnpObject.friendlyName]];
+        [UPnPLogger logVerbose:[NSString stringWithFormat:@"%@ = %@", upnpObject.className, upnpObject.description]];
     }
     
     [self updateDataAndRefreshTableView];
@@ -156,16 +153,16 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 - (void)serviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-        DDLogInfo(@"Added service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
-        DDLogVerbose(@"%@ = %@", upnpObject.className, upnpObject.description);
+        [UPnPLogger logInfo:[NSString stringWithFormat:@"Added service: %@ - %@", upnpObject.className, upnpObject.descriptionURL]];
+        [UPnPLogger logVerbose:[NSString stringWithFormat:@"%@ = %@", upnpObject.className, upnpObject.description]];
     }
 }
 
 - (void)serviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-        DDLogInfo(@"Removed service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
-        DDLogVerbose(@"%@ = %@", upnpObject.className, upnpObject.description);
+        [UPnPLogger logInfo:[NSString stringWithFormat:@"Removed service: %@ - %@", upnpObject.className, upnpObject.descriptionURL]];
+        [UPnPLogger logVerbose:[NSString stringWithFormat:@"%@ = %@", upnpObject.className, upnpObject.description]];
     }
 }
 

@@ -77,7 +77,7 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
         }
         body += "</u:\(requestParameters.soapAction)>"
         body += "</s:Body></s:Envelope>"
-        DDLogVerbose("SOAP request body: \(body)")
+        LogVerbose("SOAP request body: \(body)")
         
         mutableRequest.setValue("\(countElements(body.utf8))", forHTTPHeaderField: "Content-Length")
         
@@ -127,7 +127,7 @@ class SOAPResponseParser: AbstractDOMXMLParser {
             result = .Success
         })
         
-        DDLogVerbose("SOAP response values: \(prettyPrint(_responseParameters))")
+        LogVerbose("SOAP response values: \(prettyPrint(_responseParameters))")
         
         return result
     }
