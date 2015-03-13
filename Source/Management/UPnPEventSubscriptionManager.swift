@@ -135,7 +135,9 @@ class UPnPEventSubscriptionManager {
             selector: "applicationWillEnterForeground:",
             name: UIApplicationWillEnterForegroundNotification,
             object: nil)
-
+        
+        GCDWebServer.setLogLevel(Int32(3))
+        
         _httpServer.addHandlerForMethod("NOTIFY", path: _eventCallBackPath, requestClass: GCDWebServerDataRequest.self) { (request: GCDWebServerRequest!) -> GCDWebServerResponse! in
             if let dataRequest = request as? GCDWebServerDataRequest {
                 if let headers = dataRequest.headers as? [String: AnyObject] {
