@@ -13,7 +13,20 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        NSNotificationCenter.defaultCenter().addObserverForName(UPnPRegistry.UPnPDeviceAddedNotification(), object: nil, queue: NSOperationQueue.mainQueue()) { (notification: NSNotification!) -> Void in
+            if let upnpDevice = notification.userInfo?[UPnPRegistry.UPnPDeviceKey()] as? AbstractUPnPDevice {
+                println("Added device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
+            }
+        }
+        
+        NSNotificationCenter.defaultCenter().addObserverForName(UPnPRegistry.UPnPServiceAddedNotification(), object: nil, queue: NSOperationQueue.mainQueue()) { (notification: NSNotification!) -> Void in
+            if let upnpService = notification.userInfo?[UPnPRegistry.UPnPServiceKey()] as? AbstractUPnPService {
+                println("Added service: \(upnpService.className) - \(upnpService.descriptionURL)")
+            }
+        }
+
+        UPnPManager.sharedInstance.startSSDPDiscovery()
     }
 
     override func didReceiveMemoryWarning() {
