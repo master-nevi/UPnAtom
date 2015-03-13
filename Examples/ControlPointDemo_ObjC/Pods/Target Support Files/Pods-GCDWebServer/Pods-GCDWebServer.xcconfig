@@ -1,0 +1,1 @@
+PODS_GCDWEBSERVER_OTHER_LDFLAGS = -l"z" -framework "CFNetwork" -framework "MobileCoreServices"

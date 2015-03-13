@@ -1,0 +1,6 @@
+framework module GCDWebServer {
+  umbrella header "Pods-GCDWebServer-umbrella.h"
+
+  export *
+  module * { export * }
+}

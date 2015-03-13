@@ -32,11 +32,11 @@
     "AFNetworking": [
       "~> 2.5.0"
     ],
-    "CocoaHTTPServer": [
-      "~> 2.3"
-    ],
     "Ono": [
       "~> 1.2.0"
+    ],
+    "GCDWebServer": [
+      "~> 3.2.2"
     ]
   }
 }

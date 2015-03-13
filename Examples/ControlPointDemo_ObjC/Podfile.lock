@@ -21,21 +21,16 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - CocoaAsyncSocket (7.4.1)
-  - CocoaHTTPServer (2.3):
-    - CocoaAsyncSocket
-    - CocoaLumberjack
-  - CocoaLumberjack (1.9.2):
-    - CocoaLumberjack/Extensions (= 1.9.2)
-  - CocoaLumberjack/Core (1.9.2)
-  - CocoaLumberjack/Extensions (1.9.2):
-    - CocoaLumberjack/Core
   - CocoaSSDP (0.1.0):
     - CocoaAsyncSocket
+  - GCDWebServer (3.2.2):
+    - GCDWebServer/Core (= 3.2.2)
+  - GCDWebServer/Core (3.2.2)
   - Ono (1.2.0)
   - UPnAtom (0.0.1.beta.1):
     - AFNetworking (~> 2.5.0)
-    - CocoaHTTPServer (~> 2.3)
     - CocoaSSDP (~> 0.1.0)
+    - GCDWebServer (~> 3.2.2)
     - Ono (~> 1.2.0)
 
 DEPENDENCIES:
@@ -48,10 +43,9 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AFNetworking: 8bee59492a6ff15d69130efa4d0dc67e0094a52a
   CocoaAsyncSocket: b0a1a89e7ea4c1c0ea4ec83f57d55117d3cdae06
-  CocoaHTTPServer: 217df4cba4e48803db2480f97b805aaad2230dd1
-  CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   CocoaSSDP: 2ad6688b1475da6860651c2e0b43a102e8cd4b46
+  GCDWebServer: 285fde9951ab2cd87c2d9d74735fee977a16fe04
   Ono: 2c9f6c8c50af1b40e988ff85a3f200574ee445cd
-  UPnAtom: 61f004e10e8307ff40c5544d6fa1ac51988c6154
+  UPnAtom: 11dfe9abc0e654c8fff3e95967e7c0eada66e7ef
 
 COCOAPODS: 0.36.0

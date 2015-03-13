@@ -54,35 +54,23 @@
 #define COCOAPODS_VERSION_MINOR_CocoaAsyncSocket 4
 #define COCOAPODS_VERSION_PATCH_CocoaAsyncSocket 1
 
-// CocoaHTTPServer
-#define COCOAPODS_POD_AVAILABLE_CocoaHTTPServer
-#define COCOAPODS_VERSION_MAJOR_CocoaHTTPServer 2
-#define COCOAPODS_VERSION_MINOR_CocoaHTTPServer 3
-#define COCOAPODS_VERSION_PATCH_CocoaHTTPServer 0
-
-// CocoaLumberjack
-#define COCOAPODS_POD_AVAILABLE_CocoaLumberjack
-#define COCOAPODS_VERSION_MAJOR_CocoaLumberjack 1
-#define COCOAPODS_VERSION_MINOR_CocoaLumberjack 9
-#define COCOAPODS_VERSION_PATCH_CocoaLumberjack 2
-
-// CocoaLumberjack/Core
-#define COCOAPODS_POD_AVAILABLE_CocoaLumberjack_Core
-#define COCOAPODS_VERSION_MAJOR_CocoaLumberjack_Core 1
-#define COCOAPODS_VERSION_MINOR_CocoaLumberjack_Core 9
-#define COCOAPODS_VERSION_PATCH_CocoaLumberjack_Core 2
-
-// CocoaLumberjack/Extensions
-#define COCOAPODS_POD_AVAILABLE_CocoaLumberjack_Extensions
-#define COCOAPODS_VERSION_MAJOR_CocoaLumberjack_Extensions 1
-#define COCOAPODS_VERSION_MINOR_CocoaLumberjack_Extensions 9
-#define COCOAPODS_VERSION_PATCH_CocoaLumberjack_Extensions 2
-
 // CocoaSSDP
 #define COCOAPODS_POD_AVAILABLE_CocoaSSDP
 #define COCOAPODS_VERSION_MAJOR_CocoaSSDP 0
 #define COCOAPODS_VERSION_MINOR_CocoaSSDP 1
 #define COCOAPODS_VERSION_PATCH_CocoaSSDP 0
+
+// GCDWebServer
+#define COCOAPODS_POD_AVAILABLE_GCDWebServer
+#define COCOAPODS_VERSION_MAJOR_GCDWebServer 3
+#define COCOAPODS_VERSION_MINOR_GCDWebServer 2
+#define COCOAPODS_VERSION_PATCH_GCDWebServer 2
+
+// GCDWebServer/Core
+#define COCOAPODS_POD_AVAILABLE_GCDWebServer_Core
+#define COCOAPODS_VERSION_MAJOR_GCDWebServer_Core 3
+#define COCOAPODS_VERSION_MINOR_GCDWebServer_Core 2
+#define COCOAPODS_VERSION_PATCH_GCDWebServer_Core 2
 
 // Ono
 #define COCOAPODS_POD_AVAILABLE_Ono
