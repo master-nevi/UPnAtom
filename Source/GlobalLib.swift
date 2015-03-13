@@ -22,7 +22,6 @@
 //  SOFTWARE.
 
 import Foundation
-import NetworkTools
 
 func returnIfContainsElements<T: _CollectionType>(x: T?) -> T? {
     if let x = x {
@@ -161,12 +160,10 @@ extension NSError {
     }
 }
 
-func getIFAddresses() -> [String: String] {
-    var addresses = [String: String]()
-    
-/* 
-Until Apple provides modules for all of the missing C libraries, there's no good way to perform this task in Swift. Commenting out the pure Swift version and calling into Obj-C.
-*/
+/// Until Apple provides modules for all of the missing C libraries, there's no good way to perform this task in Swift.
+//func getIFAddresses() -> [String: String] {
+//    var addresses = [String: String]()
+//    
 //    // Get list of all interfaces on the local machine:
 //    var ifaddr : UnsafeMutablePointer<ifaddrs> = nil
 //    if getifaddrs(&ifaddr) == 0 {
@@ -195,16 +192,9 @@ Until Apple provides modules for all of the missing C libraries, there's no good
 //        }
 //        freeifaddrs(ifaddr)
 //    }
-    
-    let addressesFromObjc = NetworkTools.getIFAddresses()
-    for (key, value) in addressesFromObjc {
-        let interfaceName: String? = key as? String
-        let address: String? = value as? String
-        addresses[interfaceName!] = address!
-    }
-    
-    return addresses
-}
+//    
+//    return addresses
+//}
 
 extension NSTimer {
     private class NSTimerClosureHandler {
