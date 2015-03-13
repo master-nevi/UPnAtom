@@ -106,19 +106,19 @@ import AFNetworking
         let xmlLocation = ssdpObject.xmlLocation
         
         if let registeredClass = _upnpClasses[urn] {
-            DDLogVerbose("creating registered class for urn: \(urn)")
+            LogVerbose("creating registered class for urn: \(urn)")
             upnpClass = registeredClass
         }
         else if urn.rangeOfString("urn:schemas-upnp-org:device") != nil {
-            DDLogVerbose("creating AbstractUPnPDevice for urn: \(urn)")
+            LogVerbose("creating AbstractUPnPDevice for urn: \(urn)")
             upnpClass = AbstractUPnPDevice.self
         }
         else if urn.rangeOfString("urn:schemas-upnp-org:service") != nil {
-            DDLogVerbose("creating AbstractUPnPService for urn: \(urn)")
+            LogVerbose("creating AbstractUPnPService for urn: \(urn)")
             upnpClass = AbstractUPnPService.self
         }
         else {
-            DDLogVerbose("creating AbstractUPnP for urn: \(urn)")
+            LogVerbose("creating AbstractUPnP for urn: \(urn)")
             upnpClass = AbstractUPnP.self
         }
         

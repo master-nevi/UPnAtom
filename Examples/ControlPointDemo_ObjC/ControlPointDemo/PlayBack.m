@@ -23,9 +23,6 @@
 
 #import "PlayBack.h"
 #import <UPnAtom/UPnAtom-Swift.h>
-#import <CocoaLumberjack/CocoaLumberjack.h>
-
-static const DDLogLevel ddLogLevel = DDLogLevelInfo;
 
 @implementation PlayBack {
     NSInteger _pos;
@@ -49,7 +46,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
     [[aRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
         if ([event.service isAVTransport1Service] && [event isAVTransport1Event]) {
             AVTransport1Event *avTransportEvent = (AVTransport1Event *)event;
-            DDLogInfo(@"%@ Event: %@", event.service.className, avTransportEvent.instanceState);
+            [UPnPLogger logInfo:[NSString stringWithFormat:@"%@ Event: %@", event.service.className, avTransportEvent.instanceState]];
         }
     }];
 }
@@ -137,15 +134,15 @@ static const DDLogLevel ddLogLevel = DDLogLevelInfo;
         
         MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)self.renderer;
         [[aRenderer avTransportService] setAVTransportURIWithInstanceID:iid currentURI:uri currentURIMetadata:@"" success:^{
-            DDLogInfo(@"URI Set succeeded!");
+            [UPnPLogger logInfo:@"URI Set succeeded!"];
             
             [[aRenderer avTransportService] playWithInstanceID:iid speed:@"1" success:^{
-                DDLogInfo(@"Play command succeeded!");
+                [UPnPLogger logInfo:@"Play command succeeded!"];
             } failure:^(NSError *error) {
-                DDLogError(@"Play command failed: %@", error.localizedDescription);
+                [UPnPLogger logError:[NSString stringWithFormat:@"Play command failed: %@", error.localizedDescription]];
             }];
         } failure:^(NSError *error) {
-            DDLogError(@"URI Set failed: %@", error.localizedDescription);
+            [UPnPLogger logError:[NSString stringWithFormat:@"URI Set failed: %@", error.localizedDescription]];
         }];
     }
     

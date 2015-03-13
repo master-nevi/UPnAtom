@@ -174,7 +174,7 @@ class UPnPEventSubscriptionManager {
             return
         }
         
-        DDLogInfo("event callback url: \(_eventCallBackURL!)")
+        LogInfo("event callback url: \(_eventCallBackURL!)")
         
         let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: _eventCallBackURL!, timeout: _defaultSubscriptionTimeout)
         
@@ -192,7 +192,7 @@ class UPnPEventSubscriptionManager {
             
             let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: eventURL.absoluteString!, manager: self)
             
-            DDLogInfo("Successfully subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
+            LogInfo("Successfully subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
             
             self.add(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
@@ -200,7 +200,7 @@ class UPnPEventSubscriptionManager {
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                DDLogError("Failed to subscribe to event URL: \(eventURL.absoluteString!)\nerror: \(error)")
+                LogError("Failed to subscribe to event URL: \(eventURL.absoluteString!)\nerror: \(error)")
                 if let completion = completion {
                     completion(result: .Failure(error))
                 }
@@ -219,7 +219,7 @@ class UPnPEventSubscriptionManager {
         let parameters = UPnPEventUnsubscribeRequestSerializer.Parameters(subscriptionID: subscription.subscriptionID)
         
         _unsubscribeSessionManager.UNSUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-            DDLogInfo("Successfully unsubscribed: \(subscription)")
+            LogInfo("Successfully unsubscribed: \(subscription)")
             
             self.remove(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
@@ -227,7 +227,7 @@ class UPnPEventSubscriptionManager {
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                DDLogError("Failed to unsubscribe: \(subscription)\nerror: \(error)")
+                LogError("Failed to unsubscribe: \(subscription)\nerror: \(error)")
                 self.remove(subscription: subscription, completion: { () -> Void in
                     if let completion = completion {
                         completion(result: .Failure(error))
@@ -311,7 +311,7 @@ class UPnPEventSubscriptionManager {
             var error: NSError?
             if !httpServer.start(&error) {
                 let toAppend = error != nil && error?.localizedDescriptionOrNil != nil ? ": \(error!.localizedDescription)" : ""
-                DDLogError("Error starting HTTP server" + toAppend)
+                LogError("Error starting HTTP server" + toAppend)
             }
         }
     }
@@ -340,7 +340,7 @@ class UPnPEventSubscriptionManager {
             
             subscription.update(response.subscriptionID, expiration: expiration)
             
-            DDLogInfo("Successfully renewed subscription with timeout: \(response.timeout/60) mins: \(subscription)")
+            LogInfo("Successfully renewed subscription with timeout: \(response.timeout/60) mins: \(subscription)")
             
             // read just in case it was removed
             self.add(subscription: subscription, completion: { () -> Void in
@@ -349,7 +349,7 @@ class UPnPEventSubscriptionManager {
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                DDLogError("Failed to renew subscription: \(subscription)\nerror: \(error)")
+                LogError("Failed to renew subscription: \(subscription)\nerror: \(error)")
                 if let completion = completion {
                     completion(result: .Failure(error))
                 }
@@ -384,7 +384,7 @@ class UPnPEventSubscriptionManager {
             
             subscription.update(response.subscriptionID, expiration: expiration)
             
-            DDLogInfo("Successfully re-subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
+            LogInfo("Successfully re-subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
             
             self.add(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
@@ -392,7 +392,7 @@ class UPnPEventSubscriptionManager {
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                DDLogError("Failed to re-subscribe: \(subscription)\nerror: \(error)")
+                LogError("Failed to re-subscribe: \(subscription)\nerror: \(error)")
                 
                 subscription.subscriber?.subscriptionDidFail(self)
                 

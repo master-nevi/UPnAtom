@@ -165,7 +165,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
             _elementStack.removeLast()
         }
         else {
-            DDLogError("XML badly formatted!")
+            LogError("XML badly formatted!")
             parser.abortParsing()
         }
     }
