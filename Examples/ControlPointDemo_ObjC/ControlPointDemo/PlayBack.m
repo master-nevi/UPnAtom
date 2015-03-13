@@ -22,7 +22,7 @@
 //  SOFTWARE.
 
 #import "PlayBack.h"
-#import <UPnAtom/UPnAtom-Swift.h>
+@import UPnAtom;
 
 @implementation PlayBack {
     NSInteger _pos;

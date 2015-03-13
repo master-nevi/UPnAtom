@@ -23,7 +23,7 @@
 
 #import "FolderViewController.h"
 #import "PlayBack.h"
-#import <UPnAtom/UPnAtom-Swift.h>
+@import UPnAtom;
 
 @interface FolderViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic) IBOutlet UITableView *tableView;
