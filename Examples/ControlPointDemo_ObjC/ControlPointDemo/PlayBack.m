@@ -46,7 +46,7 @@
     [[aRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
         if ([event.service isAVTransport1Service] && [event isAVTransport1Event]) {
             AVTransport1Event *avTransportEvent = (AVTransport1Event *)event;
-            [UPnPLogger logInfo:[NSString stringWithFormat:@"%@ Event: %@", event.service.className, avTransportEvent.instanceState]];
+            NSLog(@"%@ Event: %@", event.service.className, avTransportEvent.instanceState);
         }
     }];
 }
@@ -134,15 +134,15 @@
         
         MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)self.renderer;
         [[aRenderer avTransportService] setAVTransportURIWithInstanceID:iid currentURI:uri currentURIMetadata:@"" success:^{
-            [UPnPLogger logInfo:@"URI Set succeeded!"];
+            NSLog(@"URI Set succeeded!");
             
             [[aRenderer avTransportService] playWithInstanceID:iid speed:@"1" success:^{
-                [UPnPLogger logInfo:@"Play command succeeded!"];
+                NSLog(@"Play command succeeded!");
             } failure:^(NSError *error) {
-                [UPnPLogger logError:[NSString stringWithFormat:@"Play command failed: %@", error.localizedDescription]];
+                NSLog(@"Play command failed: %@", error.localizedDescription);
             }];
         } failure:^(NSError *error) {
-            [UPnPLogger logError:[NSString stringWithFormat:@"URI Set failed: %@", error.localizedDescription]];
+            NSLog(@"URI Set failed: %@", error.localizedDescription);
         }];
     }
     
