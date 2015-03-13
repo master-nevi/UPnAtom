@@ -22,7 +22,8 @@
 //  SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import <UPnAtom/UPnAtom-Swift.h>
+
+@class AbstractUPnPDevice;
 
 @interface PlayBack : NSObject
 
