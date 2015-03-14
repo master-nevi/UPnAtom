@@ -26,7 +26,7 @@ class ViewController: UIViewController {
             }
         }
 
-        UPnPManager.sharedInstance.startSSDPDiscovery()
+        UPnAtom.sharedInstance.startSSDPDiscovery()
     }
 
     override func didReceiveMemoryWarning() {

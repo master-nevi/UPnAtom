@@ -83,5 +83,5 @@
 // This library does not follow semantic-versioning,
 // so we were not able to define version macros.
 // Please contact the author.
-// Version: 0.0.1.beta.1.
+// Version: 0.0.1.beta.2.
 

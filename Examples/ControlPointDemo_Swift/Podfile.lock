@@ -27,7 +27,7 @@ PODS:
     - GCDWebServer/Core (= 3.2.2)
   - GCDWebServer/Core (3.2.2)
   - Ono (1.2.0)
-  - UPnAtom (0.0.1.beta.1):
+  - UPnAtom (0.0.1.beta.2):
     - AFNetworking (~> 2.5.0)
     - CocoaSSDP (~> 0.1.0)
     - GCDWebServer (~> 3.2.2)
@@ -46,6 +46,6 @@ SPEC CHECKSUMS:
   CocoaSSDP: 2ad6688b1475da6860651c2e0b43a102e8cd4b46
   GCDWebServer: 285fde9951ab2cd87c2d9d74735fee977a16fe04
   Ono: 2c9f6c8c50af1b40e988ff85a3f200574ee445cd
-  UPnAtom: 8e471aba199760b2a14c30c8f40ac19e4e82638c
+  UPnAtom: a544e751f4f60c9fd6759ad9da67e69520d21103
 
 COCOAPODS: 0.36.0
