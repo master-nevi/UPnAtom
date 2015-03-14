@@ -220,3 +220,84 @@ extension AbstractUPnPService: ExtendedPrintable {
         return properties.description
     }
 }
+
+class UPnPServiceParser: AbstractSAXXMLParser {
+    class ParserUPnPService {
+        var baseURL: NSURL?
+        var serviceType: String?
+        var serviceID: String?
+        var relativeDescriptionURL: NSURL?
+        var relativeControlURL: NSURL?
+        var relativeEventURL: NSURL?
+    }
+    
+    private unowned let _upnpService: AbstractUPnPService
+    private let _upnpDescriptionXML: NSData
+    private var _baseURL: NSURL?
+    private var _currentParserService: ParserUPnPService?
+    private var _foundParserService: ParserUPnPService?
+    
+    init(supportNamespaces: Bool, upnpService: AbstractUPnPService, upnpDescriptionXML: NSData) {
+        self._upnpService = upnpService
+        self._upnpDescriptionXML = upnpDescriptionXML
+        super.init(supportNamespaces: supportNamespaces)
+        
+        self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            self._baseURL = NSURL(string: text)
+        }))
+        
+        self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service"], didStartParsingElement: { (elementName, attributeDict) -> Void in
+            self._currentParserService = ParserUPnPService()
+            }, didEndParsingElement: { (elementName) -> Void in
+                if let serviceType = self._currentParserService?.serviceType {
+                    if serviceType == self._upnpService.urn {
+                        self._foundParserService = self._currentParserService
+                    }
+                }
+            }, foundInnerText: nil))
+        
+        self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "serviceType"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.serviceType = text
+        }))
+        
+        self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "serviceId"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.serviceID = text
+        }))
+        
+        self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "SCPDURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.relativeDescriptionURL = NSURL(string: text)
+        }))
+        
+        self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "controlURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.relativeControlURL = NSURL(string: text)
+        }))
+        
+        self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "eventSubURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            var currentService = self._currentParserService
+            currentService?.relativeEventURL = NSURL(string: text)
+        }))
+    }
+    
+    convenience init(upnpService: AbstractUPnPService, upnpDescriptionXML: NSData) {
+        self.init(supportNamespaces: false, upnpService: upnpService, upnpDescriptionXML: upnpDescriptionXML)
+    }
+    
+    func parse() -> Result<ParserUPnPService> {
+        switch super.parse(data: _upnpDescriptionXML) {
+        case .Success:
+            if let foundParserService = _foundParserService {
+                foundParserService.baseURL = _baseURL
+                return .Success(foundParserService)
+            }
+            else {
+                return .Failure(createError("Parser error"))
+            }
+        case .Failure(let error):
+            return .Failure(error)
+        }
+    }
+}
