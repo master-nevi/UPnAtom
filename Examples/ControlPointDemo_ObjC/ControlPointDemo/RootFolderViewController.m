@@ -40,7 +40,6 @@
     [super viewDidLoad];
     
     _devices = [NSMutableArray array];
-    _deviceIndexForUSN = [NSMutableDictionary dictionary];
     
     //Search for UPnP Devices
     [[UPnAtom sharedInstance] startSSDPDiscovery];
@@ -67,6 +66,15 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPRegistry UPnPDeviceRemovedNotification] object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasAdded:) name:[UPnPRegistry UPnPServiceAddedNotification] object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasRemoved:) name:[UPnPRegistry UPnPServiceRemovedNotification] object:nil];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:[UPnPRegistry UPnPDeviceAddedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:[UPnPRegistry UPnPDeviceRemovedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:[UPnPRegistry UPnPServiceAddedNotification] object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:[UPnPRegistry UPnPServiceRemovedNotification] object:nil];
+    
+    [super viewDidDisappear:animated];
 }
 
 #pragma mark - IBActions
@@ -136,13 +144,12 @@
 
 - (void)deviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
-        AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-        NSLog(@"Added device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
+        AbstractUPnPDevice *upnpDevice = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
+        NSLog(@"Added device: %@ - %@", upnpDevice.className, upnpDevice.friendlyName);
 //        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
         
         NSUInteger index = _devices.count;
-        [_devices insertObject:upnpObject atIndex:index];
-        _deviceIndexForUSN[upnpObject.usn.rawValue] = @(index);
+        [_devices insertObject:upnpDevice atIndex:index];
         
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
         [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -151,13 +158,12 @@
 
 - (void)deviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
-        AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
-        NSLog(@"Removed device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
+        AbstractUPnPDevice *upnpDevice = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
+        NSLog(@"Removed device: %@ - %@", upnpDevice.className, upnpDevice.friendlyName);
 //        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
         
-        NSUInteger index = ((NSNumber *)_deviceIndexForUSN[upnpObject.usn.rawValue]).unsignedIntegerValue;
+        NSUInteger index = [_devices indexOfObject:upnpDevice];
         [_devices removeObjectAtIndex:index];
-        [_deviceIndexForUSN removeObjectForKey:upnpObject.usn.rawValue];
         
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
         [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -166,16 +172,16 @@
 
 - (void)serviceWasAdded:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
-        AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-        NSLog(@"Added service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
+        AbstractUPnPService *upnpService = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
+        NSLog(@"Added service: %@ - %@", upnpService.className, upnpService.descriptionURL);
 //        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
 }
 
 - (void)serviceWasRemoved:(NSNotification *)notification {
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
-        AbstractUPnPService *upnpObject = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
-        NSLog(@"Removed service: %@ - %@", upnpObject.className, upnpObject.descriptionURL);
+        AbstractUPnPService *upnpService = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
+        NSLog(@"Removed service: %@ - %@", upnpService.className, upnpService.descriptionURL);
 //        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
     }
 }
