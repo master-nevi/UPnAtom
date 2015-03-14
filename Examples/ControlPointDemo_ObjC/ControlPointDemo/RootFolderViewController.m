@@ -43,7 +43,7 @@
     _deviceIndexForUSN = [NSMutableDictionary dictionary];
     
     //Search for UPnP Devices
-    [[UPnPManager sharedInstance] startSSDPDiscovery];
+    [[UPnAtom sharedInstance] startSSDPDiscovery];
     
     self.title = @"Control Point Demo";
     
@@ -72,7 +72,7 @@
 #pragma mark - IBActions
 
 - (IBAction)ssdpSearchButtonTapped:(id)sender {
-    [[UPnPManager sharedInstance] restartSSDPDiscovery];
+    [[UPnAtom sharedInstance] restartSSDPDiscovery];
 }
 
 #pragma mark - UITableViewDataSource methods

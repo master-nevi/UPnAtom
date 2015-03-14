@@ -142,7 +142,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
             
             if self._eventObservers.count >= 1 {
                 // subscribe
-                UPnPManager.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
+                UPnAtom.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
                     switch subscription {
                     case .Success(let value):
                         self._eventSubscription = value()
@@ -166,7 +166,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
             
             if self._eventObservers.count == 0 {
                 // unsubscribe
-                UPnPManager.sharedInstance.eventSubscriptionManager.unsubscribe(self, completion: { (result: EmptyResult) -> Void in
+                UPnAtom.sharedInstance.eventSubscriptionManager.unsubscribe(self, completion: { (result: EmptyResult) -> Void in
                     switch result {
                     case .Success:
                         self._eventSubscription = nil

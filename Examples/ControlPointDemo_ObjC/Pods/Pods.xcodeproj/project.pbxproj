@@ -52,7 +52,7 @@
 		4AE39E870289A367C3CE59F6 /* Pods-CocoaSSDP-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D0E8B9358588A3909ED4C4A /* Pods-CocoaSSDP-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4AF7C2B7D0C5FC201E5BAA00 /* UIAlertView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 930F751294FBD653D53BF50A /* UIAlertView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		51B1ED91F57A46CF68E47354 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0B9600502863AE6807A1AA1 /* CFNetwork.framework */; };
-		5542F2E52177543C27998548 /* UPnPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF83A0C20A825C420569DCC /* UPnPManager.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
+		5542F2E52177543C27998548 /* UPnAtom.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF83A0C20A825C420569DCC /* UPnAtom.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		56904FA9E35EE038938AC9BF /* SAXXMLParserElementObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63675F475999493B16DE458B /* SAXXMLParserElementObservation.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		584EE2AD79C69CA83A0A069B /* Pods-AFNetworking-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A13FE8D09C5CE6D2DC85ADC /* Pods-AFNetworking-dummy.m */; };
 		5A701B2AE71184374C309F3C /* GCDWebServerRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CF3A0597B094656BA3C27276 /* GCDWebServerRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -360,7 +360,7 @@
 		A9F6E2D85AC8551A5063097D /* Pods-UPnAtom-Private.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-UPnAtom-Private.xcconfig"; sourceTree = "<group>"; };
 		AA51ECB8C43FDDE53743A9BF /* AFHTTPSessionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFHTTPSessionManager.m; path = AFNetworking/AFHTTPSessionManager.m; sourceTree = "<group>"; };
 		AA8039CA9EF1B16C9D45FD26 /* AVTransport1Service.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AVTransport1Service.swift; sourceTree = "<group>"; };
-		AAF83A0C20A825C420569DCC /* UPnPManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UPnPManager.swift; sourceTree = "<group>"; };
+		AAF83A0C20A825C420569DCC /* UPnAtom.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UPnAtom.swift; sourceTree = "<group>"; };
 		AC4F792E0C034C7FB2154DA9 /* Pods-GCDWebServer.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GCDWebServer.xcconfig"; sourceTree = "<group>"; };
 		AD4EF65E7CCDFAC5F5CB432F /* AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFNetworking.h; path = AFNetworking/AFNetworking.h; sourceTree = "<group>"; };
 		ADDA9F53CE51B1586CACDA99 /* UIActivityIndicatorView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIActivityIndicatorView+AFNetworking.h"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.h"; sourceTree = "<group>"; };
@@ -723,7 +723,7 @@
 			isa = PBXGroup;
 			children = (
 				1430CC28AD56649DCDF8F2BA /* UPnPEventSubscriptionManager.swift */,
-				AAF83A0C20A825C420569DCC /* UPnPManager.swift */,
+				AAF83A0C20A825C420569DCC /* UPnAtom.swift */,
 				FF856D0AC20E4AC3BBE73157 /* UPnPRegistry.swift */,
 			);
 			path = Management;
@@ -1346,7 +1346,7 @@
 				FA053450D2AAB3E920E49A0A /* UPnPEvent.swift in Sources */,
 				7383326E8E48FF2607F47E81 /* UPnPEventSubscriptionManager.swift in Sources */,
 				0CC368DAAF90066082CC9A3D /* UPnPEventSubscriptionSerialization.swift in Sources */,
-				5542F2E52177543C27998548 /* UPnPManager.swift in Sources */,
+				5542F2E52177543C27998548 /* UPnAtom.swift in Sources */,
 				E0A4C041F6D3D683ADFB93AB /* UPnPRegistry.swift in Sources */,
 				82AAD6E2C4C79B2A3E4EA87E /* UniqueServiceName.swift in Sources */,
 			);

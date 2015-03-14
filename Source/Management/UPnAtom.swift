@@ -1,5 +1,5 @@
 //
-//  UPnPManager.swift
+//  UPnAtom.swift
 //
 //  Copyright (c) 2015 David Robles
 //
@@ -23,12 +23,12 @@
 
 import Foundation
 
-private let _UPnPManagerSharedInstance = UPnPManager()
+private let _UPnAtomSharedInstance = UPnAtom()
 
-@objc public class UPnPManager {
+@objc public class UPnAtom {
     // public
-    public class var sharedInstance: UPnPManager {
-        return _UPnPManagerSharedInstance
+    public class var sharedInstance: UPnAtom {
+        return _UPnAtomSharedInstance
     }
     public let upnpRegistry: UPnPRegistry
     
@@ -37,7 +37,7 @@ private let _UPnPManagerSharedInstance = UPnPManager()
     let eventSubscriptionManager: UPnPEventSubscriptionManager
     
     init() {
-        let adapterClass = UPnPManager.ssdpDiscoveryAdapterClass()
+        let adapterClass = UPnAtom.ssdpDiscoveryAdapterClass()
         let adapter = adapterClass()
         ssdpDiscoveryAdapter = adapter
         upnpRegistry = UPnPRegistry(ssdpDiscoveryAdapter: ssdpDiscoveryAdapter)
