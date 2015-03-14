@@ -39,20 +39,12 @@ import AFNetworking
         }
     }
     
-    // public
-    /// Calling this on the main thread is not recommended as it will block until completed, blocking the main thread is a no-no
-    public var rootDevices: [AbstractUPnPDevice] {
-        var rootDevices: [AbstractUPnPDevice]!
-        dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in
-            rootDevices = self._rootDevices.values.array
-        })
-        return rootDevices
-    }
+    // internal
+    private(set) var upnpObjectsMainThreadCopy = [UniqueServiceName: AbstractUPnP]() // main thread safe copy
     
     // private
     private let _concurrentUPnPObjectQueue = dispatch_queue_create("com.upnatom.upnp-registry.upnp-object-queue", DISPATCH_QUEUE_CONCURRENT)
-    lazy private var _rootDevices = [UniqueServiceName: AbstractUPnPDevice]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
-    lazy private var _rootDeviceServices = [UniqueServiceName: AbstractUPnPService]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    lazy private var _upnpObjects = [UniqueServiceName: AbstractUPnP]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     lazy private var _ssdpObjectCache = [SSDPObject]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     private let _upnpObjectDescriptionSessionManager = AFHTTPSessionManager()
     private var _upnpClasses = [String: AbstractUPnP.Type]()
@@ -75,27 +67,23 @@ import AFNetworking
         ssdpDiscoveryAdapter.delegate = self
     }
     
-    /// Safe to call from main thread
-    public func rootDevices(closure: (rootDevices: [AbstractUPnPDevice]) -> Void) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-            let rootDevices = self.rootDevices
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                closure(rootDevices: rootDevices)
+    /// Safe to call from any thread including main thread
+    public func upnpDevices(closure: (upnpDevices: [AbstractUPnPDevice]) -> Void) {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            let upnpObjects = self.upnpObjectsMainThreadCopy
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                let upnpDevices = upnpObjects.values.array.filter({$0 is AbstractUPnPDevice})
+                
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    closure(upnpDevices: upnpDevices as [AbstractUPnPDevice])
+                })
             })
         })
     }
     
     public func register(#upnpClass: AbstractUPnP.Type, forURN urn: String) {
         _upnpClasses[urn] = upnpClass
-    }
-    
-    func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
-        var service: AbstractUPnPService?
-        dispatch_sync(_concurrentUPnPObjectQueue, { () -> Void in
-            service = self._rootDeviceServices[usn]
-        })
-        
-        return service
     }
     
     private func createUPnPObject(ssdpObject: SSDPObject, upnpDescriptionXML: NSData) -> AbstractUPnP? {
@@ -106,19 +94,15 @@ import AFNetworking
         let xmlLocation = ssdpObject.xmlLocation
         
         if let registeredClass = _upnpClasses[urn] {
-            LogVerbose("creating registered class for urn: \(urn)")
             upnpClass = registeredClass
         }
         else if urn.rangeOfString("urn:schemas-upnp-org:device") != nil {
-            LogVerbose("creating AbstractUPnPDevice for urn: \(urn)")
             upnpClass = AbstractUPnPDevice.self
         }
         else if urn.rangeOfString("urn:schemas-upnp-org:service") != nil {
-            LogVerbose("creating AbstractUPnPService for urn: \(urn)")
             upnpClass = AbstractUPnPService.self
         }
         else {
-            LogVerbose("creating AbstractUPnP for urn: \(urn)")
             upnpClass = AbstractUPnP.self
         }
         
@@ -165,17 +149,13 @@ extension UPnPRegistry: SSDPDiscoveryDelegate {
     func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didUpdateSSDPObjects ssdpObjects: [SSDPObject]) {
         dispatch_barrier_async(_concurrentUPnPObjectQueue, { () -> Void in
             self._ssdpObjectCache = ssdpObjects
-            var devicesToKeep = [AbstractUPnPDevice]()
-            var servicesToKeep = [AbstractUPnPService]()
+            var upnpObjectsToKeep = [AbstractUPnP]()
             for ssdpObject in ssdpObjects {
                 // only concerned with objects with a device or service type urn
                 if ssdpObject.urn != nil && (ssdpObject.notificationType == .Device || ssdpObject.notificationType == .Service) {
                     let usn = UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn!)
-                    if let foundDevice = self._rootDevices[usn] {
-                        devicesToKeep.append(foundDevice)
-                    }
-                    else if let foundService = self._rootDeviceServices[usn] {
-                        servicesToKeep.append(foundService)
+                    if let foundObject = self._upnpObjects[usn] {
+                        upnpObjectsToKeep.append(foundObject)
                     }
                     else {
                         self.getUPnPDescription(forSSDPObject: ssdpObject)
@@ -183,8 +163,7 @@ extension UPnPRegistry: SSDPDiscoveryDelegate {
                 }
             }
             
-            self.process(upnpObjectsToKeep: devicesToKeep, upnpObjects: &self._rootDevices, notificationType: .Device)
-            self.process(upnpObjectsToKeep: servicesToKeep, upnpObjects: &self._rootDeviceServices, notificationType: .Service)
+            self.process(upnpObjectsToKeep: upnpObjectsToKeep, upnpObjects: &self._upnpObjects)
         })
     }
     
@@ -203,51 +182,57 @@ extension UPnPRegistry: SSDPDiscoveryDelegate {
                         return
                     }
                     
-                    if ssdpObject.notificationType == .Device {
-                        self.addUPnPObject(forSSDPObject: ssdpObject, upnpDescriptionXML: xmlData, upnpObjects: &self._rootDevices, notificationType: .Device)
-                    }
-                    else if ssdpObject.notificationType == .Service {
-                        self.addUPnPObject(forSSDPObject: ssdpObject, upnpDescriptionXML: xmlData, upnpObjects: &self._rootDeviceServices, notificationType: .Service)
+                    if ssdpObject.notificationType == .Device || ssdpObject.notificationType == .Service {
+                        self.addUPnPObject(forSSDPObject: ssdpObject, upnpDescriptionXML: xmlData, upnpObjects: &self._upnpObjects)
                     }
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
-                // log
+                let error = error.localizedDescription("Unknown error")
+                LogError("Unable to fetch UPnP object description: \(error) For SSDP object: \(ssdpObject.urn) at \(ssdpObject.xmlLocation)")
         })
     }
     
     /// Must be called within dispatch_barrier_async()
-    private func addUPnPObject<T: AbstractUPnP>(forSSDPObject ssdpObject: SSDPObject, upnpDescriptionXML: NSData, inout upnpObjects: [UniqueServiceName: T], notificationType: UPnPObjectNotificationType) {
+    private func addUPnPObject(forSSDPObject ssdpObject: SSDPObject, upnpDescriptionXML: NSData, inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
         // ignore if already in db
         let usn = UniqueServiceName(uuid: ssdpObject.uuid, urn: ssdpObject.urn!)
         if let foundObject = upnpObjects[usn] {
             return
         }
         else {
-            if let newObject = createUPnPObject(ssdpObject, upnpDescriptionXML: upnpDescriptionXML) {
-                if let newObject = newObject as? T {
-                    upnpObjects[usn] = newObject
-                    
-                    let notificationComponents = notificationType.notificationComponents()
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectAddedNotificationName, object: self, userInfo: [notificationComponents.objectKey: newObject])
-                    })
+            if let newObject = createUPnPObject(ssdpObject, upnpDescriptionXML: upnpDescriptionXML) {                
+                if !(newObject is AbstractUPnPDevice) && !(newObject is AbstractUPnPService) {
+                    return
                 }
+                
+                upnpObjects[usn] = newObject
+                
+                let upnpObjectsCopy = upnpObjects // create a copy for safe use on the main thread
+                let notificationType: UPnPObjectNotificationType = newObject is AbstractUPnPDevice ? .Device : .Service
+                let notificationComponents = notificationType.notificationComponents()
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.upnpObjectsMainThreadCopy = upnpObjectsCopy
+                    NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectAddedNotificationName, object: self, userInfo: [notificationComponents.objectKey: newObject])
+                })
             }
         }
     }
     
     /// Must be called within dispatch_barrier_async()
-    private func process<T: AbstractUPnP>(#upnpObjectsToKeep: [T], inout upnpObjects: [UniqueServiceName: T], notificationType: UPnPObjectNotificationType) {
+    private func process(#upnpObjectsToKeep: [AbstractUPnP], inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
         let upnpObjectsSet = NSMutableSet(array: Array(upnpObjects.values))
         upnpObjectsSet.minusSet(NSSet(array: upnpObjectsToKeep))
-        let upnpObjectsToRemove = upnpObjectsSet.allObjects as [T] // casting from [AnyObject]
+        let upnpObjectsToRemove = upnpObjectsSet.allObjects as [AbstractUPnP] // casting from [AnyObject]
         
         for upnpObjectToRemove in upnpObjectsToRemove {
             upnpObjects.removeValueForKey(upnpObjectToRemove.usn)
             
+            let upnpObjectsCopy = upnpObjects // create a copy for safe use on the main thread
+            let notificationType: UPnPObjectNotificationType = upnpObjectToRemove is AbstractUPnPDevice ? .Device : .Service
             let notificationComponents = notificationType.notificationComponents()
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.upnpObjectsMainThreadCopy = upnpObjectsCopy
                 NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectRemoveNotificationName, object: self, userInfo: [notificationComponents.objectKey: upnpObjectToRemove])
             })
         }
