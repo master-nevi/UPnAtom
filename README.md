@@ -35,6 +35,7 @@ Currently I'm only taking feature requests, bugs, and bug fixes via [Github issu
 * [x] Create your own service and device object via class registration
 * [x] UPnP Version 1 Compliance
 * [ ] Swift 1.2
+* [ ] In-house implementation of SSDP discovery
 * [ ] OS X 10.9+ support
 * [ ] Feature parity with upnpx library
 * [ ] UPnP Version 2 Compliance
