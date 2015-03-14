@@ -102,7 +102,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
     
     func serviceFor(#urn: String) -> AbstractUPnPService? {
-        return UPnPManager.sharedInstance.upnpRegistry.upnpObjectsMainThreadCopy[UniqueServiceName(uuid: uuid, urn: urn)] as? AbstractUPnPService
+        return UPnAtom.sharedInstance.upnpRegistry.upnpObjectsMainThreadCopy[UniqueServiceName(uuid: uuid, urn: urn)] as? AbstractUPnPService
     }
 }
 
