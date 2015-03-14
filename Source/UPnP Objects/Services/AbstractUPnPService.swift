@@ -222,6 +222,7 @@ extension AbstractUPnPService: ExtendedPrintable {
 }
 
 class UPnPServiceParser: AbstractSAXXMLParser {
+    /// Using a class instead of struct since it's much easier and safer to continuously update from references rather than values directly as it's easy to accidentally update a copy and not the original.
     class ParserUPnPService {
         var baseURL: NSURL?
         var serviceType: String?
