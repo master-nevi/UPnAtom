@@ -10,7 +10,6 @@
 		0189AE44E8F58E61EEC2994F /* AbstractUPnP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D830127F7FD4CECE0355DF8C /* AbstractUPnP.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		020A219A04BB936EDBFE29A7 /* Pods-Ono-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 50347D5E23D32823E1C67D9A /* Pods-Ono-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		05108E43C8134DA269FE85CB /* GCDWebServerStreamedResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = E4D97324102FD129DD7C3F55 /* GCDWebServerStreamedResponse.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
-		05DE4A3965DD4326B7614817 /* UPnPDeviceParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B0041968CC5AD8B5A41BD5 /* UPnPDeviceParser.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		06EC6A64337A6B33D215E7AB /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DACE735E4BC6DB4F0530F21 /* AsyncUdpSocket.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		07E73E5F7A580AEC9C2C2D3F /* GCDWebServerDataRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = DDDBF8B3CCB05263F622111C /* GCDWebServerDataRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		09A3721841D9019A3EF120BE /* GCDWebServerFileRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 29BFA292E9DE241286E72AB1 /* GCDWebServerFileRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -42,7 +41,6 @@
 		3470D7201915F4E0509E3E1A /* GCDWebServerDataResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F9A0A1C3D306F063A121F0 /* GCDWebServerDataResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		38E7C1F29DADE04BB9607259 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B9CE531958113FA24E4723D /* Foundation.framework */; };
 		3A56DD5B77C9DAADE77B8D69 /* Ono.h in Headers */ = {isa = PBXBuildFile; fileRef = A2CA371649FEA85D48FAB278 /* Ono.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3B4580CB5417A140D86EB3D0 /* UPnPServiceParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0598E1375197C67E924657C /* UPnPServiceParser.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		3BF0C6C7D4FB388B7680FA01 /* Pods-UPnAtom-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5FBC42C436C4709402DA0C /* Pods-UPnAtom-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3C51A1990EC067E53FEF0DFF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B9CE531958113FA24E4723D /* Foundation.framework */; };
 		3C93B5C04E00E41F503D7CCA /* AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = AD4EF65E7CCDFAC5F5CB432F /* AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -276,7 +274,6 @@
 		2D0E151E053BA06B19B49730 /* UIButton+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIButton+AFNetworking.h"; path = "UIKit+AFNetworking/UIButton+AFNetworking.h"; sourceTree = "<group>"; };
 		2D482AE071A0064FEB2FCEDC /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFHTTPRequestOperation.m; path = AFNetworking/AFHTTPRequestOperation.m; sourceTree = "<group>"; };
 		306047EF7FAD37F83DD351A6 /* SSDPObject.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SSDPObject.swift; sourceTree = "<group>"; };
-		32B0041968CC5AD8B5A41BD5 /* UPnPDeviceParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UPnPDeviceParser.swift; sourceTree = "<group>"; };
 		34F81811EA45940DE8331B16 /* GCDWebServerResponse.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerResponse.h; path = GCDWebServer/Core/GCDWebServerResponse.h; sourceTree = "<group>"; };
 		35717CBAC9C3D20A888517B0 /* RenderingControl1Service.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RenderingControl1Service.swift; sourceTree = "<group>"; };
 		377A004289BBF5BE6BC38CB5 /* Pods-AFNetworking-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AFNetworking-umbrella.h"; sourceTree = "<group>"; };
@@ -412,7 +409,6 @@
 		EF4080FFE341DD24142225E7 /* UIAlertView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIAlertView+AFNetworking.m"; path = "UIKit+AFNetworking/UIAlertView+AFNetworking.m"; sourceTree = "<group>"; };
 		EF762E4B67ED039B0D90ACA1 /* Pods-CocoaAsyncSocket.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-CocoaAsyncSocket.modulemap"; sourceTree = "<group>"; };
 		F042E6E5EB46269C54809F82 /* GCDWebServerURLEncodedFormRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerURLEncodedFormRequest.h; path = GCDWebServer/Requests/GCDWebServerURLEncodedFormRequest.h; sourceTree = "<group>"; };
-		F0598E1375197C67E924657C /* UPnPServiceParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UPnPServiceParser.swift; sourceTree = "<group>"; };
 		F44C4DCCBA9C95B81DE6432E /* AFHTTPRequestOperationManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFHTTPRequestOperationManager.m; path = AFNetworking/AFHTTPRequestOperationManager.m; sourceTree = "<group>"; };
 		F51028C127C74EBF8A11B920 /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLResponseSerialization.h; path = AFNetworking/AFURLResponseSerialization.h; sourceTree = "<group>"; };
 		F78DE535BF49C1733B4335B4 /* CocoaAsyncSocket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CocoaAsyncSocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -636,8 +632,6 @@
 				CB796102C598441726FE6CEA /* AbstractDOMXMLParser.swift */,
 				E900ECFB26E3462A84F69208 /* AbstractSAXXMLParser.swift */,
 				63675F475999493B16DE458B /* SAXXMLParserElementObservation.swift */,
-				32B0041968CC5AD8B5A41BD5 /* UPnPDeviceParser.swift */,
-				F0598E1375197C67E924657C /* UPnPServiceParser.swift */,
 			);
 			path = Parsers;
 			sourceTree = "<group>";
@@ -1349,13 +1343,11 @@
 				C090742B0D26219D2AC3F2A7 /* SOAPSessionManager.swift in Sources */,
 				A79011CB4BF114B3033169FE /* SSDPDiscoveryAdapter.swift in Sources */,
 				CBDB6522219DA8816162FB6F /* SSDPObject.swift in Sources */,
-				05DE4A3965DD4326B7614817 /* UPnPDeviceParser.swift in Sources */,
 				FA053450D2AAB3E920E49A0A /* UPnPEvent.swift in Sources */,
 				7383326E8E48FF2607F47E81 /* UPnPEventSubscriptionManager.swift in Sources */,
 				0CC368DAAF90066082CC9A3D /* UPnPEventSubscriptionSerialization.swift in Sources */,
 				5542F2E52177543C27998548 /* UPnPManager.swift in Sources */,
 				E0A4C041F6D3D683ADFB93AB /* UPnPRegistry.swift in Sources */,
-				3B4580CB5417A140D86EB3D0 /* UPnPServiceParser.swift in Sources */,
 				82AAD6E2C4C79B2A3E4EA87E /* UniqueServiceName.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
