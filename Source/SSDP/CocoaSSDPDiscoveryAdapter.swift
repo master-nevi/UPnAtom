@@ -34,8 +34,8 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
         SSDPServiceBrowser(serviceType: SSDPServiceType_UPnP_RenderingControl1),
         SSDPServiceBrowser(serviceType: SSDPServiceType_UPnP_AVTransport1)
     ]
-    private let _serialSSDPObjectQueue = dispatch_queue_create("com.upnatom.cocoa-ssdp-discovery-adapter.ssdp-object-queue", DISPATCH_QUEUE_SERIAL)
-    private var _ssdpObjects = [String: SSDPObject]()
+    private let _serialSSDPDiscoveryQueue = dispatch_queue_create("com.upnatom.cocoa-ssdp-discovery-adapter.ssdp-discovery-queue", DISPATCH_QUEUE_SERIAL)
+    private var _ssdpDiscoveries = [String: SSDPDiscovery]()
     
     required init() {
         super.init()
@@ -54,7 +54,7 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
         for ssdpBrowser in _ssdpBrowsers {
             ssdpBrowser.stopBrowsingForServices()
         }
-        _ssdpObjects.removeAll(keepCapacity: false)
+        _ssdpDiscoveries.removeAll(keepCapacity: false)
     }
 }
 
@@ -65,28 +65,28 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
         }
     }
     
-    func ssdpBrowser(browser: SSDPServiceBrowser!, didFindService ssdpObjectUnadapted: SSDPService!) {
-        dispatch_async(_serialSSDPObjectQueue, { () -> Void in
-            if self._ssdpObjects[ssdpObjectUnadapted.uniqueServiceName] == nil {
-                if returnIfContainsElements(ssdpObjectUnadapted.uniqueServiceName) != nil &&
-                    ssdpObjectUnadapted.location != nil &&
-                    returnIfContainsElements(ssdpObjectUnadapted.serviceType) != nil {
-                        let usn = ssdpObjectUnadapted.uniqueServiceName
-                        let uuid = returnIfContainsElements(SSDPObject.uuid(usn))
-                        let urn = returnIfContainsElements(SSDPObject.urn(usn))
-                        let xmlLocation = ssdpObjectUnadapted.location
-                        let notificationType = SSDPNotificationType(notificationType: ssdpObjectUnadapted.serviceType)
+    func ssdpBrowser(browser: SSDPServiceBrowser!, didFindService ssdpDiscoveryUnadapted: SSDPService!) {
+        dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
+            if self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] == nil {
+                if returnIfContainsElements(ssdpDiscoveryUnadapted.uniqueServiceName) != nil &&
+                    ssdpDiscoveryUnadapted.location != nil &&
+                    returnIfContainsElements(ssdpDiscoveryUnadapted.serviceType) != nil {
+                        let usn = ssdpDiscoveryUnadapted.uniqueServiceName
+                        let uuid = returnIfContainsElements(SSDPDiscovery.uuid(usn))
+                        let urn = returnIfContainsElements(SSDPDiscovery.urn(usn))
+                        let xmlLocation = ssdpDiscoveryUnadapted.location
+                        let notificationType = SSDPNotificationType(notificationType: ssdpDiscoveryUnadapted.serviceType)
                         
                         if uuid == nil || xmlLocation == nil {
                             return
                         }
                         
-                        let ssdpObject = SSDPObject(uuid: uuid!, urn: urn, usn: usn, xmlLocation: xmlLocation, notificationType: notificationType)
+                        let ssdpDiscovery = SSDPDiscovery(uuid: uuid!, urn: urn, usn: usn, xmlLocation: xmlLocation, notificationType: notificationType)
                         
-                        self._ssdpObjects[ssdpObjectUnadapted.uniqueServiceName] = ssdpObject
+                        self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] = ssdpDiscovery
                         
                         if let delegate = self.delegate {
-                            delegate.ssdpDiscoveryAdapter(self, didUpdateSSDPObjects: self._ssdpObjects.values.array)
+                            delegate.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
                         }
                 }
             }
@@ -94,13 +94,13 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
     }
     
     /// Untested as it isn't implemented in CocoaSSDP library
-    func ssdpBrowser(browser: SSDPServiceBrowser!, didRemoveService ssdpObjectUnadapted: SSDPService!) {
-        dispatch_async(_serialSSDPObjectQueue, { () -> Void in
-            if self._ssdpObjects[ssdpObjectUnadapted.uniqueServiceName] != nil {
-                self._ssdpObjects.removeValueForKey(ssdpObjectUnadapted.uniqueServiceName)
+    func ssdpBrowser(browser: SSDPServiceBrowser!, didRemoveService ssdpDiscoveryUnadapted: SSDPService!) {
+        dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
+            if self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] != nil {
+                self._ssdpDiscoveries.removeValueForKey(ssdpDiscoveryUnadapted.uniqueServiceName)
                 
                 if let delegate = self.delegate {
-                    delegate.ssdpDiscoveryAdapter(self, didUpdateSSDPObjects: self._ssdpObjects.values.array)
+                    delegate.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
                 }
             }
         })

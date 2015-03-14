@@ -116,7 +116,7 @@
 		C87DDA96B1322DDB4E538614 /* AbstractUPnPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9D3DC938D40E3482AC2BC9 /* AbstractUPnPService.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		C928A228D046E69C48AB9A8F /* UIActivityIndicatorView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDA9F53CE51B1586CACDA99 /* UIActivityIndicatorView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9ECD9B0931D9F73E78C83B1 /* Ono.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCEF75563DEA7CAAA3AAD7E4 /* Ono.framework */; };
-		CBDB6522219DA8816162FB6F /* SSDPObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306047EF7FAD37F83DD351A6 /* SSDPObject.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
+		CBDB6522219DA8816162FB6F /* SSDPDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306047EF7FAD37F83DD351A6 /* SSDPDiscovery.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		D0548DBDE57058CB5B7386FC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B9CE531958113FA24E4723D /* Foundation.framework */; };
 		D47169BE94E2CA7875034F9B /* SSDPServiceBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 478B826F6ED0362524AB0658 /* SSDPServiceBrowser.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		D47FC1C5A6D79D2DD820D146 /* GCDWebServerURLEncodedFormRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = F042E6E5EB46269C54809F82 /* GCDWebServerURLEncodedFormRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -273,7 +273,7 @@
 		2BD5EB1A62C23ECDED77A35C /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D0E151E053BA06B19B49730 /* UIButton+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIButton+AFNetworking.h"; path = "UIKit+AFNetworking/UIButton+AFNetworking.h"; sourceTree = "<group>"; };
 		2D482AE071A0064FEB2FCEDC /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFHTTPRequestOperation.m; path = AFNetworking/AFHTTPRequestOperation.m; sourceTree = "<group>"; };
-		306047EF7FAD37F83DD351A6 /* SSDPObject.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SSDPObject.swift; sourceTree = "<group>"; };
+		306047EF7FAD37F83DD351A6 /* SSDPDiscovery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SSDPDiscovery.swift; sourceTree = "<group>"; };
 		34F81811EA45940DE8331B16 /* GCDWebServerResponse.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerResponse.h; path = GCDWebServer/Core/GCDWebServerResponse.h; sourceTree = "<group>"; };
 		35717CBAC9C3D20A888517B0 /* RenderingControl1Service.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RenderingControl1Service.swift; sourceTree = "<group>"; };
 		377A004289BBF5BE6BC38CB5 /* Pods-AFNetworking-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AFNetworking-umbrella.h"; sourceTree = "<group>"; };
@@ -542,7 +542,7 @@
 			children = (
 				3A949E89687D95D754B4D599 /* CocoaSSDPDiscoveryAdapter.swift */,
 				9CF2326E62F56C43FC88E762 /* SSDPDiscoveryAdapter.swift */,
-				306047EF7FAD37F83DD351A6 /* SSDPObject.swift */,
+				306047EF7FAD37F83DD351A6 /* SSDPDiscovery.swift */,
 			);
 			path = SSDP;
 			sourceTree = "<group>";
@@ -1342,7 +1342,7 @@
 				23EB335D28072E79D532BE67 /* SOAPSerialization.swift in Sources */,
 				C090742B0D26219D2AC3F2A7 /* SOAPSessionManager.swift in Sources */,
 				A79011CB4BF114B3033169FE /* SSDPDiscoveryAdapter.swift in Sources */,
-				CBDB6522219DA8816162FB6F /* SSDPObject.swift in Sources */,
+				CBDB6522219DA8816162FB6F /* SSDPDiscovery.swift in Sources */,
 				FA053450D2AAB3E920E49A0A /* UPnPEvent.swift in Sources */,
 				7383326E8E48FF2607F47E81 /* UPnPEventSubscriptionManager.swift in Sources */,
 				0CC368DAAF90066082CC9A3D /* UPnPEventSubscriptionSerialization.swift in Sources */,
