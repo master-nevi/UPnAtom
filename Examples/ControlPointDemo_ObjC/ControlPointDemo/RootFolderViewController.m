@@ -32,11 +32,15 @@
 
 @implementation RootFolderViewController {
     BOOL _hasSearchedForContentDirectories;
-    NSArray *_devices;
+    NSMutableArray *_devices;
+    NSMutableDictionary *_deviceIndexForUSN;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    _devices = [NSMutableArray array];
+    _deviceIndexForUSN = [NSMutableDictionary dictionary];
     
     //Search for UPnP Devices
     [[UPnPManager sharedInstance] startSSDPDiscovery];
@@ -135,9 +139,14 @@
         AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
         NSLog(@"Added device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
 //        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
+        
+        NSUInteger index = _devices.count;
+        [_devices insertObject:upnpObject atIndex:index];
+        _deviceIndexForUSN[upnpObject.usn.rawValue] = @(index);
+        
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
-    
-    [self updateDataAndRefreshTableView];
 }
 
 - (void)deviceWasRemoved:(NSNotification *)notification {
@@ -145,9 +154,14 @@
         AbstractUPnPDevice *upnpObject = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
         NSLog(@"Removed device: %@ - %@", upnpObject.className, upnpObject.friendlyName);
 //        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
+        
+        NSUInteger index = ((NSNumber *)_deviceIndexForUSN[upnpObject.usn.rawValue]).unsignedIntegerValue;
+        [_devices removeObjectAtIndex:index];
+        [_deviceIndexForUSN removeObjectForKey:upnpObject.usn.rawValue];
+        
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
-    
-    [self updateDataAndRefreshTableView];
 }
 
 - (void)serviceWasAdded:(NSNotification *)notification {
@@ -167,15 +181,6 @@
 }
 
 #pragma mark - Internal lib
-
-- (void)updateDataAndRefreshTableView {
-    UPnPRegistry *registry = [[UPnPManager sharedInstance] upnpRegistry];
-    [registry rootDevices:^(NSArray *rootDevices) {
-        _devices = rootDevices;
-        
-        [self.tableView reloadData];
-    }];
-}
 
 - (UILabel *)toolbarLabel {
     UIBarButtonItem *item = (UIBarButtonItem *)self.toolbarItems.firstObject;
