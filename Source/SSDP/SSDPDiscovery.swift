@@ -1,5 +1,5 @@
 //
-//  AVTransport1Event.swift
+//  SSDPDiscovery.swift
 //
 //  Copyright (c) 2015 David Robles
 //
@@ -49,7 +49,7 @@ enum SSDPNotificationType {
     }
 }
 
-struct SSDPObject {
+struct SSDPDiscovery {
     let uuid: String
     let urn: String?
     let usn: String
@@ -66,8 +66,8 @@ struct SSDPObject {
     }
 }
 
-extension SSDPObject: Equatable { }
+extension SSDPDiscovery: Equatable { }
 
-func ==(lhs: SSDPObject, rhs: SSDPObject) -> Bool {
+func ==(lhs: SSDPDiscovery, rhs: SSDPDiscovery) -> Bool {
     return lhs.usn == rhs.usn
 }

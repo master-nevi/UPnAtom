@@ -23,20 +23,20 @@
 
 import UIKit
 
-protocol SSDPDiscoveryDelegate: class {
-    func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didUpdateSSDPObjects ssdpObjects: [SSDPObject])
+protocol SSDPDiscoveryAdapterDelegate: class {
+    func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didUpdateSSDPDiscoveries ssdpDiscoveries: [SSDPDiscovery])
     func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didFailWithError error: NSError)
 }
 
 protocol SSDPDiscoveryAdapter: class {
-    weak var delegate: SSDPDiscoveryDelegate? { get set }
+    weak var delegate: SSDPDiscoveryAdapterDelegate? { get set }
     func start()
     func stop()
     func restart()
 }
 
 class AbstractSSDPDiscoveryAdapter: SSDPDiscoveryAdapter {
-    weak var delegate: SSDPDiscoveryDelegate?
+    weak var delegate: SSDPDiscoveryAdapterDelegate?
     
     required init() { }
     
