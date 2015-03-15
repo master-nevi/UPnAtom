@@ -1,5 +1,5 @@
 //
-//  PlayBack.m
+//  Player.m
 //
 //  Copyright (c) 2015 David Robles
 //
@@ -21,19 +21,19 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-#import "PlayBack.h"
+#import "Player.h"
 @import UPnAtom;
 
-@implementation PlayBack {
+@implementation Player {
     NSInteger _pos;
 }
 
-+ (PlayBack *)sharedInstance {
-    static PlayBack *instance = nil;
++ (Player *)sharedInstance {
+    static Player *instance = nil;
     static dispatch_once_t onceToken;
     
     dispatch_once(&onceToken, ^{
-        instance = [PlayBack new];
+        instance = [Player new];
     });
     
     return instance;
@@ -86,7 +86,7 @@
 //        NSMutableString *outNumberReturned = [[NSMutableString alloc] init];
 //        NSMutableString *outUpdateID = [[NSMutableString alloc] init];
         
-        //Get the metadata, we need to supply it when playback
+        //Get the metadata, we need to supply it when playing
 //        [[server contentDirectory] BrowseWithObjectID:[item objectID] BrowseFlag:@"BrowseMetadata" Filter:@"*" StartingIndex:@"0" RequestedCount:@"1" SortCriteria:@"+dc:title" OutResult:metaData OutNumberReturned:outNumberReturned OutTotalMatches:outTotalMatches OutUpdateID:outUpdateID];
         
         

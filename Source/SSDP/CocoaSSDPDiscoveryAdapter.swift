@@ -45,6 +45,8 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
     }
     
     override func start() {
+        super.start()
+        
         for ssdpBrowser in _ssdpBrowsers {
             ssdpBrowser.startBrowsingForServices()
         }
@@ -55,6 +57,8 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
             ssdpBrowser.stopBrowsingForServices()
         }
         _ssdpDiscoveries.removeAll(keepCapacity: false)
+        
+        super.stop()
     }
 }
 

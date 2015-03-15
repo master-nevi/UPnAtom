@@ -22,7 +22,7 @@
 //  SOFTWARE.
 
 #import "FolderViewController.h"
-#import "PlayBack.h"
+#import "Player.h"
 @import UPnAtom;
 
 @interface FolderViewController () <UITableViewDataSource, UITableViewDelegate>
@@ -43,7 +43,7 @@
             sortCaps = @"+dc:title";
         }
         
-        [_device.contentDirectoryService browseWithObjectID:_rootId browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:sortCaps success:^(NSArray *result, NSString *numberReturned, NSString *totalMatches, NSString *updateID) {
+        [_device.contentDirectoryService browseWithObjectID:_rootId browseFlag:@"BrowseDirectChildren" filter:@"*" startingIndex:@"0" requestedCount:@"0" sortCriteria:sortCaps success:^(NSArray *result, NSInteger numberReturned, NSInteger totalMatches, NSString *updateID) {
             _playlist = result;
             [self.tableView reloadData];
         } failure:^(NSError *error) {
@@ -58,10 +58,10 @@
     [titleLabel setBackgroundColor:[UIColor clearColor]];
     [titleLabel setTextColor:[UIColor blackColor]];
     
-    if([[PlayBack sharedInstance] renderer] == nil){
+    if([[Player sharedInstance] renderer] == nil){
         [titleLabel setText:@"No Renderer Selected"];
     }else{
-        [titleLabel setText:[[[PlayBack sharedInstance] renderer] friendlyName] ];
+        [titleLabel setText:[[[Player sharedInstance] renderer] friendlyName] ];
     }
     
     [titleLabel setTextAlignment:NSTextAlignmentLeft];
@@ -81,21 +81,14 @@
 
 #pragma mark - UITableViewDataSource methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [_playlist count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
+    static NSString *cellIdentifier = @"DefaultCell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     // Configure the cell...
     ContentDirectory1Object *item = _playlist[indexPath.row];
@@ -118,7 +111,7 @@
         
         [[self navigationController] pushViewController:targetViewController animated:YES];
     }else{
-        [[PlayBack sharedInstance] play:_playlist position:indexPath.row];
+        [[Player sharedInstance] play:_playlist position:indexPath.row];
     }
 }
 
