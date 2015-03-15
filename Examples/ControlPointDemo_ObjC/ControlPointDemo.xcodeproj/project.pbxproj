@@ -14,7 +14,7 @@
 		633C993B1A13B9770059444C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 633C99391A13B9770059444C /* LaunchScreen.xib */; };
 		633C99521A13BD650059444C /* RootFolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99511A13BD650059444C /* RootFolderViewController.m */; };
 		633C99551A13BD8E0059444C /* FolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99541A13BD8E0059444C /* FolderViewController.m */; };
-		633C99581A13C8760059444C /* PlayBack.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99571A13C8760059444C /* PlayBack.m */; };
+		633C99581A13C8760059444C /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99571A13C8760059444C /* Player.m */; };
 		96E66206756F4E4AB570745D /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3742B3919983E4B6B048AD92 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
@@ -32,8 +32,8 @@
 		633C99511A13BD650059444C /* RootFolderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootFolderViewController.m; sourceTree = "<group>"; };
 		633C99531A13BD8E0059444C /* FolderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FolderViewController.h; sourceTree = "<group>"; };
 		633C99541A13BD8E0059444C /* FolderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FolderViewController.m; sourceTree = "<group>"; };
-		633C99561A13C8750059444C /* PlayBack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayBack.h; sourceTree = "<group>"; };
-		633C99571A13C8760059444C /* PlayBack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayBack.m; sourceTree = "<group>"; };
+		633C99561A13C8750059444C /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		633C99571A13C8760059444C /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Player.m; sourceTree = "<group>"; };
 		633C995A1A150CCE0059444C /* ControlPointDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ControlPointDemo-Bridging-Header.h"; sourceTree = "<group>"; };
 		6731BDB9ACEF097F0FD8F40C /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		92D8BE707C243DA8A0E35CC3 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -96,8 +96,8 @@
 				633C99511A13BD650059444C /* RootFolderViewController.m */,
 				633C99531A13BD8E0059444C /* FolderViewController.h */,
 				633C99541A13BD8E0059444C /* FolderViewController.m */,
-				633C99561A13C8750059444C /* PlayBack.h */,
-				633C99571A13C8760059444C /* PlayBack.m */,
+				633C99561A13C8750059444C /* Player.h */,
+				633C99571A13C8760059444C /* Player.m */,
 				633C995A1A150CCE0059444C /* ControlPointDemo-Bridging-Header.h */,
 				633C99371A13B9770059444C /* Images.xcassets */,
 				633C99391A13B9770059444C /* LaunchScreen.xib */,
@@ -240,7 +240,7 @@
 				633C99521A13BD650059444C /* RootFolderViewController.m in Sources */,
 				633C99301A13B9770059444C /* AppDelegate.m in Sources */,
 				633C992D1A13B9770059444C /* main.m in Sources */,
-				633C99581A13C8760059444C /* PlayBack.m in Sources */,
+				633C99581A13C8760059444C /* Player.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

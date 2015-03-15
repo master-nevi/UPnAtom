@@ -40,6 +40,12 @@ import Foundation
     }
 }
 
+extension AbstractUPnP: Equatable { }
+
+public func ==(lhs: AbstractUPnP, rhs: AbstractUPnP) -> Bool {
+    return lhs.usn == rhs.usn
+}
+
 extension AbstractUPnP: ExtendedPrintable {
     public var className: String { return "AbstractUPnP" }
     public var description: String {

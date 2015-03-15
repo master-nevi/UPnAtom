@@ -1,5 +1,5 @@
 //
-//  PlayBack.h
+//  Player.h
 //
 //  Copyright (c) 2015 David Robles
 //
@@ -25,9 +25,9 @@
 
 @class AbstractUPnPDevice;
 
-@interface PlayBack : NSObject
+@interface Player : NSObject
 
-+ (PlayBack *)sharedInstance;
++ (Player *)sharedInstance;
 
 - (int)play:(NSArray *)playList position:(NSInteger)position;
 - (int)play:(NSInteger)position;

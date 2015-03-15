@@ -25,7 +25,7 @@ import Foundation
 import Ono
 
 public class ContentDirectory1Service: AbstractUPnPService {    
-    public func getSortCapabilities(success: (sortCapabilities: String?) -> Void, failure:(error: NSError?) -> Void) {
+    public func getSortCapabilities(success: (sortCapabilities: String?) -> Void, failure:(error: NSError) -> Void) {
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetSortCapabilities", serviceURN: urn, arguments: nil)
         
         sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
@@ -36,7 +36,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
         })
     }
     
-    public func browse(#objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, success: (result: [ContentDirectory1Object]?, numberReturned: String?, totalMatches: String?, updateID: String?) -> Void, failure: (error: NSError?) -> Void) {
+    public func browse(#objectID: String, browseFlag: String, filter: String, startingIndex: String, requestedCount: String, sortCriteria: String, success: (result: [ContentDirectory1Object]?, numberReturned: Int, totalMatches: Int, updateID: String?) -> Void, failure: (error: NSError) -> Void) {
         let arguments = [
             "ObjectID" : objectID,
             "BrowseFlag" : browseFlag,
@@ -56,8 +56,11 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     result = ContentDirectoryBrowseResultParser().parse(browseResultData: resultString.dataUsingEncoding(NSUTF8StringEncoding)!).value
                 }
                 
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    success(result: result, numberReturned: responseObject?["NumberReturned"], totalMatches: responseObject?["TotalMatches"], updateID: responseObject?["UpdateID"])
+                let numberReturned = responseObject?["NumberReturned"]?.toInt() != nil ? responseObject!["NumberReturned"]!.toInt()! : 0
+                let totalMatches = responseObject?["TotalMatches"]?.toInt() != nil ? responseObject!["TotalMatches"]!.toInt()! : 0
+                
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in                    
+                    success(result: result, numberReturned: numberReturned, totalMatches: totalMatches, updateID: responseObject?["UpdateID"])
                 })
             })
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in

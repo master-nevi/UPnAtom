@@ -30,6 +30,7 @@ protocol SSDPDiscoveryAdapterDelegate: class {
 
 protocol SSDPDiscoveryAdapter: class {
     weak var delegate: SSDPDiscoveryAdapterDelegate? { get set }
+    var running: Bool { get }
     func start()
     func stop()
     func restart()
@@ -37,15 +38,16 @@ protocol SSDPDiscoveryAdapter: class {
 
 class AbstractSSDPDiscoveryAdapter: SSDPDiscoveryAdapter {
     weak var delegate: SSDPDiscoveryAdapterDelegate?
+    private(set) var running = false
     
     required init() { }
     
     func start() {
-        fatalError("Implement in subclass")
+        running = true
     }
     
     func stop() {
-        fatalError("Implement in subclass")
+        running = false
     }
     
     func restart() {

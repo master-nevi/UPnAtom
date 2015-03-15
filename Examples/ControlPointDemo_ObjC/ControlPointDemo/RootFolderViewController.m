@@ -22,7 +22,7 @@
 //  SOFTWARE.
 
 #import "RootFolderViewController.h"
-#import "PlayBack.h"
+#import "Player.h"
 #import "FolderViewController.h"
 @import UPnAtom;
 
@@ -31,18 +31,13 @@
 @end
 
 @implementation RootFolderViewController {
-    BOOL _hasSearchedForContentDirectories;
     NSMutableArray *_devices;
-    NSMutableDictionary *_deviceIndexForUSN;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     _devices = [NSMutableArray array];
-    
-    //Search for UPnP Devices
-    [[UPnAtom sharedInstance] startSSDPDiscovery];
     
     self.title = @"Control Point Demo";
     
@@ -66,6 +61,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPRegistry UPnPDeviceRemovedNotification] object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasAdded:) name:[UPnPRegistry UPnPServiceAddedNotification] object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasRemoved:) name:[UPnPRegistry UPnPServiceRemovedNotification] object:nil];
+    
+    if (![[UPnAtom sharedInstance] ssdpDiscoveryRunning]) {
+        //Search for UPnP Devices
+        [[UPnAtom sharedInstance] startSSDPDiscovery];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -85,21 +85,14 @@
 
 #pragma mark - UITableViewDataSource methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return _devices.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
+    static NSString *cellIdentifier = @"DefaultCell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     // Configure the cell.
     AbstractUPnPDevice *device = _devices[indexPath.row];
@@ -114,7 +107,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     AbstractUPnPDevice *device = _devices[indexPath.row];
-    if([device isMediaServer1Device]){
+    if ([device isMediaServer1Device]) {
         MediaServer1Device *server = (MediaServer1Device *)device;
         if (![server contentDirectoryService]) {
             NSLog(@"%@ - has no content directory service", device.friendlyName);
@@ -127,8 +120,9 @@
         
         [[self navigationController] pushViewController:targetViewController animated:YES];
         
-        [[PlayBack sharedInstance] setServer:device];
-    } else if([device isMediaRenderer1Device]){
+        [[Player sharedInstance] setServer:device];
+    }
+    else if ([device isMediaRenderer1Device]) {
         MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)device;
         if (![aRenderer avTransportService]) {
             NSLog(@"%@ - has no AV transport service", device.friendlyName);
@@ -136,7 +130,7 @@
         }
         
         [[self toolbarLabel] setText:[device friendlyName]];
-        [[PlayBack sharedInstance] setRenderer:device];
+        [[Player sharedInstance] setRenderer:device];
     }
 }
 

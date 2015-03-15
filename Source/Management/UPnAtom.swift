@@ -48,6 +48,10 @@ private let _UPnAtomSharedInstance = UPnAtom()
         ssdpDiscoveryAdapter.stop()
     }
     
+    public func ssdpDiscoveryRunning() -> Bool {
+        return ssdpDiscoveryAdapter.running
+    }
+    
     public func startSSDPDiscovery() {
         ssdpDiscoveryAdapter.start()
     }
