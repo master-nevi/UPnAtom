@@ -62,8 +62,8 @@ public class AbstractUPnPDevice: AbstractUPnP {
     // private
     private let _baseURLFromXML: NSURL?
     
-    required public init?(uuid: String, urn: String, usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
-        super.init(uuid: uuid, urn: urn, usn: usn, xmlLocation: xmlLocation, upnpDescriptionXML: upnpDescriptionXML)
+    required public init?(usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
+        super.init(usn: usn, xmlLocation: xmlLocation, upnpDescriptionXML: upnpDescriptionXML)
         
         let deviceParser = UPnPDeviceParser(upnpDevice: self, upnpDescriptionXML: upnpDescriptionXML)
         let parsedDevice = deviceParser.parse().value
@@ -102,7 +102,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
     
     func serviceFor(#urn: String) -> AbstractUPnPService? {
-        return UPnAtom.sharedInstance.upnpRegistry.upnpObjectsMainThreadCopy[UniqueServiceName(uuid: uuid, urn: urn)] as? AbstractUPnPService
+        return UPnAtom.sharedInstance.upnpRegistry.upnpObjectsMainThreadCopy[UniqueServiceName(uuid: uuid, urn: urn)!] as? AbstractUPnPService
     }
 }
 

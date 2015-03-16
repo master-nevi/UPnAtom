@@ -86,12 +86,9 @@ import AFNetworking
         _upnpClasses[urn] = upnpClass
     }
     
-    private func createUPnPObject(ssdpDiscovery: SSDPDiscovery, upnpDescriptionXML: NSData) -> AbstractUPnP? {
+    private func createUPnPObject(#usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) -> AbstractUPnP? {
         var upnpClass: AbstractUPnP.Type!
-        let uuid = ssdpDiscovery.uuid
-        let urn = ssdpDiscovery.urn!
-        let usn = UniqueServiceName(uuid: uuid, urn: urn, customRawValue: ssdpDiscovery.usn)
-        let xmlLocation = ssdpDiscovery.xmlLocation
+        let urn = usn.urn! // checked for nil earlier
         
         if let registeredClass = _upnpClasses[urn] {
             upnpClass = registeredClass
@@ -106,7 +103,7 @@ import AFNetworking
             upnpClass = AbstractUPnP.self
         }
         
-        return upnpClass(uuid: uuid, urn: urn, usn: usn, xmlLocation: xmlLocation, upnpDescriptionXML: upnpDescriptionXML)
+        return upnpClass(usn: usn, xmlLocation: xmlLocation, upnpDescriptionXML: upnpDescriptionXML)
     }
 }
 
@@ -152,9 +149,8 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
             var upnpObjectsToKeep = [AbstractUPnP]()
             for ssdpDiscovery in ssdpDiscoveries {
                 // only concerned with objects with a device or service type urn
-                if ssdpDiscovery.urn != nil && (ssdpDiscovery.notificationType == .Device || ssdpDiscovery.notificationType == .Service) {
-                    let usn = UniqueServiceName(uuid: ssdpDiscovery.uuid, urn: ssdpDiscovery.urn!)
-                    if let foundObject = self._upnpObjects[usn] {
+                if ssdpDiscovery.usn.urn != nil && (ssdpDiscovery.notificationType == .Device || ssdpDiscovery.notificationType == .Service) {
+                    if let foundObject = self._upnpObjects[ssdpDiscovery.usn] {
                         upnpObjectsToKeep.append(foundObject)
                     }
                     else {
@@ -189,19 +185,20 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
                 let error = error.localizedDescription("Unknown error")
-                LogError("Unable to fetch UPnP object description: \(error) For SSDP object: \(ssdpDiscovery.urn) at \(ssdpDiscovery.xmlLocation)")
+                LogError("Unable to fetch UPnP object description: \(error) For SSDP object: \(ssdpDiscovery.usn.description) at \(ssdpDiscovery.xmlLocation)")
         })
     }
     
     /// Must be called within dispatch_barrier_async()
     private func addUPnPObject(forSSDPDiscovery ssdpDiscovery: SSDPDiscovery, upnpDescriptionXML: NSData, inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
+        let usn = ssdpDiscovery.usn
+        
         // ignore if already in db
-        let usn = UniqueServiceName(uuid: ssdpDiscovery.uuid, urn: ssdpDiscovery.urn!)
         if let foundObject = upnpObjects[usn] {
             return
         }
         else {
-            if let newObject = createUPnPObject(ssdpDiscovery, upnpDescriptionXML: upnpDescriptionXML) {                
+            if let newObject = createUPnPObject(usn: usn, xmlLocation: ssdpDiscovery.xmlLocation, upnpDescriptionXML: upnpDescriptionXML) {
                 if !(newObject is AbstractUPnPDevice) && !(newObject is AbstractUPnPService) {
                     return
                 }

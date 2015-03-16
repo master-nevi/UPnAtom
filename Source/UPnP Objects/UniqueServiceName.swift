@@ -23,26 +23,48 @@
 
 import Foundation
 
-/// Only supports USN's with an embedded URN string as that's all the library needs to know about for now.
 @objc public class UniqueServiceName {
-    public let uuid, urn: String
-    public var rawValue: String {
-        if let customRawValue = _customRawValue {
-            return customRawValue
+    public let uuid: String!
+    public let urn: String?
+    public let rawValue: String
+    public let rootDevice: Bool
+    
+    init?(rawValue: String) {
+        self.rawValue = rawValue
+        
+        rootDevice = UniqueServiceName.isRootDevice(usn: rawValue)
+        
+        if let uuid = returnIfContainsElements(UniqueServiceName.uuid(usn: rawValue)) {
+            self.uuid = uuid
         }
-        return "\(uuid)::\(urn)"
-    }
-    init(uuid: String, urn: String, customRawValue: String) {
-        self.uuid = uuid
-        self.urn = urn
-        _customRawValue = customRawValue
-    }
-    init(uuid: String, urn: String) {
-        self.uuid = uuid
-        self.urn = urn
+        else { return nil }
+        
+        urn = returnIfContainsElements(UniqueServiceName.urn(usn: rawValue))
     }
     
-    private let _customRawValue: String?
+    convenience init?(uuid: String, urn: String) {
+        self.init(rawValue: "\(uuid)::\(urn)")
+    }
+    
+    convenience init?(uuid: String, rootDevice: Bool) {
+        let rawValue = rootDevice ? "\(uuid)::upnp:rootdevice" : "\(uuid)"
+        self.init(rawValue: rawValue)
+    }
+    
+    class func uuid(#usn: String) -> String? {
+        let usnComponents = usn.componentsSeparatedByString("::")
+        return (usnComponents.count >= 1 && usnComponents[0].rangeOfString("uuid:") != nil) ? usnComponents[0] : nil
+    }
+    
+    class func urn(#usn: String) -> String? {
+        let usnComponents = usn.componentsSeparatedByString("::")
+        return (usnComponents.count >= 2 && usnComponents[1].rangeOfString("urn:") != nil) ? usnComponents[1] : nil
+    }
+    
+    class func isRootDevice(#usn: String) -> Bool {
+        let usnComponents = usn.componentsSeparatedByString("::")
+        return usnComponents.count >= 2 && usnComponents[1].rangeOfString("upnp:rootdevice") != nil
+    }
 }
 
 extension UniqueServiceName: Printable {
@@ -53,10 +75,10 @@ extension UniqueServiceName: Printable {
 
 extension UniqueServiceName: Hashable {
     public var hashValue: Int {
-        return uuid.hashValue ^ urn.hashValue
+        return rawValue.hashValue
     }
 }
 
 public func ==(lhs: UniqueServiceName, rhs: UniqueServiceName) -> Bool {
-    return lhs.uuid == rhs.uuid && lhs.urn == rhs.urn
+    return lhs.rawValue == rhs.rawValue
 }
