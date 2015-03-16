@@ -34,6 +34,7 @@ import Foundation
         
         rootDevice = UniqueServiceName.isRootDevice(usn: rawValue)
         
+        // all forms of usn should contain a uuid, otherwise it's invalid and nil will be returned
         if let uuid = returnIfContainsElements(UniqueServiceName.uuid(usn: rawValue)) {
             self.uuid = uuid
         }
