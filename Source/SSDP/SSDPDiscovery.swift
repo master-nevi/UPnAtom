@@ -50,20 +50,9 @@ enum SSDPNotificationType {
 }
 
 struct SSDPDiscovery {
-    let uuid: String
-    let urn: String?
-    let usn: String
+    let usn: UniqueServiceName
     let xmlLocation: NSURL
     let notificationType: SSDPNotificationType
-    
-    static func uuid(usn: String) -> String? {
-        return usn.componentsSeparatedByString("::").first
-    }
-    
-    static func urn(usn: String) -> String? {
-        let usnComponents = usn.componentsSeparatedByString("::")
-        return (usnComponents.count >= 2 && usnComponents[1].rangeOfString("urn:") != nil) ? usnComponents[1] : nil
-    }
 }
 
 extension SSDPDiscovery: Equatable { }

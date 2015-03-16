@@ -140,7 +140,7 @@
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
         AbstractUPnPDevice *upnpDevice = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
         NSLog(@"Added device: %@ - %@", upnpDevice.className, upnpDevice.friendlyName);
-//        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
+//        NSLog(@"%@ = %@", upnpDevice.className, upnpDevice.description);
         
         NSUInteger index = _devices.count;
         [_devices insertObject:upnpDevice atIndex:index];
@@ -154,7 +154,7 @@
     if (notification.userInfo[[UPnPRegistry UPnPDeviceKey]]) {
         AbstractUPnPDevice *upnpDevice = ((AbstractUPnPDevice *)notification.userInfo[[UPnPRegistry UPnPDeviceKey]]);
         NSLog(@"Removed device: %@ - %@", upnpDevice.className, upnpDevice.friendlyName);
-//        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
+//        NSLog(@"%@ = %@", upnpDevice.className, upnpDevice.description);
         
         NSUInteger index = [_devices indexOfObject:upnpDevice];
         [_devices removeObjectAtIndex:index];
@@ -168,7 +168,7 @@
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnPService *upnpService = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
         NSLog(@"Added service: %@ - %@", upnpService.className, upnpService.descriptionURL);
-//        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
+//        NSLog(@"%@ = %@", upnpService.className, upnpService.description);
     }
 }
 
@@ -176,7 +176,7 @@
     if (notification.userInfo[[UPnPRegistry UPnPServiceKey]]) {
         AbstractUPnPService *upnpService = ((AbstractUPnPService *)notification.userInfo[[UPnPRegistry UPnPServiceKey]]);
         NSLog(@"Removed service: %@ - %@", upnpService.className, upnpService.descriptionURL);
-//        NSLog(@"%@ = %@", upnpObject.className, upnpObject.description);
+//        NSLog(@"%@ = %@", upnpService.className, upnpService.description);
     }
 }
 

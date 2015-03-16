@@ -24,19 +24,26 @@
 import Foundation
 
 @objc public class AbstractUPnP {
-    public let uuid: String
-    public let urn: String
+    public var uuid: String {
+        return usn.uuid
+    }
+    public var urn: String {
+        return usn.urn! // checked for nil during init
+    }
     public let usn: UniqueServiceName
     public let xmlLocation: NSURL
     public var baseURL: NSURL! {
         return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
     }
     
-    required public init?(uuid: String, urn: String, usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
-        self.uuid = uuid
-        self.urn = urn
+    required public init?(usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
         self.usn = usn
         self.xmlLocation = xmlLocation
+        
+        // only deal with UPnP object's with URN's for now, i.e. is either a device or service
+        if returnIfContainsElements(usn.urn) == nil {
+            return nil
+        }
     }
 }
 
