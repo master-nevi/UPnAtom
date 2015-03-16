@@ -31,14 +31,14 @@ import Foundation
         return usn.urn! // checked for nil during init
     }
     public let usn: UniqueServiceName
-    public let xmlLocation: NSURL
+    public let descriptionURL: NSURL
     public var baseURL: NSURL! {
-        return NSURL(string: "/", relativeToURL: xmlLocation)?.absoluteURL
+        return NSURL(string: "/", relativeToURL: descriptionURL)?.absoluteURL
     }
     
-    required public init?(usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
+    required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
         self.usn = usn
-        self.xmlLocation = xmlLocation
+        self.descriptionURL = descriptionURL
         
         // only deal with UPnP object's with URN's for now, i.e. is either a device or service
         if returnIfContainsElements(usn.urn) == nil {
@@ -60,7 +60,7 @@ extension AbstractUPnP: ExtendedPrintable {
         properties.add("uuid", property: uuid)
         properties.add("urn", property: urn)
         properties.add("usn", property: usn.description)
-        properties.add("xmlLocation", property: xmlLocation.absoluteString)
+        properties.add("descriptionURL", property: descriptionURL.absoluteString)
         properties.add("baseURL", property: baseURL.absoluteString)
         return properties.description
     }
