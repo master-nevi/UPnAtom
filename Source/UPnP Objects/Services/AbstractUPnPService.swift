@@ -29,8 +29,8 @@ public class AbstractUPnPService: AbstractUPnP {
         return urn
     }
     public let serviceID: String!
-    public var descriptionURL: NSURL {
-        return NSURL(string: _relativeDescriptionURL.absoluteString!, relativeToURL: baseURL)!
+    public var serviceDescriptionURL: NSURL {
+        return NSURL(string: _relativeServiceDescriptionURL.absoluteString!, relativeToURL: baseURL)!
     }
     public var controlURL: NSURL {
         return NSURL(string: _relativeControlURL.absoluteString!, relativeToURL: baseURL)!
@@ -50,7 +50,7 @@ public class AbstractUPnPService: AbstractUPnP {
     
     // private
     private let _baseURLFromXML: NSURL?
-    private let _relativeDescriptionURL: NSURL!
+    private let _relativeServiceDescriptionURL: NSURL!
     private let _relativeControlURL: NSURL!
     private let _relativeEventURL: NSURL!
     
@@ -59,13 +59,13 @@ public class AbstractUPnPService: AbstractUPnP {
     private var _concurrentEventObserverQueue: dispatch_queue_t!
     private weak var _eventSubscription: AnyObject?
     
-    required public init?(usn: UniqueServiceName, xmlLocation: NSURL, upnpDescriptionXML: NSData) {
-        super.init(usn: usn, xmlLocation: xmlLocation, upnpDescriptionXML: upnpDescriptionXML)
+    required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
+        super.init(usn: usn, descriptionURL: descriptionURL, descriptionXML: descriptionXML)
         
         sessionManager🔰 = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
         
         _concurrentEventObserverQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
-        let serviceParser = UPnPServiceParser(upnpService: self, upnpDescriptionXML: upnpDescriptionXML)
+        let serviceParser = UPnPServiceParser(upnpService: self, descriptionXML: descriptionXML)
         let parsedService = serviceParser.parse().value
         
         if let baseURL = parsedService?.baseURL {
@@ -77,8 +77,8 @@ public class AbstractUPnPService: AbstractUPnP {
         }
         else { return nil }
         
-        if let relativeDescriptionURL = parsedService?.relativeDescriptionURL {
-            self._relativeDescriptionURL = relativeDescriptionURL
+        if let relativeServiceDescriptionURL = parsedService?.relativeServiceDescriptionURL {
+            self._relativeServiceDescriptionURL = relativeServiceDescriptionURL
         }
         else { return nil }
         
@@ -214,7 +214,7 @@ extension AbstractUPnPService: ExtendedPrintable {
         properties.add(super.className, property: super.description)
         properties.add("serviceType", property: serviceType)
         properties.add("serviceID", property: serviceID)
-        properties.add("descriptionURL", property: descriptionURL.absoluteString)
+        properties.add("serviceDescriptionURL", property: serviceDescriptionURL.absoluteString)
         properties.add("controlURL", property: controlURL.absoluteString)
         properties.add("eventURL", property: eventURL.absoluteString)
         return properties.description
@@ -227,20 +227,20 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         var baseURL: NSURL?
         var serviceType: String?
         var serviceID: String?
-        var relativeDescriptionURL: NSURL?
+        var relativeServiceDescriptionURL: NSURL?
         var relativeControlURL: NSURL?
         var relativeEventURL: NSURL?
     }
     
     private unowned let _upnpService: AbstractUPnPService
-    private let _upnpDescriptionXML: NSData
+    private let _descriptionXML: NSData
     private var _baseURL: NSURL?
     private var _currentParserService: ParserUPnPService?
     private var _foundParserService: ParserUPnPService?
     
-    init(supportNamespaces: Bool, upnpService: AbstractUPnPService, upnpDescriptionXML: NSData) {
+    init(supportNamespaces: Bool, upnpService: AbstractUPnPService, descriptionXML: NSData) {
         self._upnpService = upnpService
-        self._upnpDescriptionXML = upnpDescriptionXML
+        self._descriptionXML = descriptionXML
         super.init(supportNamespaces: supportNamespaces)
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
@@ -269,7 +269,7 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "SCPDURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentService = self._currentParserService
-            currentService?.relativeDescriptionURL = NSURL(string: text)
+            currentService?.relativeServiceDescriptionURL = NSURL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "controlURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
@@ -283,12 +283,12 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         }))
     }
     
-    convenience init(upnpService: AbstractUPnPService, upnpDescriptionXML: NSData) {
-        self.init(supportNamespaces: false, upnpService: upnpService, upnpDescriptionXML: upnpDescriptionXML)
+    convenience init(upnpService: AbstractUPnPService, descriptionXML: NSData) {
+        self.init(supportNamespaces: false, upnpService: upnpService, descriptionXML: descriptionXML)
     }
     
     func parse() -> Result<ParserUPnPService> {
-        switch super.parse(data: _upnpDescriptionXML) {
+        switch super.parse(data: _descriptionXML) {
         case .Success:
             if let foundParserService = _foundParserService {
                 foundParserService.baseURL = _baseURL

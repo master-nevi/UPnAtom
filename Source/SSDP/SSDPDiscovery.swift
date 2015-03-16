@@ -51,7 +51,7 @@ enum SSDPNotificationType {
 
 struct SSDPDiscovery {
     let usn: UniqueServiceName
-    let xmlLocation: NSURL
+    let descriptionURL: NSURL
     let notificationType: SSDPNotificationType
 }
 

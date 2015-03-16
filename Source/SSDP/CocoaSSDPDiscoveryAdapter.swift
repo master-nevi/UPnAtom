@@ -76,14 +76,14 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
                     ssdpDiscoveryUnadapted.location != nil &&
                     returnIfContainsElements(ssdpDiscoveryUnadapted.serviceType) != nil {
                         let usn = UniqueServiceName(rawValue: ssdpDiscoveryUnadapted.uniqueServiceName)
-                        let xmlLocation = ssdpDiscoveryUnadapted.location
+                        let descriptionURL = ssdpDiscoveryUnadapted.location
                         let notificationType = SSDPNotificationType(notificationType: ssdpDiscoveryUnadapted.serviceType)
                         
-                        if usn == nil || xmlLocation == nil {
+                        if usn == nil || descriptionURL == nil {
                             return
                         }
                         
-                        let ssdpDiscovery = SSDPDiscovery(usn: usn!, xmlLocation: xmlLocation, notificationType: notificationType)
+                        let ssdpDiscovery = SSDPDiscovery(usn: usn!, descriptionURL: descriptionURL, notificationType: notificationType)
                         
                         self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] = ssdpDiscovery
                         
