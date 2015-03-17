@@ -34,6 +34,7 @@ Currently I'm only taking feature requests, bugs, and bug fixes via [Github issu
 * [x] Usable in both Swift and Objective-C projects via CocoaPod framework
 * [x] Create your own service and device object via class registration
 * [x] UPnP Version 1 Compliance
+* [x] Ability to archive UPnP objects after initial discovery and persist somewhere via NSCoder/NSCoding
 * [ ] Swift 1.2
 * [ ] In-house implementation of SSDP discovery
 * [ ] OS X 10.9+ support
