@@ -39,12 +39,10 @@ import AFNetworking
         }
     }
     
-    // internal
-    private(set) var upnpObjectsMainThreadCopy = [UniqueServiceName: AbstractUPnP]() // main thread safe copy
-    
     // private
     private let _concurrentUPnPObjectQueue = dispatch_queue_create("com.upnatom.upnp-registry.upnp-object-queue", DISPATCH_QUEUE_CONCURRENT)
     lazy private var _upnpObjects = [UniqueServiceName: AbstractUPnP]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    lazy private var _upnpObjectsMainThreadCopy = [UniqueServiceName: AbstractUPnP]() // main thread safe copy
     lazy private var _ssdpDiscoveryCache = [SSDPDiscovery]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
     private let _upnpObjectDescriptionSessionManager = AFHTTPSessionManager()
     private var _upnpClasses = [String: AbstractUPnP.Type]()
@@ -70,7 +68,7 @@ import AFNetworking
     /// Safe to call from any thread including main thread
     public func upnpDevices(closure: (upnpDevices: [AbstractUPnPDevice]) -> Void) {
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let upnpObjects = self.upnpObjectsMainThreadCopy
+            let upnpObjects = self._upnpObjectsMainThreadCopy
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
                 let upnpDevices = upnpObjects.values.array.filter({$0 is AbstractUPnPDevice})
@@ -231,7 +229,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
                 let notificationType: UPnPObjectNotificationType = newObject is AbstractUPnPDevice ? .Device : .Service
                 let notificationComponents = notificationType.notificationComponents()
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self.upnpObjectsMainThreadCopy = upnpObjectsCopy
+                    self._upnpObjectsMainThreadCopy = upnpObjectsCopy
                     NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectAddedNotificationName, object: self, userInfo: [notificationComponents.objectKey: newObject])
                 })
             }
@@ -251,9 +249,15 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
             let notificationType: UPnPObjectNotificationType = upnpObjectToRemove is AbstractUPnPDevice ? .Device : .Service
             let notificationComponents = notificationType.notificationComponents()
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                self.upnpObjectsMainThreadCopy = upnpObjectsCopy
+                self._upnpObjectsMainThreadCopy = upnpObjectsCopy
                 NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectRemoveNotificationName, object: self, userInfo: [notificationComponents.objectKey: upnpObjectToRemove])
             })
         }
+    }
+}
+
+extension UPnPRegistry: UPnPServiceSource {
+    public func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
+        return _upnpObjectsMainThreadCopy[usn] as? AbstractUPnPService
     }
 }
