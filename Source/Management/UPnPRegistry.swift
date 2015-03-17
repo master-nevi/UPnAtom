@@ -41,9 +41,11 @@ import AFNetworking
     
     // private
     private let _concurrentUPnPObjectQueue = dispatch_queue_create("com.upnatom.upnp-registry.upnp-object-queue", DISPATCH_QUEUE_CONCURRENT)
-    lazy private var _upnpObjects = [UniqueServiceName: AbstractUPnP]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    /// Must be accessed/updated within dispatch_sync() or dispatch_barrier_async()
+    lazy private var _upnpObjects = [UniqueServiceName: AbstractUPnP]()
     lazy private var _upnpObjectsMainThreadCopy = [UniqueServiceName: AbstractUPnP]() // main thread safe copy
-    lazy private var _ssdpDiscoveryCache = [SSDPDiscovery]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    /// Must be accessed/updated within dispatch_sync() or dispatch_barrier_async()
+    lazy private var _ssdpDiscoveryCache = [SSDPDiscovery]()
     private let _upnpObjectDescriptionSessionManager = AFHTTPSessionManager()
     private var _upnpClasses = [String: AbstractUPnP.Type]()
     private let _ssdpDiscoveryAdapter: SSDPDiscoveryAdapter
@@ -227,7 +229,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
         })
     }
     
-    /// Must be called within dispatch_barrier_async()
+    /// Must be called within dispatch_sync or dispatch_barrier_async() to the UPnP object queue
     private func addUPnPObject(forSSDPDiscovery ssdpDiscovery: SSDPDiscovery, descriptionXML: NSData, inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
         let usn = ssdpDiscovery.usn
         
@@ -254,7 +256,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
         }
     }
     
-    /// Must be called within dispatch_barrier_async()
+    /// Must be called within dispatch_sync or dispatch_barrier_async() to the UPnP object queue
     private func process(#upnpObjectsToKeep: [AbstractUPnP], inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
         let upnpObjectsSet = NSMutableSet(array: Array(upnpObjects.values))
         upnpObjectsSet.minusSet(NSSet(array: upnpObjectsToKeep))
