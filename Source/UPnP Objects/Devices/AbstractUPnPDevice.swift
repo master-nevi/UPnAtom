@@ -133,7 +133,7 @@ extension AbstractUPnPDevice: ExtendedPrintable {
     }
 }
 
-public protocol UPnPServiceSource: class {
+@objc public protocol UPnPServiceSource: class {
     func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService?
 }
 
