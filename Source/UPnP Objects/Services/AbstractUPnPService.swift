@@ -55,7 +55,8 @@ public class AbstractUPnPService: AbstractUPnP {
     private let _relativeEventURL: NSURL!
     
     // MARK: UPnP Event handling related
-    lazy private var _eventObservers = [EventObserver]() // Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    /// Must be accessed/updated within dispatch_sync() or dispatch_barrier_async()
+    lazy private var _eventObservers = [EventObserver]()
     private var _concurrentEventObserverQueue: dispatch_queue_t!
     private weak var _eventSubscription: AnyObject?
     
