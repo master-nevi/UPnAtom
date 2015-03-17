@@ -51,14 +51,14 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kSz-D7-l8z">
-                        <barButtonItem key="leftBarButtonItem" title="Archive" id="IHu-Oo-iIs">
+                        <barButtonItem key="leftBarButtonItem" title="Discover" id="AAe-sf-i90">
                             <connections>
-                                <action selector="archiveButtonTapped:" destination="8jp-ob-YlT" id="2IF-9s-QfI"/>
+                                <action selector="discoverButtonTapped:" destination="8jp-ob-YlT" id="DAK-M1-Sby"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="SSDP Search" id="AAe-sf-i90">
+                        <barButtonItem key="rightBarButtonItem" title="Archive" id="T1e-f2-uaQ">
                             <connections>
-                                <action selector="ssdpSearchButtonTapped:" destination="8jp-ob-YlT" id="Ku1-4A-Oa9"/>
+                                <action selector="archiveButtonTapped:" destination="8jp-ob-YlT" id="EdB-pT-Mo1"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

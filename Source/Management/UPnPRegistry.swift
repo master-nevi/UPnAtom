@@ -107,22 +107,25 @@ import AFNetworking
             failure(error: error)
         }
         _upnpObjectDescriptionSessionManager.GET(upnpArchivable.descriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject?) -> Void in
-            if let xmlData = responseObject as? NSData {
-                if let usn = UniqueServiceName(rawValue: upnpArchivable.usn) {
-                    if let upnpObject = self.createUPnPObject(usn: usn, descriptionURL: upnpArchivable.descriptionURL, descriptionXML: xmlData) {
-                        success(upnpObject: upnpObject)
-                        
-                        return
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                if let xmlData = responseObject as? NSData {
+                    if let usn = UniqueServiceName(rawValue: upnpArchivable.usn) {
+                        if let upnpObject = self.createUPnPObject(usn: usn, descriptionURL: upnpArchivable.descriptionURL, descriptionXML: xmlData) {
+                            success(upnpObject: upnpObject)
+                            
+                            return
+                        }
                     }
                 }
-            }
-            
-            failureCase(createError("Unable to create UPnP object"))
+                
+                failureCase(createError("Unable to create UPnP object"))
+            })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
                 failureCase(error)
         })
     }
     
+    /// Should be called on the background thread as every instance it creates parses XML
     private func createUPnPObject(#usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) -> AbstractUPnP? {
         var upnpClass: AbstractUPnP.Type!
         let urn = usn.urn! // checked for nil earlier
