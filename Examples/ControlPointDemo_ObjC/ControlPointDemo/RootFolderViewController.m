@@ -26,18 +26,24 @@
 #import "FolderViewController.h"
 @import UPnAtom;
 
+#define kUPnPArchiveKey @"upnpArchiveKey"
+
 @interface RootFolderViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic) IBOutlet UITableView *tableView;
 @end
 
 @implementation RootFolderViewController {
-    NSMutableArray *_devices;
+    NSMutableArray *_discoveredDevices;
+    NSMutableArray *_archivedDevices;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _devices = [NSMutableArray array];
+    _discoveredDevices = [NSMutableArray array];
+    _archivedDevices = [NSMutableArray array];
+    
+    [self loadArchivedObjects];
     
     self.title = @"Control Point Demo";
     
@@ -83,10 +89,39 @@
     [[UPnAtom sharedInstance] restartSSDPDiscovery];
 }
 
+- (IBAction)archiveButtonTapped:(id)sender {
+    NSMutableArray *archivableUPnPs = [NSMutableArray array];
+    
+    for (AbstractUPnPDevice *device in _discoveredDevices) {
+        UPnPArchivableAnnex *archivable = [device archivableWithCustomMetadata:@{@"friendlyName": device.friendlyName}];
+        [archivableUPnPs addObject:archivable];
+    }
+    
+    NSData *archiveData = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithArray:archivableUPnPs]];
+    
+    [[NSUserDefaults standardUserDefaults] setObject:archiveData forKey:kUPnPArchiveKey];
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Archive Complete" message:@"Reload table view? If cancelled you'll see it on the next launch" preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self loadArchivedObjects];
+    }]];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
 #pragma mark - UITableViewDataSource methods
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 2;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    return section == 0 ? @"Archived Devices" : @"Discovered Devices";
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _devices.count;
+    NSArray *devices = section == 0 ? _archivedDevices : _discoveredDevices;
+    return devices.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -95,7 +130,8 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     // Configure the cell.
-    AbstractUPnPDevice *device = _devices[indexPath.row];
+    NSArray *devices = indexPath.section == 0 ? _archivedDevices : _discoveredDevices;
+    AbstractUPnPDevice *device = devices[indexPath.row];
     [[cell textLabel] setText:[device friendlyName]];
     
     cell.accessoryType = [device isMediaServer1Device] ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
@@ -106,7 +142,8 @@
 #pragma mark - UITableViewDelegate methods
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    AbstractUPnPDevice *device = _devices[indexPath.row];
+    NSArray *devices = indexPath.section == 0 ? _archivedDevices : _discoveredDevices;
+    AbstractUPnPDevice *device = devices[indexPath.row];
     if ([device isMediaServer1Device]) {
         MediaServer1Device *server = (MediaServer1Device *)device;
         if (![server contentDirectoryService]) {
@@ -142,10 +179,10 @@
         NSLog(@"Added device: %@ - %@", upnpDevice.className, upnpDevice.friendlyName);
 //        NSLog(@"%@ = %@", upnpDevice.className, upnpDevice.description);
         
-        NSUInteger index = _devices.count;
-        [_devices insertObject:upnpDevice atIndex:index];
+        NSUInteger index = _discoveredDevices.count;
+        [_discoveredDevices insertObject:upnpDevice atIndex:index];
         
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:1];
         [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
 }
@@ -156,10 +193,10 @@
         NSLog(@"Removed device: %@ - %@", upnpDevice.className, upnpDevice.friendlyName);
 //        NSLog(@"%@ = %@", upnpDevice.className, upnpDevice.description);
         
-        NSUInteger index = [_devices indexOfObject:upnpDevice];
-        [_devices removeObjectAtIndex:index];
+        NSUInteger index = [_discoveredDevices indexOfObject:upnpDevice];
+        [_discoveredDevices removeObjectAtIndex:index];
         
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:1];
         [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
 }
@@ -185,6 +222,38 @@
 - (UILabel *)toolbarLabel {
     UIBarButtonItem *item = (UIBarButtonItem *)self.toolbarItems.firstObject;
     return (UILabel *)item.customView;
+}
+
+- (void)loadArchivedObjects {
+    if (_archivedDevices.count) {
+        NSMutableArray *currentArchivedDeviceIndexes = [NSMutableArray array];
+        for (NSUInteger i = 0; i < _archivedDevices.count; i++) {
+            [currentArchivedDeviceIndexes addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+        }
+        
+        [_archivedDevices removeAllObjects];
+        [self.tableView deleteRowsAtIndexPaths:currentArchivedDeviceIndexes withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    
+    NSData *archivedUPnPData = [[NSUserDefaults standardUserDefaults] objectForKey:kUPnPArchiveKey];
+    if (archivedUPnPData != nil) {
+        NSArray *unarchivedUPnPs = [NSKeyedUnarchiver unarchiveObjectWithData:archivedUPnPData];
+        
+        for (UPnPArchivableAnnex *archivable in unarchivedUPnPs) {
+            NSLog(@"Unarchived %@", archivable.customMetadata[@"friendlyName"]);
+            [[[UPnAtom sharedInstance] upnpRegistry] createUPnPObject:archivable success:^(AbstractUPnP *upnpObject) {
+//                NSLog(@"Re-created %@: %@ = %@", archivable.customMetadata[@"friendlyName"], upnpObject.className, upnpObject.description);
+                
+                NSUInteger index = _archivedDevices.count;
+                [_archivedDevices insertObject:upnpObject atIndex:index];
+                
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            } failure:^(NSError *error) {
+                NSLog(@"Failed to create UPnP Object from archive");
+            }];
+        }
+    }
 }
 
 @end

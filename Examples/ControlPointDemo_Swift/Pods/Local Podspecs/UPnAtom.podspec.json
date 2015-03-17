@@ -5,7 +5,7 @@
     "type": "MIT",
     "file": "LICENSE"
   },
-  "summary": "An open source Universal Plug & Play library with a focus on media streaming coordination (UPnP A/V Profile).",
+  "summary": "An open source Universal Plug and Play library with a focus on media streaming coordination using the UPnP A/V profile.",
   "homepage": "https://github.com/master-nevi/UPnAtom",
   "authors": {
     "David Robles": "master-nevi@users.noreply.github.com"
