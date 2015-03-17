@@ -52,6 +52,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
     public let modelURL: NSURL?
     public let serialNumber: String?
     public let iconDescriptions: [IconDescription]?
+    public unowned var serviceSource: UPnPServiceSource = UPnAtom.sharedInstance.upnpRegistry
     override public var baseURL: NSURL! {
         if let baseURL = _baseURLFromXML {
             return baseURL
@@ -102,7 +103,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
     
     func serviceFor(#urn: String) -> AbstractUPnPService? {
-        return UPnAtom.sharedInstance.upnpRegistry.upnpObjectsMainThreadCopy[UniqueServiceName(uuid: uuid, urn: urn)!] as? AbstractUPnPService
+        return serviceSource.serviceFor(usn: UniqueServiceName(uuid: uuid, urn: urn)!)
     }
 }
 
@@ -130,6 +131,10 @@ extension AbstractUPnPDevice: ExtendedPrintable {
         properties.add("iconDescriptions", property: iconDescriptions)
         return properties.description
     }
+}
+
+public protocol UPnPServiceSource: class {
+    func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService?
 }
 
 class UPnPDeviceParser: AbstractSAXXMLParser {
