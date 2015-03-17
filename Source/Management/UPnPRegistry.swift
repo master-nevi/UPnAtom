@@ -86,6 +86,30 @@ import AFNetworking
         _upnpClasses[urn] = upnpClass
     }
     
+    public func createUPnPObject(upnpArchivable: UPnPArchivable, success: ((upnpObject: AbstractUPnP) -> Void), failure: ((error: NSError) -> Void)) {
+        let failureCase = { (error: NSError) -> Void in
+            let errorString = error.localizedDescription("Unknown error")
+            LogError("Unable to fetch UPnP object description: \(errorString) For SSDP object: \(upnpArchivable.usn) at \(upnpArchivable.descriptionURL)")
+            
+            failure(error: error)
+        }
+        _upnpObjectDescriptionSessionManager.GET(upnpArchivable.descriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject?) -> Void in
+            if let xmlData = responseObject as? NSData {
+                if let usn = UniqueServiceName(rawValue: upnpArchivable.usn) {
+                    if let upnpObject = self.createUPnPObject(usn: usn, descriptionURL: upnpArchivable.descriptionURL, descriptionXML: xmlData) {
+                        success(upnpObject: upnpObject)
+                        
+                        return
+                    }
+                }
+            }
+            
+            failureCase(createError("Unable to create UPnP object"))
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
+                failureCase(error)
+        })
+    }
+    
     private func createUPnPObject(#usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) -> AbstractUPnP? {
         var upnpClass: AbstractUPnP.Type!
         let urn = usn.urn! // checked for nil earlier
@@ -178,9 +202,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
                         return
                     }
                     
-                    if ssdpDiscovery.notificationType == .Device || ssdpDiscovery.notificationType == .Service {
-                        self.addUPnPObject(forSSDPDiscovery: ssdpDiscovery, descriptionXML: xmlData, upnpObjects: &self._upnpObjects)
-                    }
+                    self.addUPnPObject(forSSDPDiscovery: ssdpDiscovery, descriptionXML: xmlData, upnpObjects: &self._upnpObjects)
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
