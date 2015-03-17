@@ -51,7 +51,9 @@ class AbstractSSDPDiscoveryAdapter: SSDPDiscoveryAdapter {
     }
     
     func restart() {
-        stop()
+        if running {
+            stop()
+        }
         start()
     }
 }

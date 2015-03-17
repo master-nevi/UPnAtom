@@ -46,6 +46,9 @@
     _archivedDevices = [NSMutableArray array];
     _archivedServices = [NSMutableDictionary dictionary];
     
+    // initialize
+    [UPnAtom sharedInstance];
+    
     [self loadArchivedUPnPObjects];
     
     self.title = @"Control Point Demo";
@@ -70,11 +73,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceWasRemoved:) name:[UPnPRegistry UPnPDeviceRemovedNotification] object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasAdded:) name:[UPnPRegistry UPnPServiceAddedNotification] object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(serviceWasRemoved:) name:[UPnPRegistry UPnPServiceRemovedNotification] object:nil];
-    
-    if (![[UPnAtom sharedInstance] ssdpDiscoveryRunning]) {
-        //Search for UPnP Devices
-        [[UPnAtom sharedInstance] startSSDPDiscovery];
-    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -88,8 +86,14 @@
 
 #pragma mark - IBActions
 
-- (IBAction)ssdpSearchButtonTapped:(id)sender {
-    [[UPnAtom sharedInstance] restartSSDPDiscovery];
+- (IBAction)discoverButtonTapped:(id)sender {
+    //Search for UPnP devices and services
+    if (![[UPnAtom sharedInstance] ssdpDiscoveryRunning]) {
+        [[UPnAtom sharedInstance] startSSDPDiscovery];
+    }
+    else {   
+        [[UPnAtom sharedInstance] restartSSDPDiscovery];
+    }
 }
 
 - (IBAction)archiveButtonTapped:(id)sender {
@@ -224,36 +228,42 @@
 - (void)archiveUPnPObjects {
     // archive devices
     [[[UPnAtom sharedInstance] upnpRegistry] upnpDevices:^(NSArray *upnpDevices) {
-        NSMutableArray *archivableDevices = [NSMutableArray array];
-        
-        for (AbstractUPnPDevice *device in upnpDevices) {
-            UPnPArchivableAnnex *archivableDevice = [device archivableWithCustomMetadata:@{@"upnpType": device.className, @"friendlyName": device.friendlyName}];
-            [archivableDevices addObject:archivableDevice];
-        }
-        
-        NSData *archiveData = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithArray:archivableDevices]];
-        [[NSUserDefaults standardUserDefaults] setObject:archiveData forKey:kUPnPDeviceArchiveKey];
-        
-        // archive services
-        [[[UPnAtom sharedInstance] upnpRegistry] upnpServices:^(NSArray *upnpServices) {
-            NSMutableArray *archivableServices = [NSMutableArray array];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSMutableArray *archivableDevices = [NSMutableArray array];
             
-            for (AbstractUPnPService *service in upnpServices) {
-                UPnPArchivableAnnex *archivableService = [service archivableWithCustomMetadata:@{@"upnpType": service.className}];
-                [archivableServices addObject:archivableService];
+            for (AbstractUPnPDevice *device in upnpDevices) {
+                UPnPArchivableAnnex *archivableDevice = [device archivableWithCustomMetadata:@{@"upnpType": device.className, @"friendlyName": device.friendlyName}];
+                [archivableDevices addObject:archivableDevice];
             }
             
-            NSData *archiveData = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithArray:archivableServices]];
-            [[NSUserDefaults standardUserDefaults] setObject:archiveData forKey:kUPnPServiceArchiveKey];
+            NSData *archiveData = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithArray:archivableDevices]];
+            [[NSUserDefaults standardUserDefaults] setObject:archiveData forKey:kUPnPDeviceArchiveKey];
             
-            // show archive complete alert
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Archive Complete" message:@"Reload table view? If cancelled you'll see it on the next launch" preferredStyle:UIAlertControllerStyleAlert];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                [self loadArchivedUPnPObjects];
-            }]];
-            [self presentViewController:alertController animated:YES completion:nil];
-        }];
+            // archive services
+            [[[UPnAtom sharedInstance] upnpRegistry] upnpServices:^(NSArray *upnpServices) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    NSMutableArray *archivableServices = [NSMutableArray array];
+                    
+                    for (AbstractUPnPService *service in upnpServices) {
+                        UPnPArchivableAnnex *archivableService = [service archivableWithCustomMetadata:@{@"upnpType": service.className}];
+                        [archivableServices addObject:archivableService];
+                    }
+                    
+                    NSData *archiveData = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithArray:archivableServices]];
+                    [[NSUserDefaults standardUserDefaults] setObject:archiveData forKey:kUPnPServiceArchiveKey];
+                    
+                    // show archive complete alert
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Archive Complete" message:@"Load archive and reload table view? If cancelled you'll see it on the next launch" preferredStyle:UIAlertControllerStyleAlert];
+                        [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+                        [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                            [self loadArchivedUPnPObjects];
+                        }]];
+                        [self presentViewController:alertController animated:YES completion:nil];
+                    });
+                });
+            }];
+        });
     }];
 }
 
@@ -275,44 +285,53 @@
     }
     
     // load archived devices
-    NSData *archivedDeviceData = [[NSUserDefaults standardUserDefaults] objectForKey:kUPnPDeviceArchiveKey];
-    if (archivedDeviceData != nil) {
-        NSArray *unarchivedDevices = [NSKeyedUnarchiver unarchiveObjectWithData:archivedDeviceData];
-        
-        for (UPnPArchivableAnnex *archivable in unarchivedDevices) {
-            NSLog(@"Unarchived %@ - %@", archivable.customMetadata[@"upnpType"], archivable.customMetadata[@"friendlyName"]);
-            [[[UPnAtom sharedInstance] upnpRegistry] createUPnPObject:archivable success:^(AbstractUPnP *upnpObject) {
-                //                NSLog(@"Re-created %@: %@ = %@", archivable.customMetadata[@"friendlyName"], upnpObject.className, upnpObject.description);
-                
-                AbstractUPnPDevice *upnpDevice = (AbstractUPnPDevice *)upnpObject;
-                
-                upnpDevice.serviceSource = self;
-                
-                NSUInteger index = _archivedDevices.count;
-                [_archivedDevices insertObject:upnpDevice atIndex:index];
-                
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-                [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-            } failure:^(NSError *error) {
-                NSLog(@"Failed to create UPnP Object from archive");
-            }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSData *archivedDeviceData = [[NSUserDefaults standardUserDefaults] objectForKey:kUPnPDeviceArchiveKey];
+        if (archivedDeviceData != nil) {
+            NSArray *unarchivedDevices = [NSKeyedUnarchiver unarchiveObjectWithData:archivedDeviceData];
+            
+            for (UPnPArchivableAnnex *archivable in unarchivedDevices) {
+                NSLog(@"Unarchived device from cache %@ - %@", archivable.customMetadata[@"upnpType"], archivable.customMetadata[@"friendlyName"]);
+                [[[UPnAtom sharedInstance] upnpRegistry] createUPnPObject:archivable success:^(AbstractUPnP *upnpObject) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSLog(@"Re-created device %@ - %@", upnpObject.className, archivable.customMetadata[@"friendlyName"]);
+                        
+                        AbstractUPnPDevice *upnpDevice = (AbstractUPnPDevice *)upnpObject;
+                        
+                        upnpDevice.serviceSource = self;
+                        
+                        NSUInteger index = _archivedDevices.count;
+                        [_archivedDevices insertObject:upnpDevice atIndex:index];
+                        
+                        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                    });
+                } failure:^(NSError *error) {
+                    NSLog(@"Failed to create UPnP Object from archive");
+                }];
+            }
         }
-    }
+    });
     
     // load archived services
-    NSData *archivedServiceData = [[NSUserDefaults standardUserDefaults] objectForKey:kUPnPServiceArchiveKey];
-    if (archivedServiceData != nil) {
-        NSArray *unarchivedServices = [NSKeyedUnarchiver unarchiveObjectWithData:archivedServiceData];
-        
-        for (UPnPArchivableAnnex *archivable in unarchivedServices) {
-            NSLog(@"Unarchived %@", archivable.customMetadata[@"upnpType"]);
-            [[[UPnAtom sharedInstance] upnpRegistry] createUPnPObject:archivable success:^(AbstractUPnP *upnpObject) {
-                _archivedServices[upnpObject.usn.rawValue] = upnpObject;
-            } failure:^(NSError *error) {
-                NSLog(@"Failed to create UPnP Object from archive");
-            }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSData *archivedServiceData = [[NSUserDefaults standardUserDefaults] objectForKey:kUPnPServiceArchiveKey];
+        if (archivedServiceData != nil) {
+            NSArray *unarchivedServices = [NSKeyedUnarchiver unarchiveObjectWithData:archivedServiceData];
+            
+            for (UPnPArchivableAnnex *archivable in unarchivedServices) {
+                NSLog(@"Unarchived service from cache %@", archivable.customMetadata[@"upnpType"]);
+                [[[UPnAtom sharedInstance] upnpRegistry] createUPnPObject:archivable success:^(AbstractUPnP *upnpObject) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSLog(@"Re-created service %@", upnpObject.className);
+                        _archivedServices[upnpObject.usn.rawValue] = upnpObject;
+                    });
+                } failure:^(NSError *error) {
+                    NSLog(@"Failed to create UPnP Object from archive");
+                }];
+            }
         }
-    }
+    });
 }
 
 @end
