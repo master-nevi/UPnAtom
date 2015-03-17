@@ -80,6 +80,21 @@ import AFNetworking
         })
     }
     
+    /// Safe to call from any thread including main thread
+    public func upnpServices(closure: (upnpServices: [AbstractUPnPService]) -> Void) {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            let upnpObjects = self._upnpObjectsMainThreadCopy
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                let upnpServices = upnpObjects.values.array.filter({$0 is AbstractUPnPService})
+                
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    closure(upnpServices: upnpServices as [AbstractUPnPService])
+                })
+            })
+        })
+    }
+    
     public func register(#upnpClass: AbstractUPnP.Type, forURN urn: String) {
         _upnpClasses[urn] = upnpClass
     }
