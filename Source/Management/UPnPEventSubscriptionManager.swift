@@ -90,7 +90,7 @@ class UPnPEventSubscriptionManager {
     }
     
     // private
-    /// Must be accessed within dispatch_sync() and updated within dispatch_barrier_async()
+    /// Must be accessed/updated within dispatch_sync() or dispatch_barrier_async()
     private var _subscriptions = [String: Subscription]() /* [eventURLString: Subscription] */
     private let _concurrentSubscriptionQueue = dispatch_queue_create("com.upnatom.upnp-event-subscription-manager.subscription-queue", DISPATCH_QUEUE_CONCURRENT)
     private let _httpServer = GCDWebServer()
@@ -100,22 +100,6 @@ class UPnPEventSubscriptionManager {
     private let _unsubscribeSessionManager = AFHTTPSessionManager()
     private let _defaultSubscriptionTimeout: Int = 1800
     private let _eventCallBackPath = "/Event/\(NSUUID().dashlessUUIDString)"
-    private var _eventCallBackURL: NSURL? {
-        if let serverURL = _httpServer.serverURL {
-            return NSURL(string: _eventCallBackPath, relativeToURL: serverURL)!
-        }
-        
-        return nil
-    }
-    /// Calling this on the main thread is not recommended as it will block until completed, blocking the main thread is a no-no
-    private var subscriptions: [String: Subscription] {
-        var subscriptions: [String: Subscription]!
-        dispatch_sync(_concurrentSubscriptionQueue, { () -> Void in
-            // Dictionaries are structures and therefore copied when assigned to a new constant or variable
-            subscriptions = self._subscriptions
-        })
-        return subscriptions
-    }
     
     init() {
         _subscribeSessionManager.requestSerializer = UPnPEventSubscribeRequestSerializer() as AFHTTPRequestSerializer
@@ -156,64 +140,65 @@ class UPnPEventSubscriptionManager {
     
     /// Subscribers should hold on to a weak reference of the subscription object returned. It's ok to call subscribe for a subscription that already exists, the subscription will simply be looked up and returned.
     func subscribe(subscriber: UPnPEventSubscriber, eventURL: NSURL, completion: ((result: Result<AnyObject>) -> Void)? = nil) {
+        let failureClosure = { (error: NSError) -> Void in
+            if let completion = completion {
+                completion(result: .Failure(error))
+            }
+        }
+        
         let eventURLString: String! = eventURL.absoluteString
         if eventURLString == nil {
             if let completion = completion {
-                completion(result: .Failure(createError("Event URL does not exist")))
+                failureClosure(createError("Event URL does not exist"))
             }
             return
         }
         
         // check if subscription for event URL already exists
-        if let subscription = self.subscriptions[eventURLString] {
-            if let completion = completion {
-                completion(result: .Success(subscription))
-            }
-            return
-        }
-        
-        if !_httpServer.running {
-            _httpServer.startWithPort(_httpServerPort, bonjourName: nil)
-        }
-        
-        if _eventCallBackURL == nil {
-            if let completion = completion {
-                completion(result: .Failure(createError("Event call back URL could not be created")))
-            }
-            return
-        }
-        
-        LogInfo("event callback url: \(_eventCallBackURL!)")
-        
-        let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: _eventCallBackURL!, timeout: _defaultSubscriptionTimeout)
-        
-        _subscribeSessionManager.SUBSCRIBE(eventURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-            let response: UPnPEventSubscribeResponseSerializer.Response! = responseObject as? UPnPEventSubscribeResponseSerializer.Response
-            if response == nil {
+        subscriptions { [unowned self] (subscriptions: [String: Subscription]) -> Void in
+            if let subscription = subscriptions[eventURLString] {
                 if let completion = completion {
-                    completion(result: .Failure(createError("Failure serializing event subscribe response")))
+                    completion(result: .Success(subscription))
                 }
                 return
             }
             
-            let now = NSDate()
-            let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
-            
-            let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: eventURL.absoluteString!, manager: self)
-            
-            LogInfo("Successfully subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
-            
-            self.add(subscription: subscription, completion: { () -> Void in
-                if let completion = completion {
-                    completion(result: .Success(subscription))
+            self.eventCallBackURL({ [unowned self] (eventCallBackURL: NSURL?) -> Void in
+                let eventCallBackURL: NSURL! = eventCallBackURL
+                if eventCallBackURL == nil {
+                    failureClosure(createError("Event call back URL could not be created"))
+                    return
                 }
+                
+                LogInfo("event callback url: \(eventCallBackURL)")
+                
+                let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: eventCallBackURL, timeout: self._defaultSubscriptionTimeout)
+                
+                self._subscribeSessionManager.SUBSCRIBE(eventURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
+                    let response: UPnPEventSubscribeResponseSerializer.Response! = responseObject as? UPnPEventSubscribeResponseSerializer.Response
+                    if response == nil {
+                        failureClosure(createError("Failure serializing event subscribe response"))
+                        return
+                    }
+                    
+                    let now = NSDate()
+                    let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
+                    
+                    let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: eventURL.absoluteString!, manager: self)
+                    
+                    LogInfo("Successfully subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
+                    
+                    self.add(subscription: subscription, completion: { () -> Void in
+                        if let completion = completion {
+                            completion(result: .Success(subscription))
+                        }
+                    })
+                    }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                        LogError("Failed to subscribe to event URL: \(eventURL.absoluteString!)\nerror: \(error)")
+                        failureClosure(error)
+                })
             })
-            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                LogError("Failed to subscribe to event URL: \(eventURL.absoluteString!)\nerror: \(error)")
-                if let completion = completion {
-                    completion(result: .Failure(error))
-                }
-        })
+        }
     }
     
     func unsubscribe(subscription: Any, completion: ((result: EmptyResult) -> Void)? = nil) {
@@ -246,21 +231,26 @@ class UPnPEventSubscriptionManager {
     }
     
     private func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
-        if let subscription: Subscription = (subscriptions.values.array as NSArray).firstUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!) {
-            subscription.subscriber?.handleEvent(self, eventXML: eventData)
+        subscriptions { (subscriptions: [String: Subscription]) -> Void in
+            if let subscription: Subscription = (subscriptions.values.array as NSArray).firstUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!) {
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    subscription.subscriber?.handleEvent(self, eventXML: eventData)
+                    return
+                })
+            }
         }
     }
     
     @objc private func applicationDidEnterBackground(notification: NSNotification) {
-        if _httpServer.running {
-            _httpServer.stop()
-        }
+        // GCDWebServer handles stopping and restarting itself as appropriate during application life cycle events. Invalidating the timers is all that's necessary here :)
         
         subscriptions { [unowned self] (subscriptions: [String: Subscription]) -> Void in
-            // invalidate all timers before being backgrounded as the will be trashed upon foregrounding anyways
-            for (eventURL, subscription) in subscriptions {
-                subscription.invalidate()
-            }
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                // invalidate all timers before being backgrounded as the will be trashed upon foregrounding anyways
+                for (eventURL, subscription) in subscriptions {
+                    subscription.invalidate()
+                }
+            })
         }
     }
     
@@ -269,7 +259,11 @@ class UPnPEventSubscriptionManager {
             // unsubscribe and re-subscribe for all event subscriptions
             for (eventURL, subscription) in subscriptions {
                 self.unsubscribe(subscription, completion: { (result) -> Void in
-                    self.resubscribe(subscription)
+                    self.resubscribe(subscription, completion: {
+                        if let errorDescription = $0.error?.localizedDescriptionOrNil {
+                            LogError("\(errorDescription)")
+                        }
+                    })
                 })
             }            
         }
@@ -301,19 +295,38 @@ class UPnPEventSubscriptionManager {
         })
     }
     
-    /// Safe to call from main thread
+    private func eventCallBackURL(closure: (eventCallBackURL: NSURL?) -> Void) {
+        dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
+            // needs to be running in order to get server url for the subscription message
+            let httpServer = self._httpServer
+            if !httpServer.running {
+                httpServer.startWithPort(self._httpServerPort, bonjourName: nil)
+            }
+            
+            let serverURL = httpServer.serverURL
+            
+            // Stop http server if it's not needed further
+            self.startStopHTTPServerIfNeeded(self._subscriptions)
+            
+            serverURL != nil ? closure(eventCallBackURL: NSURL(string: self._eventCallBackPath, relativeToURL: serverURL)!) : closure(eventCallBackURL: nil)
+        })
+    }
+    
+    /// Safe to call from any queue and closure is called on callback queue
     private func subscriptions(closure: (subscriptions: [String: Subscription]) -> Void) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-            let subscriptions = self.subscriptions
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+        dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
+            let subscriptions = self._subscriptions
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
                 closure(subscriptions: subscriptions)
             })
         })
     }
     
+    /// Must be called within dispatch_sync or dispatch_barrier_async() to the subscription queue as it requires synchronous knowledge of the subscription count.
+    // TODO: consider putting entire method inside a dispatch_barrier_async to subscription queue
     private func startStopHTTPServerIfNeeded(subscriptions: [String: Subscription]) {
         let httpServer = self._httpServer
-        if subscriptions.count == 0 {
+        if subscriptions.count == 0 && httpServer.running {
             httpServer.stop()
         }
         else if subscriptions.count > 0 && !httpServer.running {
@@ -369,45 +382,53 @@ class UPnPEventSubscriptionManager {
         // remove, just in case resubscription fails
         remove(subscription: subscription)
         
+        let failureClosure = { (error: NSError) -> Void in
+            subscription.subscriber?.subscriptionDidFail(self)
+            
+            if let completion = completion {
+                completion(result: .Failure(error))
+            }
+        }
+        
         // re-subscribe only if subscriber still exists
         if subscription.subscriber == nil {
-            if let completion = completion {
-                completion(result: .Failure(createError("Subscriber doesn't exist anymore")))
-            }
+            failureClosure(createError("Subscriber doesn't exist anymore"))
             return
         }
         
-        let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: _eventCallBackURL!, timeout: _defaultSubscriptionTimeout)
-        
-        _subscribeSessionManager.SUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-            let response: UPnPEventSubscribeResponseSerializer.Response! = responseObject as? UPnPEventSubscribeResponseSerializer.Response
-            if response == nil {
-                if let completion = completion {
-                    completion(result: .Failure(createError("Failure serializing event subscribe response")))
-                }
+        self.eventCallBackURL({ [unowned self] (eventCallBackURL: NSURL?) -> Void in
+            let eventCallBackURL: NSURL! = eventCallBackURL
+            if eventCallBackURL == nil {
+                failureClosure(createError("Event call back URL could not be created"))
                 return
             }
             
-            let now = NSDate()
-            let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
+            let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: eventCallBackURL, timeout: self._defaultSubscriptionTimeout)
             
-            subscription.update(response.subscriptionID, expiration: expiration)
-            
-            LogInfo("Successfully re-subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
-            
-            self.add(subscription: subscription, completion: { () -> Void in
-                if let completion = completion {
-                    completion(result: .Success(subscription))
+            self._subscribeSessionManager.SUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
+                let response: UPnPEventSubscribeResponseSerializer.Response! = responseObject as? UPnPEventSubscribeResponseSerializer.Response
+                if response == nil {
+                    failureClosure(createError("Failure serializing event subscribe response"))
+                    return
                 }
+                
+                let now = NSDate()
+                let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
+                
+                subscription.update(response.subscriptionID, expiration: expiration)
+                
+                LogInfo("Successfully re-subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
+                
+                self.add(subscription: subscription, completion: { () -> Void in
+                    if let completion = completion {
+                        completion(result: .Success(subscription))
+                    }
+                })
+                }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                    LogError("Failed to re-subscribe: \(subscription)\nerror: \(error)")
+                    
+                    failureClosure(error)
             })
-            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                LogError("Failed to re-subscribe: \(subscription)\nerror: \(error)")
-                
-                subscription.subscriber?.subscriptionDidFail(self)
-                
-                if let completion = completion {
-                    completion(result: .Failure(error))
-                }
         })
     }
     
@@ -416,7 +437,11 @@ class UPnPEventSubscriptionManager {
     }
     
     private func subscriptionDidExpire(subscription: Subscription) {
-        resubscribe(subscription)
+        resubscribe(subscription, completion: {
+            if let errorDescription = $0.error?.localizedDescriptionOrNil {
+                LogError("\(errorDescription)")
+            }
+        })
     }
 }
 
