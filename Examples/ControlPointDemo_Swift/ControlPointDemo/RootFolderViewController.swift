@@ -192,8 +192,8 @@ class RootFolderViewController: UIViewController {
                 let deviceArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(deviceArchivablesData) as [UPnPArchivableAnnex]
                 
                 for deviceArchivable in deviceArchivables {
-                    let upnpType = deviceArchivable.customMetadata?["upnpType"]
-                    let friendlyName = deviceArchivable.customMetadata?["friendlyName"]
+                    let upnpType = deviceArchivable.customMetadata["upnpType"] as? String
+                    let friendlyName = deviceArchivable.customMetadata["friendlyName"] as? String
                     println("Unarchived device from cache \(upnpType) - \(friendlyName)")
                     
                     UPnAtom.sharedInstance.upnpRegistry.createUPnPObject(deviceArchivable, success: { (upnpObject: AbstractUPnP) -> Void in
@@ -220,7 +220,7 @@ class RootFolderViewController: UIViewController {
                 let serviceArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(serviceArchivablesData) as [UPnPArchivableAnnex]
                 
                 for serviceArchivable in serviceArchivables {
-                    let upnpType = serviceArchivable.customMetadata?["upnpType"]
+                    let upnpType = serviceArchivable.customMetadata["upnpType"] as? String
                     println("Unarchived service from cache \(upnpType)")
                     
                     UPnAtom.sharedInstance.upnpRegistry.createUPnPObject(serviceArchivable, success: { (upnpObject: AbstractUPnP) -> Void in
