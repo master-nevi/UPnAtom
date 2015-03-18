@@ -74,29 +74,3 @@ extension AbstractUPnP {
         return UPnPArchivableAnnex(usn: usn.rawValue, descriptionURL: descriptionURL, customMetadata: customMetadata)
     }
 }
-
-public class UPnPArchivableGenericAnnex<T: NSCoding>: UPnPArchivable {
-    /// Use the custom metadata dictionary to re-populate any missing data fields from a custom device or service subclass.
-    public let customMetadata: T?
-    
-    init(usn: String, descriptionURL: NSURL, customMetadata: T? = nil) {
-        super.init(usn: usn, descriptionURL: descriptionURL)
-        self.customMetadata = customMetadata
-    }
-    
-    required public init(coder decoder: NSCoder) {
-        super.init(coder: decoder)
-        self.customMetadata = decoder.decodeObjectForKey("customMetadata") as T?
-    }
-    
-    public override func encodeWithCoder(coder: NSCoder) {
-        super.encodeWithCoder(coder)
-        coder.encodeObject(customMetadata, forKey: "customMetadata")
-    }
-}
-
-extension AbstractUPnP {
-    public func archivable<T: NSCoding>(customMetadata: T?) -> UPnPArchivableGenericAnnex<T> {
-        return UPnPArchivableGenericAnnex(usn: usn.rawValue, descriptionURL: descriptionURL, customMetadata: customMetadata)
-    }
-}

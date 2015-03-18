@@ -25,14 +25,23 @@ import UIKit
 import UPnAtom
 
 class RootFolderViewController: UIViewController {
-    private var _devices = [AbstractUPnPDevice]()
+    private var _discoveredDevices = [AbstractUPnPDevice]()
+    private var _archivedDevices = [AbstractUPnPDevice]()
+    private var _archivedServices = [UniqueServiceName: AbstractUPnPService]()
     private var toolbarLabel: UILabel? {
         return (self.toolbarItems?.first as? UIBarButtonItem)?.customView as? UILabel
     }
     @IBOutlet private weak var _tableView: UITableView!
+    private let _upnpDeviceArchiveKey = "upnpDeviceArchiveKey"
+    private let _upnpServiceArchiveKey = "upnpServiceArchiveKey"
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // initialize
+        UPnAtom.sharedInstance
+        
+        loadArchivedUPnPObjects()
         
         self.title = "Control Point Demo"
         
@@ -55,10 +64,6 @@ class RootFolderViewController: UIViewController {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceWasRemoved:", name: UPnPRegistry.UPnPDeviceRemovedNotification(), object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "serviceWasAdded:", name: UPnPRegistry.UPnPServiceAddedNotification(), object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "serviceWasRemoved:", name: UPnPRegistry.UPnPServiceRemovedNotification(), object: nil)
-        
-        if !UPnAtom.sharedInstance.ssdpDiscoveryRunning() {
-            UPnAtom.sharedInstance.startSSDPDiscovery()
-        }
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -70,18 +75,27 @@ class RootFolderViewController: UIViewController {
         super.viewDidDisappear(animated)
     }
     
-    @IBAction func ssdpSearchButtonTapped(sender: AnyObject) {
-        UPnAtom.sharedInstance.restartSSDPDiscovery()
+    @IBAction private func discoverButtonTapped(sender: AnyObject) {
+        if UPnAtom.sharedInstance.ssdpDiscoveryRunning() {
+            UPnAtom.sharedInstance.restartSSDPDiscovery()
+        }
+        else {
+            UPnAtom.sharedInstance.startSSDPDiscovery()
+        }
+    }
+    
+    @IBAction private func archiveButtonTapped(sender: AnyObject) {
+        archiveUPnPObjects()
     }
 
     @objc private func deviceWasAdded(notification: NSNotification) {
         if let upnpDevice = notification.userInfo?[UPnPRegistry.UPnPDeviceKey()] as? AbstractUPnPDevice {
             println("Added device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
             
-            let index = _devices.count
-            _devices.insert(upnpDevice, atIndex: index)
+            let index = _discoveredDevices.count
+            _discoveredDevices.insert(upnpDevice, atIndex: index)
             
-            let indexPath = NSIndexPath(forRow: index, inSection: 0)
+            let indexPath = NSIndexPath(forRow: index, inSection: 1)
             _tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
         }
     }
@@ -90,10 +104,10 @@ class RootFolderViewController: UIViewController {
         if let upnpDevice = notification.userInfo?[UPnPRegistry.UPnPDeviceKey()] as? AbstractUPnPDevice {
             println("Removed device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
             
-            if let index = find(_devices, upnpDevice) {
-                _devices.removeAtIndex(index)
+            if let index = find(_discoveredDevices, upnpDevice) {
+                _discoveredDevices.removeAtIndex(index)
                 
-                let indexPath = NSIndexPath(forRow: index, inSection: 0)
+                let indexPath = NSIndexPath(forRow: index, inSection: 1)
                 _tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
             }
         }
@@ -101,25 +115,149 @@ class RootFolderViewController: UIViewController {
     
     @objc private func serviceWasAdded(notification: NSNotification) {
         if let upnpService = notification.userInfo?[UPnPRegistry.UPnPServiceKey()] as? AbstractUPnPService {
-            println("Added service: \(upnpService.className) - \(upnpService.descriptionURL)")
+            println("Added service: \(upnpService.className)")
         }
     }
     
     @objc private func serviceWasRemoved(notification: NSNotification) {
         if let upnpService = notification.userInfo?[UPnPRegistry.UPnPServiceKey()] as? AbstractUPnPService {
-            println("Removed service: \(upnpService.className) - \(upnpService.descriptionURL)")
+            println("Removed service: \(upnpService.className)")
         }
+    }
+    
+    private func devicesForTableSection(section: Int) -> [AbstractUPnPDevice] {
+        return section == 0 ? _archivedDevices : _discoveredDevices
+    }
+    
+    private func archiveUPnPObjects() {
+        // archive devices
+        UPnAtom.sharedInstance.upnpRegistry.upnpDevices { (upnpDevices: [AbstractUPnPDevice]) -> Void in
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                var deviceArchivables = [UPnPArchivableAnnex]()
+                for device in upnpDevices {
+                    let deviceArchivable = device.archivable(customMetadata: ["upnpType": device.className, "friendlyName": device.friendlyName])
+                    deviceArchivables.append(deviceArchivable)
+                }
+                
+                let deviceArchivablesData = NSKeyedArchiver.archivedDataWithRootObject(deviceArchivables)
+                NSUserDefaults.standardUserDefaults().setObject(deviceArchivablesData, forKey: self._upnpDeviceArchiveKey)
+                
+                // archive services
+                UPnAtom.sharedInstance.upnpRegistry.upnpServices { (upnpServices: [AbstractUPnPService]) -> Void in
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                        var serviceArchivables = [UPnPArchivableAnnex]()
+                        for service in upnpServices {
+                            let serviceArchivable = service.archivable(customMetadata: ["upnpType": service.className])
+                            serviceArchivables.append(serviceArchivable)
+                        }
+                        
+                        let serviceArchivablesData = NSKeyedArchiver.archivedDataWithRootObject(serviceArchivables)
+                        NSUserDefaults.standardUserDefaults().setObject(serviceArchivablesData, forKey: self._upnpServiceArchiveKey)
+                        
+                        // show archive complete alert
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            let alertController = UIAlertController(title: "Archive Complete!", message: "Load archive and reload table view? If cancelled you'll see the archived devices on the next launch.", preferredStyle: .Alert)
+                            alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+                            alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction!) -> Void in
+                                self.loadArchivedUPnPObjects()
+                            }))
+                            self.presentViewController(alertController, animated: true, completion: nil)
+                        })
+                    })
+                }
+            })
+        }
+    }
+    
+    private func loadArchivedUPnPObjects() {
+        // clear previously loaded devices
+        if _archivedDevices.count > 0 {
+            var currentArchivedDeviceIndexes = [NSIndexPath]()
+            for var i: Int = 0; i < _archivedDevices.count; i++ {
+                currentArchivedDeviceIndexes.append(NSIndexPath(forRow: i, inSection: 0))
+            }
+            
+            _archivedDevices.removeAll(keepCapacity: false)
+            _tableView.deleteRowsAtIndexPaths(currentArchivedDeviceIndexes, withRowAnimation: .Automatic)
+        }
+        
+        // clear previously loaded services
+        if _archivedServices.count > 0 {
+            _archivedServices.removeAll(keepCapacity: false)
+        }
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+            // load archived devices
+            if let deviceArchivablesData = NSUserDefaults.standardUserDefaults().objectForKey(self._upnpDeviceArchiveKey) as? NSData {
+                let deviceArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(deviceArchivablesData) as [UPnPArchivableAnnex]
+                
+                for deviceArchivable in deviceArchivables {
+                    let upnpType = deviceArchivable.customMetadata?["upnpType"]
+                    let friendlyName = deviceArchivable.customMetadata?["friendlyName"]
+                    println("Unarchived device from cache \(upnpType) - \(friendlyName)")
+                    
+                    UPnAtom.sharedInstance.upnpRegistry.createUPnPObject(deviceArchivable, success: { (upnpObject: AbstractUPnP) -> Void in
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            println("Re-created device \(upnpObject.className) - \(friendlyName)")
+                            
+                            if let upnpDevice = upnpObject as? AbstractUPnPDevice {
+                                upnpDevice.serviceSource = self
+                                
+                                let index = self._archivedDevices.count
+                                self._archivedDevices.insert(upnpDevice, atIndex: index)
+                                let indexPath = NSIndexPath(forRow: index, inSection: 0)
+                                self._tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                            }
+                        })
+                        }, failure: { (error: NSError) -> Void in
+                        println("Failed to create UPnP Object from archive")
+                    })
+                }
+            }
+            
+            // load archived services
+            if let serviceArchivablesData = NSUserDefaults.standardUserDefaults().objectForKey(self._upnpServiceArchiveKey) as? NSData {
+                let serviceArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(serviceArchivablesData) as [UPnPArchivableAnnex]
+                
+                for serviceArchivable in serviceArchivables {
+                    let upnpType = serviceArchivable.customMetadata?["upnpType"]
+                    println("Unarchived service from cache \(upnpType)")
+                    
+                    UPnAtom.sharedInstance.upnpRegistry.createUPnPObject(serviceArchivable, success: { (upnpObject: AbstractUPnP) -> Void in
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            println("Re-created service \(upnpObject.className)")
+                            
+                            if let upnpDevice = upnpObject as? AbstractUPnPService {
+                                self._archivedServices[upnpDevice.usn] = upnpDevice
+                            }
+                        })
+                        }, failure: { (error: NSError) -> Void in
+                            println("Failed to create UPnP Object from archive")
+                    })
+                }
+            }
+        })
     }
 }
 
 extension RootFolderViewController: UITableViewDataSource {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return section == 0 ? "Archived Devices" : "Discovered Devices"
+    }
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return _devices.count
+        let devices = devicesForTableSection(section)
+        return devices.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as UITableViewCell
-        let device = _devices[indexPath.row]
+        let devices = devicesForTableSection(indexPath.section)
+        let device = devices[indexPath.row]
         cell.textLabel?.text = device.friendlyName
         cell.accessoryType = device is MediaServer1Device ? .DisclosureIndicator : .None
         
@@ -129,7 +267,8 @@ extension RootFolderViewController: UITableViewDataSource {
 
 extension RootFolderViewController: UITableViewDelegate {
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let device = _devices[indexPath.row]
+        let devices = devicesForTableSection(indexPath.section)
+        let device = devices[indexPath.row]
 
         if let mediaServer = device as? MediaServer1Device {
             if mediaServer.contentDirectoryService() == nil {
@@ -155,3 +294,8 @@ extension RootFolderViewController: UITableViewDelegate {
     }
 }
 
+extension RootFolderViewController: UPnPServiceSource {
+    func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
+        return _archivedServices[usn]
+    }
+}
