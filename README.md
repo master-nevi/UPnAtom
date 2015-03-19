@@ -23,13 +23,6 @@ pod 'UPnAtom', '~> 0.0.1.beta.2'
 import UPnAtom
 ```
 
-### Contribute:
-Currently I'm only taking feature requests, bugs, and bug fixes via [Github issue](https://github.com/master-nevi/UPnAtom/issues). Sorry no pull requests for features or major changes until the library is mature enough.
-
-- If you'd like to **ask a general question**, use [Stack Overflow](http://stackoverflow.com/).
-- If you **found a bug**, open an issue.
-- If you **have a feature request**, open an issue.
-
 ### Milestones:
 * [x] Usable in both Swift and Objective-C projects via CocoaPod framework
 * [x] Create your own service and device object via class registration
@@ -40,3 +33,19 @@ Currently I'm only taking feature requests, bugs, and bug fixes via [Github issu
 * [ ] OS X 10.9+ support
 * [ ] Feature parity with upnpx library
 * [ ] UPnP Version 2 Compliance
+
+### Tested Support On:
+###### UPnP Servers:
+* Kodi - Open Source Home Theatre Software (aka XBMC)
+* Universal Media Server (fork of PS3 Media Server)
+
+###### UPnP Clients:
+* Kodi - Open Source Home Theatre Software (aka XBMC)
+* Sony Bravia TV's with DLNA support
+
+### Contribute:
+Currently I'm only taking feature requests, bugs, and bug fixes via [Github issue](https://github.com/master-nevi/UPnAtom/issues). Sorry no pull requests for features or major changes until the library is mature enough.
+
+- If you'd like to **ask a general question**, use [Stack Overflow](http://stackoverflow.com/).
+- If you **found a bug**, open an issue.
+- If you **have a feature request**, open an issue.
