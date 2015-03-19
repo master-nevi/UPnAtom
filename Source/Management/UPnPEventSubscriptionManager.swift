@@ -201,7 +201,7 @@ class UPnPEventSubscriptionManager {
         }
     }
     
-    func unsubscribe(subscription: Any, completion: ((result: EmptyResult) -> Void)? = nil) {
+    func unsubscribe(subscription: AnyObject, completion: ((result: EmptyResult) -> Void)? = nil) {
         let subscription: Subscription! = subscription as? Subscription
         if subscription == nil {
             if let completion = completion {
@@ -210,23 +210,22 @@ class UPnPEventSubscriptionManager {
             return
         }
         
-        let parameters = UPnPEventUnsubscribeRequestSerializer.Parameters(subscriptionID: subscription.subscriptionID)
-        
-        _unsubscribeSessionManager.UNSUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-            LogInfo("Successfully unsubscribed: \(subscription)")
+        // remove local version of subscription immediately to prevent any race conditions
+        self.remove(subscription: subscription, completion: { [unowned self] () -> Void in
+            let parameters = UPnPEventUnsubscribeRequestSerializer.Parameters(subscriptionID: subscription.subscriptionID)
             
-            self.remove(subscription: subscription, completion: { () -> Void in
+            self._unsubscribeSessionManager.UNSUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
+                LogInfo("Successfully unsubscribed: \(subscription)")
                 if let completion = completion {
                     completion(result: .Success)
                 }
-            })
-            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                LogError("Failed to unsubscribe: \(subscription)\nerror: \(error)")
-                self.remove(subscription: subscription, completion: { () -> Void in
+                
+                }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                    LogError("Failed to unsubscribe: \(subscription)\nerror: \(error)")
                     if let completion = completion {
                         completion(result: .Failure(error))
                     }
-                })
+            })
         })
     }
     
@@ -270,27 +269,27 @@ class UPnPEventSubscriptionManager {
     }
     
     private func add(#subscription: Subscription, completion: (() -> Void)? = nil) {
-        let originalQueue = NSOperationQueue.currentQueue()
         dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
             self._subscriptions[subscription.eventURLString] = subscription
             self.startStopHTTPServerIfNeeded(self._subscriptions)
             
-            // kick the completion back onto original queue
             if let completion = completion {
-                originalQueue?.addOperationWithBlock(completion)
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                    completion()
+                })
             }
         })
     }
     
     private func remove(#subscription: Subscription, completion: (() -> Void)? = nil) {
-        let originalQueue = NSOperationQueue.currentQueue()
         dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
             self._subscriptions.removeValueForKey(subscription.eventURLString)?.invalidate()
             self.startStopHTTPServerIfNeeded(self._subscriptions)
             
-            // kick the completion back onto original queue
             if let completion = completion {
-                originalQueue?.addOperationWithBlock(completion)
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                    completion()
+                })
             }
         })
     }
@@ -308,7 +307,9 @@ class UPnPEventSubscriptionManager {
             // Stop http server if it's not needed further
             self.startStopHTTPServerIfNeeded(self._subscriptions)
             
-            serverURL != nil ? closure(eventCallBackURL: NSURL(string: self._eventCallBackPath, relativeToURL: serverURL)!) : closure(eventCallBackURL: nil)
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                serverURL != nil ? closure(eventCallBackURL: NSURL(string: self._eventCallBackPath, relativeToURL: serverURL)!) : closure(eventCallBackURL: nil)
+            })
         })
     }
     
