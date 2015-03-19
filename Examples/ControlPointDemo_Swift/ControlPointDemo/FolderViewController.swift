@@ -42,14 +42,16 @@ class FolderViewController: UIViewController {
             println("Failed to get sort capabilities: \(error)")
         })
         
-        let titleLabel = UILabel(frame: CGRect(x: 0.0, y: 11.0, width: self.navigationController!.view.frame.size.width, height: 21.0))
+        let playerButton = Player.sharedInstance.playerButton
+        let viewWidth = self.navigationController!.view.frame.size.width
+        let titleLabel = UILabel(frame: CGRect(x: 0.0, y: 11.0, width: viewWidth - (viewWidth * 0.2), height: 21.0))
         titleLabel.font = UIFont(name: "Helvetica", size: 18)
         titleLabel.backgroundColor = UIColor.clearColor()
         titleLabel.textColor = UIColor.blackColor()
         titleLabel.textAlignment = .Left
         titleLabel.text = Player.sharedInstance.mediaRenderer == nil ? "No Renderer Selected" : Player.sharedInstance.mediaRenderer?.friendlyName
         let barButton = UIBarButtonItem(customView: titleLabel)
-        self.toolbarItems = [barButton]
+        self.toolbarItems = [playerButton, barButton]
         
         self.navigationController?.toolbarHidden = false
     }
@@ -79,7 +81,7 @@ extension FolderViewController: UITableViewDelegate {
             self.navigationController?.pushViewController(targetViewController, animated: true)
         }
         else {
-            Player.sharedInstance.play(_playlist, position: indexPath.row)
+            Player.sharedInstance.startPlayback(_playlist, position: indexPath.row)
         }
     }
 }
