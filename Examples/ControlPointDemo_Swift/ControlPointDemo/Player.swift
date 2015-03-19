@@ -49,10 +49,10 @@ class Player {
     private var _avTransportInstanceID = "0"
     
     enum PlayerState {
+        case Unknown
         case Stopped
         case Playing
         case Paused
-        case Unknown
     }
     
     init() {
@@ -86,7 +86,7 @@ class Player {
         }
     }
     
-    @IBAction private func playerButtonTapped(sender: AnyObject) {
+    @objc private func playerButtonTapped(sender: AnyObject) {
         println("player button tapped")
         
         switch _playerState {
@@ -115,15 +115,15 @@ class Player {
         _avTransportEventObserver = newRenderer?.avTransportService()?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
             if let avTransportEvent = event as? AVTransport1Event {
                 println("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
-                if let transportState = avTransportEvent.instanceState["TransportState"] as? String {
+                if let transportState = (avTransportEvent.instanceState["TransportState"] as? String)?.lowercaseString {
                     println("transport state: \(transportState)")
-                    if transportState.lowercaseString.rangeOfString("playing") != nil {
+                    if transportState.rangeOfString("playing") != nil {
                         self._playerState = .Playing
                     }
-                    else if transportState.lowercaseString.rangeOfString("paused") != nil {
+                    else if transportState.rangeOfString("paused") != nil {
                         self._playerState = .Paused
                     }
-                    else if transportState.lowercaseString.rangeOfString("stopped") != nil {
+                    else if transportState.rangeOfString("stopped") != nil {
                         self._playerState = .Stopped
                     }
                     else {
