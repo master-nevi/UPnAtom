@@ -37,6 +37,7 @@
     NSMutableArray *_discoveredDevices;
     NSMutableArray *_archivedDevices;
     NSMutableDictionary *_archivedServices;
+    __weak UILabel *_toolbarLabel;
 }
 
 - (void)viewDidLoad {
@@ -53,14 +54,17 @@
     
     self.title = @"Control Point Demo";
     
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, self.navigationController.view.frame.size.width, 21.0f)];
+    UIBarButtonItem *playerButton = [[Player sharedInstance] playerButton];
+    CGFloat viewWidth = self.navigationController.view.frame.size.width;
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, viewWidth - (viewWidth * 0.2), 21.0f)];
+    _toolbarLabel = titleLabel;
     [titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
     [titleLabel setBackgroundColor:[UIColor clearColor]];
     [titleLabel setTextColor:[UIColor blackColor]];
     [titleLabel setText:@""];
     [titleLabel setTextAlignment:NSTextAlignmentLeft];
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
-    NSArray *items = @[barButton];
+    NSArray *items = @[playerButton, barButton];
     self.toolbarItems = items;
     
     self.navigationController.toolbarHidden = NO;
@@ -148,7 +152,7 @@
         
         [[self navigationController] pushViewController:targetViewController animated:YES];
         
-        [[Player sharedInstance] setServer:device];
+        [[Player sharedInstance] setMediaServer:server];
     }
     else if ([device isMediaRenderer1Device]) {
         MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)device;
@@ -157,8 +161,8 @@
             return;
         }
         
-        [[self toolbarLabel] setText:[device friendlyName]];
-        [[Player sharedInstance] setRenderer:device];
+        [_toolbarLabel setText:[device friendlyName]];
+        [[Player sharedInstance] setMediaRenderer:aRenderer];
     }
 }
 
@@ -215,11 +219,6 @@
 }
 
 #pragma mark - Internal lib
-
-- (UILabel *)toolbarLabel {
-    UIBarButtonItem *item = (UIBarButtonItem *)self.toolbarItems.firstObject;
-    return (UILabel *)item.customView;
-}
 
 - (NSArray *)devicesForTableSection:(NSUInteger)section {
     return section == 0 ? _archivedDevices : _discoveredDevices;

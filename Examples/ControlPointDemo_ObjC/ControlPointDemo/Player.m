@@ -24,8 +24,23 @@
 #import "Player.h"
 @import UPnAtom;
 
+typedef NS_ENUM(NSInteger, PlayerState) {
+    PlayerStateUnknown = 0,
+    PlayerStateStopped,
+    PlayerStatePlaying,
+    PlayerStatePaused
+};
+
+@interface Player ()
+@property (nonatomic, readwrite) NSArray *playlist;
+@property (nonatomic, readwrite) UIBarButtonItem *playerButton;
+@property (nonatomic) PlayerState playerState;
+@end
+
 @implementation Player {
-    NSInteger _pos;
+    NSInteger _position;
+    id _avTransportEventObserver;
+    NSString *_avTransportInstanceID;
 }
 
 + (Player *)sharedInstance {
@@ -34,123 +49,140 @@
     
     dispatch_once(&onceToken, ^{
         instance = [Player new];
+        
+        instance.playerButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"play_button"] style:UIBarButtonItemStylePlain target:instance action:@selector(playerButtonTapped:)];
+        instance->_avTransportInstanceID = @"0";
     });
     
     return instance;
 }
 
-- (void)setRenderer:(AbstractUPnPDevice *)renderer {
-    _renderer = renderer;
+- (void)setMediaRenderer:(MediaRenderer1Device *)mediaRenderer {
+    MediaRenderer1Device *oldRenderer = _mediaRenderer;
+    _mediaRenderer = mediaRenderer;
     
-    MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)self.renderer;
-    [[aRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
+    if (_avTransportEventObserver != nil) {
+        [[oldRenderer avTransportService] removeEventObserver:_avTransportEventObserver];
+    }
+    
+    _avTransportEventObserver = [[mediaRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
         if ([event.service isAVTransport1Service] && [event isAVTransport1Event]) {
             AVTransport1Event *avTransportEvent = (AVTransport1Event *)event;
             NSLog(@"%@ Event: %@", event.service.className, avTransportEvent.instanceState);
+            NSString *transportState = [avTransportEvent.instanceState[@"TransportState"] lowercaseString];
+            if (transportState.length) {
+                if ([transportState rangeOfString:@"playing"].location != NSNotFound) {
+                    self.playerState = PlayerStatePlaying;
+                }
+                else if ([transportState rangeOfString:@"paused"].location != NSNotFound) {
+                    self.playerState = PlayerStatePaused;
+                }
+                else if ([transportState rangeOfString:@"stopped"].location != NSNotFound) {
+                    self.playerState = PlayerStateStopped;
+                }
+                else {
+                    self.playerState = PlayerStateUnknown;
+                }
+            }
         }
     }];
 }
 
-- (int)play:(NSArray*)playList position:(NSInteger)position{
+- (void)startPlayback:(NSArray *)playList position:(NSInteger)position{
     [self setPlaylist:playList];
     
-    //Play
-    return [self play:position];
+    [self startPlayback:position];
 }
 
-
-- (int)play:(NSInteger)position{
+- (void)startPlayback:(NSInteger)position{
     //Do we have a Renderer & a playlist ?
-    if(_renderer == nil || _playlist == nil){
-        return -1;
+    if(_mediaRenderer == nil || _playlist == nil){
+        return;
     }
     
     if(position >= [_playlist count]){
         position = 0; //Loop
     }
     
-    _pos = position;
+    _position = position;
 
     ContentDirectory1Object *item = _playlist[position];
     //Is it a Media1ServerItem ?
     if([item isContentDirectory1VideoItem]){
         ContentDirectory1VideoItem *item = _playlist[position];
         
-        //A few things are missing here:
-        // - Find the right URI based on MIME type, do this via: [item resources], also check render capabilities 
-        // = The InstanceID is set to @"0", find the right one via: "ConnetionManager PrepareForConnection"
-        
-        //Metadata
-//        NSMutableString *metaData = [[NSMutableString alloc] init];
-//        NSMutableString *outTotalMatches = [[NSMutableString alloc] init];
-//        NSMutableString *outNumberReturned = [[NSMutableString alloc] init];
-//        NSMutableString *outUpdateID = [[NSMutableString alloc] init];
-        
-        //Get the metadata, we need to supply it when playing
-//        [[server contentDirectory] BrowseWithObjectID:[item objectID] BrowseFlag:@"BrowseMetadata" Filter:@"*" StartingIndex:@"0" RequestedCount:@"1" SortCriteria:@"+dc:title" OutResult:metaData OutNumberReturned:outNumberReturned OutTotalMatches:outTotalMatches OutUpdateID:outUpdateID];
-        
-        
-        //Find the right URI & Instance ID
-//        NSMutableString *Source = [NSMutableString new];
-//        NSMutableString *Sink = [NSMutableString new];
-//        [[renderer connectionManager] GetProtocolInfoWithOutSource:Source OutSink:Sink];
-//        NSArray *SinkArr = [Sink componentsSeparatedByString:@","];
-        
-//        NSMutableString *RendererOutConnectionIDs = [NSMutableString new];
-//        [[renderer connectionManager] GetCurrentConnectionIDsWithOutConnectionIDs:RendererOutConnectionIDs];
-//        
-//        NSMutableString *OutRcsID = [NSMutableString new];
-//        NSMutableString *OutAVTransportID = [NSMutableString new];
-//        NSMutableString *OutProtocolInfo = [NSMutableString string];
-//        NSMutableString *OutPeerConnectionManager = [NSMutableString new];
-//        NSMutableString *OutPeerConnectionID = [NSMutableString new];
-//        NSMutableString *OutDirection = [NSMutableString string];
-//        NSMutableString *OutStatus = [NSMutableString string];
-//        [[renderer connectionManager] GetCurrentConnectionInfoWithConnectionID:RendererOutConnectionIDs OutRcsID:OutRcsID OutAVTransportID:OutAVTransportID OutProtocolInfo:OutProtocolInfo OutPeerConnectionManager:OutPeerConnectionManager OutPeerConnectionID:OutPeerConnectionID OutDirection:OutDirection OutStatus:OutStatus];
-        
         NSString *uri = [item resourceURL].absoluteString;
-        NSString *iid = @"0";//OutAVTransportID2;
-        
-        //Play
-//        NSMutableString *OutActions = [NSMutableString string];
-//        [[renderer avTransport] GetCurrentTransportActionsWithInstanceID:@"0" OutActions:OutActions];
-//
-//        NSMutableString *OutNrTracks = [NSMutableString string];
-//        NSMutableString *OutMediaDuration = [NSMutableString string];
-//        NSMutableString *OutCurrentURI = [NSMutableString string];
-//        NSMutableString *OutCurrentURIMetaData = [NSMutableString string];
-//        NSMutableString *OutNextURI = [NSMutableString string];
-//        NSMutableString *OutNextURIMetaData = [NSMutableString string];
-//        NSMutableString *OutPlayMedium = [NSMutableString string];
-//        NSMutableString *OutRecordMedium = [NSMutableString string];
-//        NSMutableString *OutWriteStatus = [NSMutableString string];
-//        [[renderer avTransport] GetMediaInfoWithInstanceID:iid OutNrTracks:OutNrTracks OutMediaDuration:OutMediaDuration OutCurrentURI:OutCurrentURI OutCurrentURIMetaData:OutCurrentURIMetaData OutNextURI:OutNextURI OutNextURIMetaData:OutNextURIMetaData OutPlayMedium:OutPlayMedium OutRecordMedium:OutRecordMedium OutWriteStatus:OutWriteStatus];
-        
-        
-//        [[renderer avTransport] StopWithInstanceID:iid];
-//        NSString *escapedMetaData = [metaData XMLEscape];
-        
-//        NSDate *start = [NSDate date];
-        
-        MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)self.renderer;
-        [[aRenderer avTransportService] setAVTransportURIWithInstanceID:iid currentURI:uri currentURIMetadata:@"" success:^{
-            NSLog(@"URI Set succeeded!");
+        if (uri.length) {
             
-            [[aRenderer avTransportService] playWithInstanceID:iid speed:@"1" success:^{
+            [[self.mediaRenderer avTransportService] setAVTransportURIWithInstanceID:_avTransportInstanceID currentURI:uri currentURIMetadata:@"" success:^{
+                NSLog(@"URI Set succeeded!");
+                
+                [self playWithSuccess:^{
+                    NSLog(@"Play command succeeded!");
+                } failure:^(NSError *error) {
+                    NSLog(@"Play command failed: %@", error.localizedDescription);
+                }];
+            } failure:^(NSError *error) {
+                NSLog(@"URI Set failed: %@", error.localizedDescription);
+            }];
+        }
+    }
+}
+
+#pragma mark - Internal lib
+
+- (void)playerButtonTapped:(id)sender {
+    switch (self.playerState) {
+        case PlayerStatePlaying:
+            [self pauseWithSuccess:^{
+                NSLog(@"Pause command succeeded!");
+            } failure:^(NSError *error) {
+                NSLog(@"Pause command failed: %@", error.localizedDescription);
+            }];
+            break;
+            
+        case PlayerStatePaused:
+            [self playWithSuccess:^{
                 NSLog(@"Play command succeeded!");
             } failure:^(NSError *error) {
                 NSLog(@"Play command failed: %@", error.localizedDescription);
             }];
-        } failure:^(NSError *error) {
-            NSLog(@"URI Set failed: %@", error.localizedDescription);
-        }];
+            break;
+            
+        default:
+            NSLog(@"Player button cannot be used in this state.");
+            break;
     }
-    
-    return 0;
 }
 
-- (void)pause {
-//    [[renderer avTransport] PauseWithInstanceID:@"0"];
+- (void)setPlayerState:(PlayerState)playerState {
+    _playerState = playerState;
+    
+    switch (playerState) {
+        case PlayerStateStopped:
+            self.playerButton.image = [UIImage imageNamed:@"play_button"];
+            break;
+            
+        case PlayerStatePlaying:
+            self.playerButton.image = [UIImage imageNamed:@"pause_button"];
+            break;
+            
+        case PlayerStatePaused:
+            self.playerButton.image = [UIImage imageNamed:@"play_button"];
+            break;
+            
+        default:
+            self.playerButton.image = [UIImage imageNamed:@"play_button"];
+            break;
+    }
+}
+
+- (void)playWithSuccess:(void (^)(void))success failure:(void (^)(NSError *))failure {
+    [[self.mediaRenderer avTransportService] playWithInstanceID:_avTransportInstanceID speed:@"1" success:success failure:failure];
+}
+
+- (void)pauseWithSuccess:(void (^)(void))success failure:(void (^)(NSError *))failure {
+    [[self.mediaRenderer avTransportService] pauseWithInstanceID:_avTransportInstanceID success:success failure:failure];
 }
 
 @end
