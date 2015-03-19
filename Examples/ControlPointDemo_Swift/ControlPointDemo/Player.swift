@@ -33,35 +33,52 @@ class Player {
     var mediaServer: MediaServer1Device?
     var mediaRenderer: MediaRenderer1Device? {
         didSet {
-            didSetRenderer(mediaRenderer)
+            didSetRenderer(oldRenderer: oldValue, newRenderer: mediaRenderer)
         }
     }
+    let playerButton: UIBarButtonItem!
     
     private var _position: Int = 0
     private var _playlist: [ContentDirectory1Object]?
+    private var _avTransportEventObserver: AnyObject?
+    private var _playerState: PlayerState = PlayerState.Stopped {
+        didSet {
+            playerStateDidChange()
+        }
+    }
+    private var _avTransportInstanceID = "0"
     
-    init() { }
-    
-    func play(playlist: [ContentDirectory1Object], position: Int) {
-        _playlist = playlist
-        
-        play(position: position)
+    enum PlayerState {
+        case Stopped
+        case Playing
+        case Paused
+        case Unknown
     }
     
-    func play(#position: Int) {
+    init() {
+        playerButton = UIBarButtonItem(image: UIImage(named: "play_button"), style: .Plain, target: self, action: "playerButtonTapped:")
+    }
+    
+    func startPlayback(playlist: [ContentDirectory1Object], position: Int) {
+        _playlist = playlist
+        
+        startPlayback(position: position)
+    }
+    
+    func startPlayback(#position: Int) {
         _position = position
         
         if let item = _playlist?[position] as? ContentDirectory1VideoItem {
             if let uri = item.resourceURL.absoluteString {
-                let instanceID = "0"
+                let instanceID = _avTransportInstanceID
                 mediaRenderer?.avTransportService()?.setAVTransportURI(instanceID: instanceID, currentURI: uri, currentURIMetadata: "", success: { () -> Void in
                     println("URI set succeeded!")
-                    
-                    self.mediaRenderer?.avTransportService()?.play(instanceID: instanceID, speed: "1", success: { () -> Void in
+                    self.play({ () -> Void in
                         println("Play command succeeded!")
                         }, failure: { (error) -> Void in
                             println("Play command failed: \(error)")
                     })
+                    
                     }, failure: { (error) -> Void in
                         println("URI set failed: \(error)")
                 })
@@ -69,13 +86,72 @@ class Player {
         }
     }
     
-    private func didSetRenderer(renderer: MediaRenderer1Device?) {
-        if let renderer = renderer {
-            renderer.avTransportService()?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
-                if let avTransportEvent = event as? AVTransport1Event {
-                    println("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
-                }
+    @IBAction private func playerButtonTapped(sender: AnyObject) {
+        println("player button tapped")
+        
+        switch _playerState {
+        case .Playing:
+            pause({ () -> Void in
+                println("Pause command succeeded!")
+            }, failure: { (error) -> Void in
+                println("Pause command failed: \(error)")
             })
+        case .Paused:
+            play({ () -> Void in
+                println("Play command succeeded!")
+                }, failure: { (error) -> Void in
+                    println("Play command failed: \(error)")
+            })
+        default:
+            println("Player button cannot be used in this state.")
         }
+    }
+    
+    private func didSetRenderer(#oldRenderer: MediaRenderer1Device?, newRenderer: MediaRenderer1Device?) {
+        if let avTransportEventObserver: AnyObject = _avTransportEventObserver {
+            oldRenderer?.avTransportService()?.removeEventObserver(avTransportEventObserver)
+        }
+        
+        _avTransportEventObserver = newRenderer?.avTransportService()?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
+            if let avTransportEvent = event as? AVTransport1Event {
+                println("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
+                if let transportState = avTransportEvent.instanceState["TransportState"] as? String {
+                    println("transport state: \(transportState)")
+                    if transportState.lowercaseString.rangeOfString("playing") != nil {
+                        self._playerState = .Playing
+                    }
+                    else if transportState.lowercaseString.rangeOfString("paused") != nil {
+                        self._playerState = .Paused
+                    }
+                    else if transportState.lowercaseString.rangeOfString("stopped") != nil {
+                        self._playerState = .Stopped
+                    }
+                    else {
+                        self._playerState = .Unknown
+                    }
+                }
+            }
+        })
+    }
+    
+    private func playerStateDidChange() {
+        switch _playerState {
+        case .Stopped:
+            playerButton.image = UIImage(named: "play_button")
+        case .Playing:
+            playerButton.image = UIImage(named: "pause_button")
+        case .Paused:
+            playerButton.image = UIImage(named: "play_button")
+        case .Unknown:
+            playerButton.image = UIImage(named: "play_button")
+        }
+    }
+    
+    private func play(success: () -> Void, failure:(error: NSError) -> Void) {
+        self.mediaRenderer?.avTransportService()?.play(instanceID: _avTransportInstanceID, speed: "1", success: success, failure: failure)
+    }
+    
+    private func pause(success: () -> Void, failure:(error: NSError) -> Void) {
+        self.mediaRenderer?.avTransportService()?.pause(instanceID: _avTransportInstanceID, success: success, failure: failure)
     }
 }

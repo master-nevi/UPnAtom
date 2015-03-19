@@ -28,9 +28,7 @@ class RootFolderViewController: UIViewController {
     private var _discoveredDevices = [AbstractUPnPDevice]()
     private var _archivedDevices = [AbstractUPnPDevice]()
     private var _archivedServices = [UniqueServiceName: AbstractUPnPService]()
-    private var toolbarLabel: UILabel? {
-        return (self.toolbarItems?.first as? UIBarButtonItem)?.customView as? UILabel
-    }
+    private weak var _toolbarLabel: UILabel?
     @IBOutlet private weak var _tableView: UITableView!
     private let _upnpDeviceArchiveKey = "upnpDeviceArchiveKey"
     private let _upnpServiceArchiveKey = "upnpServiceArchiveKey"
@@ -45,14 +43,17 @@ class RootFolderViewController: UIViewController {
         
         self.title = "Control Point Demo"
         
-        let titleLabel = UILabel(frame: CGRect(x: 0.0, y: 11.0, width: self.navigationController!.view.frame.size.width, height: 21.0))
+        let playerButton = Player.sharedInstance.playerButton
+        let viewWidth = self.navigationController!.view.frame.size.width
+        let titleLabel = UILabel(frame: CGRect(x: 0.0, y: 11.0, width: viewWidth - (viewWidth * 0.2), height: 21.0))
+        _toolbarLabel = titleLabel
         titleLabel.font = UIFont(name: "Helvetica", size: 18)
         titleLabel.backgroundColor = UIColor.clearColor()
         titleLabel.textColor = UIColor.blackColor()
         titleLabel.textAlignment = .Left
         titleLabel.text = ""
         let barButton = UIBarButtonItem(customView: titleLabel)
-        self.toolbarItems = [barButton]
+        self.toolbarItems = [playerButton, barButton]
         
         self.navigationController?.toolbarHidden = false
     }
@@ -288,7 +289,7 @@ extension RootFolderViewController: UITableViewDelegate {
                 return
             }
             
-            toolbarLabel?.text = mediaRenderer.friendlyName
+            _toolbarLabel?.text = mediaRenderer.friendlyName
             Player.sharedInstance.mediaRenderer = mediaRenderer
         }
     }

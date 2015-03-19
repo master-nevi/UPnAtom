@@ -24,7 +24,7 @@
 import Foundation
 
 public class AVTransport1Service: AbstractUPnPService {
-    public func setAVTransportURI(#instanceID: String, currentURI: String, currentURIMetadata: String, success: () -> Void, failure:(error: NSError?) -> Void) {
+    public func setAVTransportURI(#instanceID: String, currentURI: String, currentURIMetadata: String, success: () -> Void, failure:(error: NSError) -> Void) {
         let arguments = [
             "InstanceID" : instanceID,
             "CurrentURI" : currentURI,
@@ -39,7 +39,7 @@ public class AVTransport1Service: AbstractUPnPService {
         })
     }
     
-    public func play(#instanceID: String, speed: String, success: () -> Void, failure:(error: NSError?) -> Void) {
+    public func play(#instanceID: String, speed: String, success: () -> Void, failure:(error: NSError) -> Void) {
         let arguments = [
             "InstanceID" : instanceID,
             "Speed" : speed]
@@ -53,7 +53,7 @@ public class AVTransport1Service: AbstractUPnPService {
         })
     }
     
-    public func pause(#instanceID: String, success: () -> Void, failure:(error: NSError?) -> Void) {
+    public func pause(#instanceID: String, success: () -> Void, failure:(error: NSError) -> Void) {
         let arguments = ["InstanceID" : instanceID]
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Pause", serviceURN: urn, arguments: arguments)
