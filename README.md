@@ -9,7 +9,7 @@ An open source Universal Plug and Play library with a focus on media streaming c
 ### Install:
 Add following to Podfile:
 ```ruby
-pod 'UPnAtom', '~> 0.0.1.beta.2'
+pod 'UPnAtom', '~> 0.0.1.beta.3'
 ```
 
 ### Usage:
@@ -36,12 +36,12 @@ import UPnAtom
 
 ### Tested Support On:
 ###### UPnP Servers:
-* [Kodi - Open Source Home Theatre Software](http://kodi.tv/) (aka XBMC) - [How to enable](http://kodi.wiki/view/UPnP/Server)
+* [Kodi](http://kodi.tv/) - Open Source Home Theatre Software (aka XBMC) - [How to enable](http://kodi.wiki/view/UPnP/Server)
 * [Universal Media Server](http://www.universalmediaserver.com/) (fork of PS3 Media Server)
 
 ###### UPnP Clients:
-* [Kodi - Open Source Home Theatre Software](http://kodi.tv/) (aka XBMC) - [How to enable](http://kodi.wiki/view/UPnP/Client)
-* Sony Bravia TV's with DLNA support
+* [Kodi](http://kodi.tv/) - Open Source Home Theatre Software (aka XBMC) - [How to enable](http://kodi.wiki/view/UPnP/Client)
+* [Sony Bravia TV's with DLNA support](http://esupport.sony.com/p/support-info.pl?info_id=884&template_id=1&region_id=8)
 
 ### Contribute:
 Currently I'm only taking feature requests, bugs, and bug fixes via [Github issue](https://github.com/master-nevi/UPnAtom/issues). Sorry no pull requests for features or major changes until the library is mature enough.
