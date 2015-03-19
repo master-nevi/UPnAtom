@@ -130,8 +130,9 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         return "UPnPEventKey"
     }
     
-    /// Use callBackBlock for event notifications. While the notifications are backed by NSNotifications for broadcasting, they should only be used internally in order to keep track of how many subscribers there are.
+    /// Returns an opaque object to act as the observer. Use it when the event observer needs to be removed.
     public func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent) -> Void) -> AnyObject {
+        /// Use callBackBlock for event notifications. While the notifications are backed by NSNotifications for broadcasting, they should only be used internally in order to keep track of how many subscribers there are.
         let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
             if let event = notification.userInfo?[AbstractUPnPService.UPnPEventKey()] as? UPnPEvent {
                 callBackBlock(event: event)
@@ -158,7 +159,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         return observer
     }
     
-    func removeEventObserver(observer: AnyObject) {
+    public func removeEventObserver(observer: AnyObject) {
         dispatch_barrier_async(_concurrentEventObserverQueue, { () -> Void in
             if let observer = observer as? EventObserver {
                 removeObject(&self._eventObservers, observer)
@@ -167,14 +168,13 @@ extension AbstractUPnPService: UPnPEventSubscriber {
             
             if self._eventObservers.count == 0 {
                 // unsubscribe
-                UPnAtom.sharedInstance.eventSubscriptionManager.unsubscribe(self, completion: { (result: EmptyResult) -> Void in
-                    switch result {
-                    case .Success:
-                        self._eventSubscription = nil
-                    case .Failure(let error):
+                let eventSubscription: AnyObject = self._eventSubscription!
+                self._eventSubscription = nil
+                
+                UPnAtom.sharedInstance.eventSubscriptionManager.unsubscribe(eventSubscription, completion: { (result: EmptyResult) -> Void in
+                    if let error = result.error {
                         let errorDescription = error.localizedDescription("Unknown unsubscribe error")
                         LogError("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")
-                        self._eventSubscription = nil
                     }
                 })
             }
