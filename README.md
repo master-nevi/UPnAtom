@@ -36,11 +36,11 @@ import UPnAtom
 
 ### Tested Support On:
 ###### UPnP Servers:
-* Kodi - Open Source Home Theatre Software (aka XBMC)
+* Kodi - Open Source Home Theatre Software (aka XBMC) - [How to enable](http://kodi.wiki/view/UPnP/Server)
 * Universal Media Server (fork of PS3 Media Server)
 
 ###### UPnP Clients:
-* Kodi - Open Source Home Theatre Software (aka XBMC)
+* Kodi - Open Source Home Theatre Software (aka XBMC) - [How to enable](http://kodi.wiki/view/UPnP/Client)
 * Sony Bravia TV's with DLNA support
 
 ### Contribute:
