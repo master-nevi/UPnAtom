@@ -53,20 +53,22 @@
         NSLog(@"failed to get sort capabilities");
     }];
     
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, self.navigationController.view.frame.size.width, 21.0f)];
+    UIBarButtonItem *playerButton = [[Player sharedInstance] playerButton];
+    CGFloat viewWidth = self.navigationController.view.frame.size.width;
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, viewWidth - (viewWidth * 0.2), 21.0f)];
     [titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
     [titleLabel setBackgroundColor:[UIColor clearColor]];
     [titleLabel setTextColor:[UIColor blackColor]];
     
-    if([[Player sharedInstance] renderer] == nil){
+    if([[Player sharedInstance] mediaRenderer] == nil){
         [titleLabel setText:@"No Renderer Selected"];
     }else{
-        [titleLabel setText:[[[Player sharedInstance] renderer] friendlyName] ];
+        [titleLabel setText:[[[Player sharedInstance] mediaRenderer] friendlyName] ];
     }
     
     [titleLabel setTextAlignment:NSTextAlignmentLeft];
     UIBarButtonItem *title = [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
-    NSArray *items = @[title];
+    NSArray *items = @[playerButton, title];
     self.toolbarItems = items;
     
     self.navigationController.toolbarHidden = NO;
@@ -111,7 +113,7 @@
         
         [[self navigationController] pushViewController:targetViewController animated:YES];
     }else{
-        [[Player sharedInstance] play:_playlist position:indexPath.row];
+        [[Player sharedInstance] startPlayback:_playlist position:indexPath.row];
     }
 }
 

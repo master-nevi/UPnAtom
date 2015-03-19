@@ -21,21 +21,23 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+@import UIKit;
 
-@class AbstractUPnPDevice;
+@class MediaServer1Device;
+@class MediaRenderer1Device;
 
 @interface Player : NSObject
 
 + (Player *)sharedInstance;
 
-- (int)play:(NSArray *)playList position:(NSInteger)position;
-- (int)play:(NSInteger)position;
-- (void)pause;
+- (void)startPlayback:(NSArray *)playList position:(NSInteger)position;
+- (void)startPlayback:(NSInteger)position;
 
-@property (strong) NSArray *playlist;
-@property (nonatomic) AbstractUPnPDevice *server;
-@property (nonatomic) AbstractUPnPDevice *renderer;
+@property (nonatomic, readonly) NSArray *playlist;
+@property (nonatomic) MediaServer1Device *mediaServer;
+@property (nonatomic) MediaRenderer1Device *mediaRenderer;
+@property (nonatomic, readonly) UIBarButtonItem *playerButton;
 
 @end
 
