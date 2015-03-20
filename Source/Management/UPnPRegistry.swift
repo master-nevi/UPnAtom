@@ -103,8 +103,7 @@ import AFNetworking
     
     public func createUPnPObject(upnpArchivable: UPnPArchivable, success: ((upnpObject: AbstractUPnP) -> Void), failure: ((error: NSError) -> Void)) {
         let failureCase = { (error: NSError) -> Void in
-            let errorString = error.localizedDescription("Unknown error")
-            LogError("Unable to fetch UPnP object description: \(errorString) For SSDP object: \(upnpArchivable.usn) at \(upnpArchivable.descriptionURL)")
+            LogError("Unable to fetch UPnP object description for archivable: \(upnpArchivable.usn) at \(upnpArchivable.descriptionURL): \(error)")
             
             failure(error: error)
         }
@@ -224,8 +223,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
-                let error = error.localizedDescription("Unknown error")
-                LogError("Unable to fetch UPnP object description: \(error) For SSDP object: \(ssdpDiscovery.usn.description) at \(ssdpDiscovery.descriptionURL)")
+                LogError("Unable to fetch UPnP object description for SSDP object: \(ssdpDiscovery.usn.description) at \(ssdpDiscovery.descriptionURL): \(error)")
         })
     }
     
