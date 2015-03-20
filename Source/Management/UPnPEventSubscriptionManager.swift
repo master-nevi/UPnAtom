@@ -298,14 +298,22 @@ class UPnPEventSubscriptionManager {
         dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
             // needs to be running in order to get server url for the subscription message
             let httpServer = self._httpServer
-            if !httpServer.running {
-                httpServer.startWithPort(self._httpServerPort, bonjourName: nil)
+            var serverURL: NSURL? = httpServer.serverURL
+            
+            // most likely nil if the http server is stopped
+            if serverURL == nil && !httpServer.running {
+                // Start http server
+                if self.startHTTPServer() {
+                    // Grab server url
+                    serverURL = httpServer.serverURL
+                    
+                    // Stop http server if it's not needed further
+                    self.startStopHTTPServerIfNeeded(self._subscriptions)
+                }
+                else {
+                    LogError("Error starting HTTP server")
+                }
             }
-            
-            let serverURL = httpServer.serverURL
-            
-            // Stop http server if it's not needed further
-            self.startStopHTTPServerIfNeeded(self._subscriptions)
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
                 serverURL != nil ? closure(eventCallBackURL: NSURL(string: self._eventCallBackPath, relativeToURL: serverURL)!) : closure(eventCallBackURL: nil)
@@ -328,13 +336,13 @@ class UPnPEventSubscriptionManager {
     private func startStopHTTPServerIfNeeded(subscriptions: [String: Subscription]) {
         let httpServer = self._httpServer
         if subscriptions.count == 0 && httpServer.running {
-            httpServer.stop()
+            if !stopHTTPServer() {
+                LogError("Error stopping HTTP server")
+            }
         }
         else if subscriptions.count > 0 && !httpServer.running {
-            var error: NSError?
-            if !httpServer.startWithPort(_httpServerPort, bonjourName: nil) {
-                let toAppend = error != nil && error?.localizedDescriptionOrNil != nil ? ": \(error!.localizedDescription)" : ""
-                LogError("Error starting HTTP server" + toAppend)
+            if !startHTTPServer() {
+                LogError("Error starting HTTP server")
             }
         }
     }
@@ -444,6 +452,23 @@ class UPnPEventSubscriptionManager {
             }
         })
     }
+    
+    private func startHTTPServer() -> Bool {
+        if _httpServer.safeToStart {
+            return _httpServer.startWithPort(_httpServerPort, bonjourName: nil)
+        }
+        
+        return false
+    }
+    
+    private func stopHTTPServer() -> Bool {
+        if _httpServer.safeToStop {
+            _httpServer.stop()
+            return true
+        }
+        
+        return false
+    }
 }
 
 extension UPnPEventSubscriptionManager.Subscription: Equatable { }
@@ -504,5 +529,17 @@ extension AFHTTPSessionManager {
         })
         
         return dataTask
+    }
+}
+
+extension GCDWebServer {
+    var safeToStart: Bool {
+        // prevents a crash where although the http server reports running is false, attempting to start while GCDWebServer->_source4 is not null causes abort() to be called which kills the app. GCDWebServer.serverURL == nil is equivalent to GCDWebServer->_source4 == NULL.
+        return !running && serverURL == nil
+    }
+    
+    var safeToStop: Bool {
+        // prevents a crash where http server must actually be running to stop it or abort() is called which kills the app.
+        return running
     }
 }
