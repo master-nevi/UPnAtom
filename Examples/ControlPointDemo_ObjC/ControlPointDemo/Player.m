@@ -149,6 +149,14 @@ typedef NS_ENUM(NSInteger, PlayerState) {
             }];
             break;
             
+        case PlayerStateStopped:
+            [self playWithSuccess:^{
+                NSLog(@"Play command succeeded!");
+            } failure:^(NSError *error) {
+                NSLog(@"Play command failed: %@", error.localizedDescription);
+            }];
+            break;
+            
         default:
             NSLog(@"Player button cannot be used in this state.");
             break;

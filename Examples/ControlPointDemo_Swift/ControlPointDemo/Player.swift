@@ -102,6 +102,12 @@ class Player {
                 }, failure: { (error) -> Void in
                     println("Play command failed: \(error)")
             })
+        case .Stopped:
+            play({ () -> Void in
+                println("Play command succeeded!")
+                }, failure: { (error) -> Void in
+                    println("Play command failed: \(error)")
+            })
         default:
             println("Player button cannot be used in this state.")
         }
