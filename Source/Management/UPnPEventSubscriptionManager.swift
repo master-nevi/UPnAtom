@@ -111,14 +111,10 @@ class UPnPEventSubscriptionManager {
         _unsubscribeSessionManager.requestSerializer = UPnPEventUnsubscribeRequestSerializer() as AFHTTPRequestSerializer
         _unsubscribeSessionManager.responseSerializer = UPnPEventUnsubscribeResponseSerializer()
         
-        NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "applicationDidEnterBackground:",
-            name: UIApplicationDidEnterBackgroundNotification,
-            object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "applicationWillEnterForeground:",
-            name: UIApplicationWillEnterForegroundNotification,
-            object: nil)
+        #if os(iOS)
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: "applicationDidEnterBackground:", name: UIApplicationDidEnterBackgroundNotification, object: nil)
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: "applicationWillEnterForeground:", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        #endif
         
         GCDWebServer.setLogLevel(Int32(3))
         
@@ -480,7 +476,11 @@ internal func ==(lhs: UPnPEventSubscriptionManager.Subscription, rhs: UPnPEventS
 }
 
 extension UPnPEventSubscriptionManager.Subscription: ExtendedPrintable {
+    #if os(iOS)
     var className: String { return "Subscription" }
+    #elseif os(OSX) // NSObject.className actually exists on OSX! Who knew.
+    override var className: String { return "Subscription" }
+    #endif
     override var description: String {
         var properties = PropertyPrinter()
         properties.add("subscriptionID", property: subscriptionID)
