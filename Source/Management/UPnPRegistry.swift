@@ -41,10 +41,10 @@ import AFNetworking
     
     // private
     private let _concurrentUPnPObjectQueue = dispatch_queue_create("com.upnatom.upnp-registry.upnp-object-queue", DISPATCH_QUEUE_CONCURRENT)
-    /// Must be accessed/updated within dispatch_sync() or dispatch_barrier_async()
+    /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
     lazy private var _upnpObjects = [UniqueServiceName: AbstractUPnP]()
     lazy private var _upnpObjectsMainThreadCopy = [UniqueServiceName: AbstractUPnP]() // main thread safe copy
-    /// Must be accessed/updated within dispatch_sync() or dispatch_barrier_async()
+    /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
     lazy private var _ssdpDiscoveryCache = [SSDPDiscovery]()
     private let _upnpObjectDescriptionSessionManager = AFHTTPSessionManager()
     private var _upnpClasses = [String: AbstractUPnP.Type]()
@@ -67,34 +67,26 @@ import AFNetworking
         ssdpDiscoveryAdapter.delegate = self
     }
     
-    /// Safe to call from any thread including main thread
+    /// Safe to call from any thread, closure called on main thread
     public func upnpDevices(closure: (upnpDevices: [AbstractUPnPDevice]) -> Void) {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let upnpObjects = self._upnpObjectsMainThreadCopy
+        upnpObjects { (upnpObjects: [UniqueServiceName: AbstractUPnP]) -> Void in
+            let upnpDevices = upnpObjects.values.array.filter({$0 is AbstractUPnPDevice})
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-                let upnpDevices = upnpObjects.values.array.filter({$0 is AbstractUPnPDevice})
-                
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    closure(upnpDevices: upnpDevices as [AbstractUPnPDevice])
-                })
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                closure(upnpDevices: upnpDevices as [AbstractUPnPDevice])
             })
-        })
+        }
     }
     
-    /// Safe to call from any thread including main thread
+    /// Safe to call from any thread, closure called on main thread
     public func upnpServices(closure: (upnpServices: [AbstractUPnPService]) -> Void) {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let upnpObjects = self._upnpObjectsMainThreadCopy
+        upnpObjects { (upnpObjects: [UniqueServiceName: AbstractUPnP]) -> Void in
+            let upnpServices = upnpObjects.values.array.filter({$0 is AbstractUPnPService})
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-                let upnpServices = upnpObjects.values.array.filter({$0 is AbstractUPnPService})
-                
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    closure(upnpServices: upnpServices as [AbstractUPnPService])
-                })
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                closure(upnpServices: upnpServices as [AbstractUPnPService])
             })
-        })
+        }
     }
     
     public func register(#upnpClass: AbstractUPnP.Type, forURN urn: String) {
@@ -123,6 +115,18 @@ import AFNetworking
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
                 failureCase(error)
+        })
+    }
+    
+    /// Safe to call from any thread, closure called on background thread
+    private func upnpObjects(closure: (upnpObjects: [UniqueServiceName: AbstractUPnP]) -> Void) {
+        // only reading upnp objects, so distpach_async is appropriate to allow for concurrent reads
+        dispatch_async(_concurrentUPnPObjectQueue, { () -> Void in
+            let upnpObjects = self._upnpObjects
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                closure(upnpObjects: upnpObjects)
+            })
         })
     }
     
@@ -227,7 +231,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
         })
     }
     
-    /// Must be called within dispatch_sync or dispatch_barrier_async() to the UPnP object queue
+    /// Must be called within dispatch_barrier_async() to the UPnP object queue since the upnpObjects dictionary is being updated
     private func addUPnPObject(forSSDPDiscovery ssdpDiscovery: SSDPDiscovery, descriptionXML: NSData, inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
         let usn = ssdpDiscovery.usn
         
@@ -254,7 +258,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
         }
     }
     
-    /// Must be called within dispatch_sync or dispatch_barrier_async() to the UPnP object queue
+    /// Must be called within dispatch_barrier_async() to the UPnP object queue since the upnpObjects dictionary is being updated
     private func process(#upnpObjectsToKeep: [AbstractUPnP], inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
         let upnpObjectsSet = NSMutableSet(array: Array(upnpObjects.values))
         upnpObjectsSet.minusSet(NSSet(array: upnpObjectsToKeep))
