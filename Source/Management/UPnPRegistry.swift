@@ -67,24 +67,24 @@ import AFNetworking
         ssdpDiscoveryAdapter.delegate = self
     }
     
-    /// Safe to call from any thread, closure called on main thread
-    public func upnpDevices(closure: (upnpDevices: [AbstractUPnPDevice]) -> Void) {
+    /// Safe to call from any thread
+    public func upnpDevices(#completionQueue: NSOperationQueue, completion: (upnpDevices: [AbstractUPnPDevice]) -> Void) {
         upnpObjects { (upnpObjects: [UniqueServiceName: AbstractUPnP]) -> Void in
             let upnpDevices = upnpObjects.values.array.filter({$0 is AbstractUPnPDevice})
             
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                closure(upnpDevices: upnpDevices as [AbstractUPnPDevice])
+            completionQueue.addOperationWithBlock({ () -> Void in
+                completion(upnpDevices: upnpDevices as [AbstractUPnPDevice])
             })
         }
     }
     
-    /// Safe to call from any thread, closure called on main thread
-    public func upnpServices(closure: (upnpServices: [AbstractUPnPService]) -> Void) {
+    /// Safe to call from any thread
+    public func upnpServices(#completionQueue: NSOperationQueue, completion: (upnpServices: [AbstractUPnPService]) -> Void) {
         upnpObjects { (upnpObjects: [UniqueServiceName: AbstractUPnP]) -> Void in
             let upnpServices = upnpObjects.values.array.filter({$0 is AbstractUPnPService})
             
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                closure(upnpServices: upnpServices as [AbstractUPnPService])
+            completionQueue.addOperationWithBlock({ () -> Void in
+                completion(upnpServices: upnpServices as [AbstractUPnPService])
             })
         }
     }
@@ -93,18 +93,21 @@ import AFNetworking
         _upnpClasses[urn] = upnpClass
     }
     
-    public func createUPnPObject(upnpArchivable: UPnPArchivable, success: ((upnpObject: AbstractUPnP) -> Void), failure: ((error: NSError) -> Void)) {
+    public func createUPnPObject(#upnpArchivable: UPnPArchivable, callbackQueue: NSOperationQueue, success: ((upnpObject: AbstractUPnP) -> Void), failure: ((error: NSError) -> Void)) {
         let failureCase = { (error: NSError) -> Void in
             LogError("Unable to fetch UPnP object description for archivable: \(upnpArchivable.usn) at \(upnpArchivable.descriptionURL): \(error)")
-            
-            failure(error: error)
+            callbackQueue.addOperationWithBlock({ () -> Void in
+                failure(error: error)
+            })
         }
         _upnpObjectDescriptionSessionManager.GET(upnpArchivable.descriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject?) -> Void in
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
                 if let xmlData = responseObject as? NSData {
                     if let usn = UniqueServiceName(rawValue: upnpArchivable.usn) {
                         if let upnpObject = self.createUPnPObject(usn: usn, descriptionURL: upnpArchivable.descriptionURL, descriptionXML: xmlData) {
-                            success(upnpObject: upnpObject)
+                            callbackQueue.addOperationWithBlock({ () -> Void in
+                                success(upnpObject: upnpObject)
+                            })
                             
                             return
                         }
