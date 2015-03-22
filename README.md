@@ -4,6 +4,7 @@ An open source Universal Plug and Play library with a focus on media streaming c
 
 ### Requirements:
 * iOS 8.0+
+* OSX 10.9+
 * Xcode 6.1
 
 ### Install:
@@ -28,9 +29,9 @@ import UPnAtom
 * [x] Create your own service and device object via class registration
 * [x] UPnP Version 1 Compliance
 * [x] Ability to archive UPnP objects after initial discovery and persist somewhere via NSCoder/NSCoding
+* [x] OSX 10.9+ support
 * [ ] Swift 1.2
 * [ ] In-house implementation of SSDP discovery
-* [ ] OS X 10.9+ support
 * [ ] Feature parity with upnpx library
 * [ ] UPnP Version 2 Compliance
 
