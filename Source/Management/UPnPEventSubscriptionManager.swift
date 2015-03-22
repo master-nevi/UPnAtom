@@ -90,7 +90,7 @@ class UPnPEventSubscriptionManager {
     }
     
     // private
-    /// Must be accessed/updated within dispatch_sync() or dispatch_barrier_async()
+    /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
     private var _subscriptions = [String: Subscription]() /* [eventURLString: Subscription] */
     private let _concurrentSubscriptionQueue = dispatch_queue_create("com.upnatom.upnp-event-subscription-manager.subscription-queue", DISPATCH_QUEUE_CONCURRENT)
     private let _httpServer = GCDWebServer()
@@ -271,7 +271,7 @@ class UPnPEventSubscriptionManager {
     private func add(#subscription: Subscription, completion: (() -> Void)? = nil) {
         dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
             self._subscriptions[subscription.eventURLString] = subscription
-            self.startStopHTTPServerIfNeeded(self._subscriptions)
+            self.startStopHTTPServerIfNeeded(self._subscriptions.count)
             
             if let completion = completion {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
@@ -284,7 +284,7 @@ class UPnPEventSubscriptionManager {
     private func remove(#subscription: Subscription, completion: (() -> Void)? = nil) {
         dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
             self._subscriptions.removeValueForKey(subscription.eventURLString)?.invalidate()
-            self.startStopHTTPServerIfNeeded(self._subscriptions)
+            self.startStopHTTPServerIfNeeded(self._subscriptions.count)
             
             if let completion = completion {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
@@ -295,7 +295,8 @@ class UPnPEventSubscriptionManager {
     }
     
     private func eventCallBackURL(closure: (eventCallBackURL: NSURL?) -> Void) {
-        dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
+        // only reading subscriptions, so distpach_async is appropriate to allow for concurrent reads
+        dispatch_async(self._concurrentSubscriptionQueue, { () -> Void in
             // needs to be running in order to get server url for the subscription message
             let httpServer = self._httpServer
             var serverURL: NSURL? = httpServer.serverURL
@@ -308,7 +309,7 @@ class UPnPEventSubscriptionManager {
                     serverURL = httpServer.serverURL
                     
                     // Stop http server if it's not needed further
-                    self.startStopHTTPServerIfNeeded(self._subscriptions)
+                    self.startStopHTTPServerIfNeeded(self._subscriptions.count)
                 }
                 else {
                     LogError("Error starting HTTP server")
@@ -323,7 +324,8 @@ class UPnPEventSubscriptionManager {
     
     /// Safe to call from any queue and closure is called on callback queue
     private func subscriptions(closure: (subscriptions: [String: Subscription]) -> Void) {
-        dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
+        // only reading subscriptions, so distpach_async is appropriate to allow for concurrent reads
+        dispatch_async(self._concurrentSubscriptionQueue, { () -> Void in
             let subscriptions = self._subscriptions
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
                 closure(subscriptions: subscriptions)
@@ -331,16 +333,16 @@ class UPnPEventSubscriptionManager {
         })
     }
     
-    /// Must be called within dispatch_sync or dispatch_barrier_async() to the subscription queue as it requires synchronous knowledge of the subscription count.
+    /// Must be called with the most up to date knowledge of the subscription count so should be called withing the subscription queue.
     // TODO: consider putting entire method inside a dispatch_barrier_async to subscription queue
-    private func startStopHTTPServerIfNeeded(subscriptions: [String: Subscription]) {
+    private func startStopHTTPServerIfNeeded(subscriptionCount: Int) {
         let httpServer = self._httpServer
-        if subscriptions.count == 0 && httpServer.running {
+        if subscriptionCount == 0 && httpServer.running {
             if !stopHTTPServer() {
                 LogError("Error stopping HTTP server")
             }
         }
-        else if subscriptions.count > 0 && !httpServer.running {
+        else if subscriptionCount > 0 && !httpServer.running {
             if !startHTTPServer() {
                 LogError("Error starting HTTP server")
             }
