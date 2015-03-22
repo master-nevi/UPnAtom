@@ -10,7 +10,7 @@ An open source Universal Plug and Play library with a focus on media streaming c
 ### Install:
 Add following to Podfile:
 ```ruby
-pod 'UPnAtom', '~> 0.0.1.beta.3'
+pod 'UPnAtom', '~> 0.0.1.beta.4'
 ```
 
 ### Usage:
