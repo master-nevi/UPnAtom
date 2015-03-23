@@ -37,6 +37,10 @@ private let _UPnAtomSharedInstance = UPnAtom()
     let eventSubscriptionManager: UPnPEventSubscriptionManager
     
     init() {
+        if !NSThread.isMainThread() {
+            fatalError("UPnAtom singleton must be initialized on main thread")
+        }
+        
         let adapterClass = UPnAtom.ssdpDiscoveryAdapterClass()
         let adapter = adapterClass()
         ssdpDiscoveryAdapter = adapter
