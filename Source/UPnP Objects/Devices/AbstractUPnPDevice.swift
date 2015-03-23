@@ -57,7 +57,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
     public let modelURL: NSURL?
     public let serialNumber: String?
     public let iconDescriptions: [IconDescription]?
-    public unowned var serviceSource: UPnPServiceSource = UPnAtom.sharedInstance.upnpRegistry
+    public weak var serviceSource: UPnPServiceSource?
     override public var baseURL: NSURL! {
         if let baseURL = _baseURLFromXML {
             return baseURL
@@ -103,7 +103,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
     
     func serviceFor(#urn: String) -> AbstractUPnPService? {
-        return serviceSource.serviceFor(usn: UniqueServiceName(uuid: uuid, urn: urn)!)
+        return serviceSource?.serviceFor(usn: UniqueServiceName(uuid: uuid, urn: urn)!)
     }
 }
 

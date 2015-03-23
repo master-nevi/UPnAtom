@@ -44,6 +44,10 @@ public class AbstractUPnPService: AbstractUPnP {
         }
         return super.baseURL
     }
+    public weak var deviceSource: UPnPDeviceSource?
+    public var device: AbstractUPnPDevice? {
+        return deviceSource?.deviceFor(usn: _deviceUSN)
+    }
     
     // protected = 🔰
     let sessionManager🔰: SOAPSessionManager!
@@ -53,6 +57,7 @@ public class AbstractUPnPService: AbstractUPnP {
     private let _relativeServiceDescriptionURL: NSURL!
     private let _relativeControlURL: NSURL!
     private let _relativeEventURL: NSURL!
+    private let _deviceUSN: UniqueServiceName!
     
     // MARK: UPnP Event handling related
     /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
@@ -90,6 +95,11 @@ public class AbstractUPnPService: AbstractUPnP {
         
         if let relativeEventURL = parsedService?.relativeEventURL {
             self._relativeEventURL = relativeEventURL
+        }
+        else { return nil }
+        
+        if let deviceUSN = parsedService?.deviceUSN {
+            self._deviceUSN = deviceUSN
         }
         else { return nil }
     }
@@ -213,6 +223,7 @@ extension AbstractUPnPService: ExtendedPrintable {
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
+        properties.add("deviceUSN", property: _deviceUSN)
         properties.add("serviceType", property: serviceType)
         properties.add("serviceID", property: serviceID)
         properties.add("serviceDescriptionURL", property: serviceDescriptionURL.absoluteString)
@@ -220,6 +231,10 @@ extension AbstractUPnPService: ExtendedPrintable {
         properties.add("eventURL", property: eventURL.absoluteString)
         return properties.description
     }
+}
+
+@objc public protocol UPnPDeviceSource: class {
+    func deviceFor(#usn: UniqueServiceName) -> AbstractUPnPDevice?
 }
 
 class UPnPServiceParser: AbstractSAXXMLParser {
@@ -231,11 +246,13 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         var relativeServiceDescriptionURL: NSURL?
         var relativeControlURL: NSURL?
         var relativeEventURL: NSURL?
+        var deviceUSN: UniqueServiceName?
     }
     
     private unowned let _upnpService: AbstractUPnPService
     private let _descriptionXML: NSData
     private var _baseURL: NSURL?
+    private var _deviceType: String?
     private var _currentParserService: ParserUPnPService?
     private var _foundParserService: ParserUPnPService?
     
@@ -246,6 +263,10 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             self._baseURL = NSURL(string: text)
+        }))
+        
+        self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "deviceType"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
+            self._deviceType = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service"], didStartParsingElement: { (elementName, attributeDict) -> Void in
@@ -293,6 +314,9 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         case .Success:
             if let foundParserService = _foundParserService {
                 foundParserService.baseURL = _baseURL
+                if let deviceType = _deviceType {
+                    foundParserService.deviceUSN = UniqueServiceName(uuid: _upnpService.uuid, urn: deviceType)
+                }
                 return .Success(foundParserService)
             }
             else {
