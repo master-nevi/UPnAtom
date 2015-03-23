@@ -167,15 +167,16 @@ extension AbstractUPnPService: UPnPEventSubscriber {
             
             if self._eventObservers.count == 0 {
                 // unsubscribe
-                let eventSubscription: AnyObject = self._eventSubscription!
-                self._eventSubscription = nil
-                
-                UPnAtom.sharedInstance.eventSubscriptionManager.unsubscribe(eventSubscription, completion: { (result: EmptyResult) -> Void in
-                    if let error = result.error {
-                        let errorDescription = error.localizedDescription("Unknown unsubscribe error")
-                        LogError("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")
-                    }
-                })
+                if let eventSubscription: AnyObject = self._eventSubscription {
+                    self._eventSubscription = nil
+                    
+                    UPnAtom.sharedInstance.eventSubscriptionManager.unsubscribe(eventSubscription, completion: { (result: EmptyResult) -> Void in
+                        if let error = result.error {
+                            let errorDescription = error.localizedDescription("Unknown unsubscribe error")
+                            LogError("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")
+                        }
+                    })
+                }
             }
         })
     }
