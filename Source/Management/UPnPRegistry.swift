@@ -248,6 +248,13 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
                     return
                 }
                 
+                if newObject is AbstractUPnPDevice {
+                    (newObject as AbstractUPnPDevice).serviceSource = self
+                }
+                else {
+                    (newObject as AbstractUPnPService).deviceSource = self
+                }
+                
                 upnpObjects[usn] = newObject
                 
                 let upnpObjectsCopy = upnpObjects // create a copy for safe use on the main thread
@@ -284,5 +291,11 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
 extension UPnPRegistry: UPnPServiceSource {
     public func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
         return _upnpObjectsMainThreadCopy[usn] as? AbstractUPnPService
+    }
+}
+
+extension UPnPRegistry: UPnPDeviceSource {
+    public func deviceFor(#usn: UniqueServiceName) -> AbstractUPnPDevice? {
+        return _upnpObjectsMainThreadCopy[usn] as? AbstractUPnPDevice
     }
 }
