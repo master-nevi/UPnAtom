@@ -42,7 +42,12 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
     
     // public
-    public let udn: String!
+    public var deviceType: String {
+        return urn
+    }
+    public var udn: String {
+        return uuid
+    }
     public let friendlyName: String!
     public let manufacturer: String!
     public let manufacturerURL: NSURL?
@@ -68,11 +73,6 @@ public class AbstractUPnPDevice: AbstractUPnP {
         
         let deviceParser = UPnPDeviceParser(upnpDevice: self, descriptionXML: descriptionXML)
         let parsedDevice = deviceParser.parse().value
-        
-        if let udn = parsedDevice?.udn {
-            self.udn = udn
-        }
-        else { return nil }
         
         if let baseURL = parsedDevice?.baseURL {
             _baseURLFromXML = baseURL
@@ -119,6 +119,7 @@ extension AbstractUPnPDevice: ExtendedPrintable {
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
+        properties.add("deviceType", property: deviceType)
         properties.add("udn", property: udn)
         properties.add("friendlyName", property: friendlyName)
         properties.add("manufacturer", property: manufacturer)
