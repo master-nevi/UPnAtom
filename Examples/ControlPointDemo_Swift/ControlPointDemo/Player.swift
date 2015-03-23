@@ -71,7 +71,7 @@ class Player {
         if let item = _playlist?[position] as? ContentDirectory1VideoItem {
             if let uri = item.resourceURL.absoluteString {
                 let instanceID = _avTransportInstanceID
-                mediaRenderer?.avTransportService()?.setAVTransportURI(instanceID: instanceID, currentURI: uri, currentURIMetadata: "", success: { () -> Void in
+                mediaRenderer?.avTransportService?.setAVTransportURI(instanceID: instanceID, currentURI: uri, currentURIMetadata: "", success: { () -> Void in
                     println("URI set succeeded!")
                     self.play({ () -> Void in
                         println("Play command succeeded!")
@@ -115,10 +115,10 @@ class Player {
     
     private func didSetRenderer(#oldRenderer: MediaRenderer1Device?, newRenderer: MediaRenderer1Device?) {
         if let avTransportEventObserver: AnyObject = _avTransportEventObserver {
-            oldRenderer?.avTransportService()?.removeEventObserver(avTransportEventObserver)
+            oldRenderer?.avTransportService?.removeEventObserver(avTransportEventObserver)
         }
         
-        _avTransportEventObserver = newRenderer?.avTransportService()?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
+        _avTransportEventObserver = newRenderer?.avTransportService?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
             if let avTransportEvent = event as? AVTransport1Event {
                 println("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
                 if let transportState = (avTransportEvent.instanceState["TransportState"] as? String)?.lowercaseString {
@@ -154,10 +154,10 @@ class Player {
     }
     
     private func play(success: () -> Void, failure:(error: NSError) -> Void) {
-        self.mediaRenderer?.avTransportService()?.play(instanceID: _avTransportInstanceID, speed: "1", success: success, failure: failure)
+        self.mediaRenderer?.avTransportService?.play(instanceID: _avTransportInstanceID, speed: "1", success: success, failure: failure)
     }
     
     private func pause(success: () -> Void, failure:(error: NSError) -> Void) {
-        self.mediaRenderer?.avTransportService()?.pause(instanceID: _avTransportInstanceID, success: success, failure: failure)
+        self.mediaRenderer?.avTransportService?.pause(instanceID: _avTransportInstanceID, success: success, failure: failure)
     }
 }

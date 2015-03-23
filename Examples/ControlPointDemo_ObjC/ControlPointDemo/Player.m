@@ -62,10 +62,10 @@ typedef NS_ENUM(NSInteger, PlayerState) {
     _mediaRenderer = mediaRenderer;
     
     if (_avTransportEventObserver != nil) {
-        [[oldRenderer avTransportService] removeEventObserver:_avTransportEventObserver];
+        [oldRenderer.avTransportService removeEventObserver:_avTransportEventObserver];
     }
     
-    _avTransportEventObserver = [[mediaRenderer avTransportService] addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
+    _avTransportEventObserver = [mediaRenderer.avTransportService addEventObserver:[NSOperationQueue currentQueue] callBackBlock:^(UPnPEvent *event) {
         if ([event.service isAVTransport1Service] && [event isAVTransport1Event]) {
             AVTransport1Event *avTransportEvent = (AVTransport1Event *)event;
             NSLog(@"%@ Event: %@", event.service.className, avTransportEvent.instanceState);
@@ -114,7 +114,7 @@ typedef NS_ENUM(NSInteger, PlayerState) {
         NSString *uri = [item resourceURL].absoluteString;
         if (uri.length) {
             
-            [[self.mediaRenderer avTransportService] setAVTransportURIWithInstanceID:_avTransportInstanceID currentURI:uri currentURIMetadata:@"" success:^{
+            [self.mediaRenderer.avTransportService setAVTransportURIWithInstanceID:_avTransportInstanceID currentURI:uri currentURIMetadata:@"" success:^{
                 NSLog(@"URI Set succeeded!");
                 
                 [self playWithSuccess:^{
@@ -186,11 +186,11 @@ typedef NS_ENUM(NSInteger, PlayerState) {
 }
 
 - (void)playWithSuccess:(void (^)(void))success failure:(void (^)(NSError *))failure {
-    [[self.mediaRenderer avTransportService] playWithInstanceID:_avTransportInstanceID speed:@"1" success:success failure:failure];
+    [self.mediaRenderer.avTransportService playWithInstanceID:_avTransportInstanceID speed:@"1" success:success failure:failure];
 }
 
 - (void)pauseWithSuccess:(void (^)(void))success failure:(void (^)(NSError *))failure {
-    [[self.mediaRenderer avTransportService] pauseWithInstanceID:_avTransportInstanceID success:success failure:failure];
+    [self.mediaRenderer.avTransportService pauseWithInstanceID:_avTransportInstanceID success:success failure:failure];
 }
 
 @end

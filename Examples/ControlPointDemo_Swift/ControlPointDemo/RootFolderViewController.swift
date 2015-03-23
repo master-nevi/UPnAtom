@@ -276,7 +276,7 @@ extension RootFolderViewController: UITableViewDelegate {
         let device = deviceForIndexPath(indexPath)
 
         if let mediaServer = device as? MediaServer1Device {
-            if mediaServer.contentDirectoryService() == nil {
+            if mediaServer.contentDirectoryService == nil {
                 println("\(mediaServer.friendlyName) - has no content directory service")
                 return
             }
@@ -288,7 +288,7 @@ extension RootFolderViewController: UITableViewDelegate {
             Player.sharedInstance.mediaServer = mediaServer
         }
         else if let mediaRenderer = device as? MediaRenderer1Device {
-            if mediaRenderer.avTransportService() == nil {
+            if mediaRenderer.avTransportService == nil {
                 println("\(mediaRenderer.friendlyName) - has no AV transport service")
                 return
             }

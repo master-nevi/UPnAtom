@@ -24,15 +24,15 @@
 import Foundation
 
 public class MediaServer1Device: AbstractUPnPDevice {
-    public func avTransportService() -> AVTransport1Service? {
+    public var avTransportService: AVTransport1Service? {
         return serviceFor(urn: "urn:schemas-upnp-org:service:AVTransport:1") as? AVTransport1Service
     }
     
-    public func connectionManagerService() -> ConnectionManager1Service? {
+    public var connectionManagerService: ConnectionManager1Service? {
         return serviceFor(urn: "urn:schemas-upnp-org:service:ConnectionManager:1") as? ConnectionManager1Service
     }
     
-    public func contentDirectoryService() -> ContentDirectory1Service? {
+    public var contentDirectoryService: ContentDirectory1Service? {
         return serviceFor(urn: "urn:schemas-upnp-org:service:ContentDirectory:1") as? ContentDirectory1Service
     }
 }

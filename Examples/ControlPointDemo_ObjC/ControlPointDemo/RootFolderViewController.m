@@ -137,7 +137,7 @@
     AbstractUPnPDevice *device = [self deviceForIndexPath:indexPath];
     if ([device isMediaServer1Device]) {
         MediaServer1Device *server = (MediaServer1Device *)device;
-        if (![server contentDirectoryService]) {
+        if (!server.contentDirectoryService) {
             NSLog(@"%@ - has no content directory service", device.friendlyName);
             return;
         }
@@ -152,7 +152,7 @@
     }
     else if ([device isMediaRenderer1Device]) {
         MediaRenderer1Device *aRenderer = (MediaRenderer1Device *)device;
-        if (![aRenderer avTransportService]) {
+        if (!aRenderer.avTransportService) {
             NSLog(@"%@ - has no AV transport service", device.friendlyName);
             return;
         }

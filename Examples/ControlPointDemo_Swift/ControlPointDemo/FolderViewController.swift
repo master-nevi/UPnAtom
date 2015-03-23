@@ -24,13 +24,13 @@ class FolderViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        _mediaServer?.contentDirectoryService()?.getSortCapabilities({ (sortCapabilities: String?) -> Void in
+        _mediaServer?.contentDirectoryService?.getSortCapabilities({ (sortCapabilities: String?) -> Void in
             var sortCapabilities = sortCapabilities != nil ? sortCapabilities! : ""
             if sortCapabilities.rangeOfString("dc:title") != nil {
                 sortCapabilities = "+dc:title"
             }
             
-            self._mediaServer?.contentDirectoryService()?.browse(objectID: self._contentDirectoryID, browseFlag: "BrowseDirectChildren", filter: "*", startingIndex: "0", requestedCount: "0", sortCriteria: sortCapabilities, success: { (result: [ContentDirectory1Object]?, numberReturned: Int, totalMatches: Int, updateID: String?) -> Void in
+            self._mediaServer?.contentDirectoryService?.browse(objectID: self._contentDirectoryID, browseFlag: "BrowseDirectChildren", filter: "*", startingIndex: "0", requestedCount: "0", sortCriteria: sortCapabilities, success: { (result: [ContentDirectory1Object]?, numberReturned: Int, totalMatches: Int, updateID: String?) -> Void in
                 if let result = result {
                     self._playlist = result
                 }
