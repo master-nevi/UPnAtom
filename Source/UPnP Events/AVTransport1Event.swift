@@ -49,7 +49,7 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
         let result: EmptyResult = .Success
 
         // procedural vs series of nested if let's
-        let lastChangeXMLString = document.firstChildWithXPath("/e:propertyset/e:property/LastChange")?.stringValue()?
+        let lastChangeXMLString = document.firstChildWithXPath("/e:propertyset/e:property/LastChange")?.stringValue()
         if lastChangeXMLString == nil {
             return .Failure(createError("No LastChange element in UPnP service event XML"))
         }
