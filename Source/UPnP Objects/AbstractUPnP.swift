@@ -53,6 +53,12 @@ public func ==(lhs: AbstractUPnP, rhs: AbstractUPnP) -> Bool {
     return lhs.usn == rhs.usn
 }
 
+extension AbstractUPnP: Hashable {
+    public var hashValue: Int {
+        return usn.hashValue
+    }
+}
+
 extension AbstractUPnP: ExtendedPrintable {
     public var className: String { return "AbstractUPnP" }
     public var description: String {
