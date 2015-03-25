@@ -62,13 +62,13 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
 }
 
 extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
-    func ssdpBrowser(browser: SSDPServiceBrowser!, didNotStartBrowsingForServices error: NSError!) {
+    @objc func ssdpBrowser(browser: SSDPServiceBrowser!, didNotStartBrowsingForServices error: NSError!) {
         if let delegate = self.delegate {
             delegate.ssdpDiscoveryAdapter(self, didFailWithError: error)
         }
     }
     
-    func ssdpBrowser(browser: SSDPServiceBrowser!, didFindService ssdpDiscoveryUnadapted: SSDPService!) {
+    @objc func ssdpBrowser(browser: SSDPServiceBrowser!, didFindService ssdpDiscoveryUnadapted: SSDPService!) {
         dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
             if self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] == nil {
                 if returnIfContainsElements(ssdpDiscoveryUnadapted.uniqueServiceName) != nil &&
@@ -95,7 +95,7 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
     }
     
     /// Untested as it isn't implemented in CocoaSSDP library
-    func ssdpBrowser(browser: SSDPServiceBrowser!, didRemoveService ssdpDiscoveryUnadapted: SSDPService!) {
+    @objc func ssdpBrowser(browser: SSDPServiceBrowser!, didRemoveService ssdpDiscoveryUnadapted: SSDPService!) {
         dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
             if self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] != nil {
                 self._ssdpDiscoveries.removeValueForKey(ssdpDiscoveryUnadapted.uniqueServiceName)
