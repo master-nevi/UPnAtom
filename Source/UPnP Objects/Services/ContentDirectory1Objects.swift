@@ -170,7 +170,7 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
         
         if let resolutionString = xmlElement.firstChildWithTag("res").valueForAttribute("resolution") as? String {
             let resolutionComponents = resolutionString.componentsSeparatedByString("x")
-            if countElements(resolutionComponents) == 2 {
+            if count(resolutionComponents) == 2 {
                 resolution = CGSize(width: resolutionComponents[0].toInt()!, height: resolutionComponents[1].toInt()!)
             }
         }

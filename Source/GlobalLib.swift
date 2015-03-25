@@ -25,7 +25,7 @@ import Foundation
 
 func returnIfContainsElements<T: _CollectionType>(x: T?) -> T? {
     if let x = x {
-        if countElements(x) > 0 {
+        if count(x) > 0 {
             return x
         }
     }
@@ -50,7 +50,7 @@ func curlRep(request: NSURLRequest) -> String {
         }
     }
     
-    for (key, value) in request.allHTTPHeaderFields as [String: AnyObject] {
+    for (key, value) in request.allHTTPHeaderFields as! [String: AnyObject] {
         curl += " -H '\(key): \(value)'"
     }
     

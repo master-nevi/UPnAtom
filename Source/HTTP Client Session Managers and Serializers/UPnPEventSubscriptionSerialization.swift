@@ -41,7 +41,7 @@ class UPnPEventSubscribeRequestSerializer: AFHTTPRequestSerializer {
             return nil
         }
         
-        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
+        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
             if let field = field as? String {
@@ -76,7 +76,7 @@ class UPnPEventSubscribeResponseSerializer: AFHTTPResponseSerializer {
     }
     
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
-        if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
+        if !validateResponse(response as! NSHTTPURLResponse, data: data, error: error) {
             if error == nil {
                 return nil
             }
@@ -85,8 +85,8 @@ class UPnPEventSubscribeResponseSerializer: AFHTTPResponseSerializer {
         var serializationError: NSError?
         var responseObject: AnyObject!
         
-        let subscriptionID: String! = (response as NSHTTPURLResponse).allHeaderFields["SID"] as? String
-        let timeoutString: String! = (response as NSHTTPURLResponse).allHeaderFields["TIMEOUT"] as? String
+        let subscriptionID: String! = (response as! NSHTTPURLResponse).allHeaderFields["SID"] as? String
+        let timeoutString: String! = (response as! NSHTTPURLResponse).allHeaderFields["TIMEOUT"] as? String
         
         if subscriptionID != nil && timeoutString != nil {
             let secondKeywordRange: Range! = timeoutString.rangeOfString("Second-")
@@ -125,7 +125,7 @@ class UPnPEventRenewSubscriptionRequestSerializer: AFHTTPRequestSerializer {
             return nil
         }
         
-        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
+        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
             if let field = field as? String {
@@ -156,7 +156,7 @@ class UPnPEventRenewSubscriptionResponseSerializer: AFHTTPResponseSerializer {
     }
     
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
-        if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
+        if !validateResponse(response as! NSHTTPURLResponse, data: data, error: error) {
             if error == nil {
                 return nil
             }
@@ -165,8 +165,8 @@ class UPnPEventRenewSubscriptionResponseSerializer: AFHTTPResponseSerializer {
         var serializationError: NSError?
         var responseObject: AnyObject!
         
-        let subscriptionID: String! = (response as NSHTTPURLResponse).allHeaderFields["SID"] as? String
-        let timeoutString: String! = (response as NSHTTPURLResponse).allHeaderFields["TIMEOUT"] as? String
+        let subscriptionID: String! = (response as! NSHTTPURLResponse).allHeaderFields["SID"] as? String
+        let timeoutString: String! = (response as! NSHTTPURLResponse).allHeaderFields["TIMEOUT"] as? String
         
         if subscriptionID != nil && timeoutString != nil {
             let secondKeywordRange: Range! = timeoutString.rangeOfString("Second-")
@@ -203,7 +203,7 @@ class UPnPEventUnsubscribeRequestSerializer: AFHTTPRequestSerializer {
             return nil
         }
         
-        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
+        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
             if let field = field as? String {
@@ -223,7 +223,7 @@ class UPnPEventUnsubscribeRequestSerializer: AFHTTPRequestSerializer {
 
 class UPnPEventUnsubscribeResponseSerializer: AFHTTPResponseSerializer {
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
-        if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
+        if !validateResponse(response as! NSHTTPURLResponse, data: data, error: error) {
             if error == nil {
                 return nil
             }

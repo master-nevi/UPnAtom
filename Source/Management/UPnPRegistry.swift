@@ -73,7 +73,7 @@ import AFNetworking
             let upnpDevices = upnpObjects.values.array.filter({$0 is AbstractUPnPDevice})
             
             completionQueue.addOperationWithBlock({ () -> Void in
-                completion(upnpDevices: upnpDevices as [AbstractUPnPDevice])
+                completion(upnpDevices: upnpDevices as! [AbstractUPnPDevice])
             })
         }
     }
@@ -84,7 +84,7 @@ import AFNetworking
             let upnpServices = upnpObjects.values.array.filter({$0 is AbstractUPnPService})
             
             completionQueue.addOperationWithBlock({ () -> Void in
-                completion(upnpServices: upnpServices as [AbstractUPnPService])
+                completion(upnpServices: upnpServices as! [AbstractUPnPService])
             })
         }
     }
@@ -249,10 +249,10 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
                 }
                 
                 if newObject is AbstractUPnPDevice {
-                    (newObject as AbstractUPnPDevice).serviceSource = self
+                    (newObject as! AbstractUPnPDevice).serviceSource = self
                 }
                 else {
-                    (newObject as AbstractUPnPService).deviceSource = self
+                    (newObject as! AbstractUPnPService).deviceSource = self
                 }
                 
                 upnpObjects[usn] = newObject
@@ -271,8 +271,8 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
     /// Must be called within dispatch_barrier_async() to the UPnP object queue since the upnpObjects dictionary is being updated
     private func process(#upnpObjectsToKeep: [AbstractUPnP], inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
         let upnpObjectsSet = NSMutableSet(array: Array(upnpObjects.values))
-        upnpObjectsSet.minusSet(NSSet(array: upnpObjectsToKeep))
-        let upnpObjectsToRemove = upnpObjectsSet.allObjects as [AbstractUPnP] // casting from [AnyObject]
+        upnpObjectsSet.minusSet(NSSet(array: upnpObjectsToKeep) as Set<NSObject>)
+        let upnpObjectsToRemove = upnpObjectsSet.allObjects as! [AbstractUPnP] // casting from [AnyObject]
         
         for upnpObjectToRemove in upnpObjectsToRemove {
             upnpObjects.removeValueForKey(upnpObjectToRemove.usn)
