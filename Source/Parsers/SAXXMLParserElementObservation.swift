@@ -30,7 +30,7 @@ class SAXXMLParserElementObservation {
     let foundInnerText: ((elementName: String, text: String) -> Void)?
     let elementPath: [String]
     var innerText: String? {
-        return _innerText?
+        return _innerText
     }
     
     // private
@@ -51,11 +51,13 @@ class SAXXMLParserElementObservation {
         self.foundInnerText = foundInnerText
     }
     
-    func appendInnerText(innerText: String) {
+    func appendInnerText(innerText: String?) {
         if _innerText == nil {
             _innerText = ""
         }
         
-        _innerText! += innerText
+        if let innerText = innerText {
+            _innerText! += innerText
+        }
     }
 }
