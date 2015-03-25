@@ -47,7 +47,7 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
             return nil
         }
         
-        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as NSMutableURLRequest
+        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
             if let field = field as? String {
@@ -79,7 +79,7 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
         body += "</s:Body></s:Envelope>"
         LogVerbose("SOAP request body: \(body)")
         
-        mutableRequest.setValue("\(countElements(body.utf8))", forHTTPHeaderField: "Content-Length")
+        mutableRequest.setValue("\(count(body.utf8))", forHTTPHeaderField: "Content-Length")
         
         mutableRequest.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         
@@ -89,7 +89,7 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
 
 class SOAPResponseSerializer: AFXMLParserResponseSerializer {    
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
-        if !validateResponse(response as NSHTTPURLResponse, data: data, error: error) {
+        if !validateResponse(response as! NSHTTPURLResponse, data: data, error: error) {
             if error == nil {
                 return nil
             }
@@ -120,7 +120,7 @@ class SOAPResponseParser: AbstractDOMXMLParser {
     override func parse(#document: ONOXMLDocument) -> EmptyResult {
         var result: EmptyResult = .Success
         document.enumerateElementsWithXPath("/s:Envelope/s:Body/*/*", usingBlock: { (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-            if element.tag != nil && element.stringValue() != nil && countElements(element.tag) > 0 && countElements(element.stringValue()) > 0 {
+            if element.tag != nil && element.stringValue() != nil && count(element.tag) > 0 && count(element.stringValue()) > 0 {
                 self._responseParameters[element.tag] = element.stringValue()
             }
             

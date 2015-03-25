@@ -129,7 +129,7 @@ class AbstractSAXXMLParser: NSObject {
         var error: NSError?
         let regexOptional = NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .AnchorsMatchLines, error: &error)
         if xmlStringOptional != nil && regexOptional != nil {
-            let validXMLString = regexOptional!.stringByReplacingMatchesInString(xmlStringOptional!, options: NSMatchingOptions(0), range: NSMakeRange(0, xmlStringOptional!.length), withTemplate: "")
+            let validXMLString = regexOptional!.stringByReplacingMatchesInString(xmlStringOptional! as String, options: NSMatchingOptions(0), range: NSMakeRange(0, xmlStringOptional!.length), withTemplate: "")
             return validXMLString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
         }
         

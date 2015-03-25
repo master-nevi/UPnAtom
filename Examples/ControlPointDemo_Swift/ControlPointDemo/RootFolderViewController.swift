@@ -262,7 +262,7 @@ extension RootFolderViewController: UITableViewDataSource {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as UITableViewCell
+        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as! UITableViewCell
         let device = deviceForIndexPath(indexPath)
         cell.textLabel?.text = device.friendlyName
         cell.accessoryType = device is MediaServer1Device ? .DisclosureIndicator : .None
