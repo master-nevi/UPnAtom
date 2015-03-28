@@ -131,7 +131,7 @@ class RootFolderViewController: UIViewController {
     private func deviceForIndexPath(indexPath: NSIndexPath) -> AbstractUPnPDevice {
         let deviceUSN = indexPath.section == 0 ? _archivedDeviceUSNs[indexPath.row] : _discoveredDeviceUSNs[indexPath.row]
         let deviceCache = indexPath.section == 0 ? _archivedUPnPObjectCache : _discoveredUPnPObjectCache
-        return deviceCache[deviceUSN] as AbstractUPnPDevice
+        return deviceCache[deviceUSN] as! AbstractUPnPDevice
     }
     
     private func insertDevice(#deviceUSN: UniqueServiceName, inout deviceUSNs: [UniqueServiceName], inSection section: Int) {
@@ -214,7 +214,7 @@ class RootFolderViewController: UIViewController {
         _archivingUnarchivingQueue.addOperationWithBlock { () -> Void in
             // load archived objects
             if let upnpArchivablesData = NSUserDefaults.standardUserDefaults().objectForKey(RootFolderViewController.upnpObjectArchiveKey()) as? NSData {
-                let upnpArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(upnpArchivablesData) as [UPnPArchivableAnnex]
+                let upnpArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(upnpArchivablesData) as! [UPnPArchivableAnnex]
                 
                 for upnpArchivable in upnpArchivables {
                     let upnpType = upnpArchivable.customMetadata["upnpType"] as? String
@@ -281,7 +281,7 @@ extension RootFolderViewController: UITableViewDelegate {
                 return
             }
             
-            let targetViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("FolderViewControllerScene") as FolderViewController
+            let targetViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("FolderViewControllerScene") as! FolderViewController
             targetViewController.configure(mediaServer: mediaServer, title: "Root", contentDirectoryID: "0")
             self.navigationController?.pushViewController(targetViewController, animated: true)
             
