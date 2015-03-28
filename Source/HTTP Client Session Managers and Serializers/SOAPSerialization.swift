@@ -50,12 +50,8 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
         var mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
-            if let field = field as? String {
-                if request.valueForHTTPHeaderField(field) == nil {
-                    if let value = value as? String {
-                        mutableRequest.setValue(value, forHTTPHeaderField: field)
-                    }
-                }
+            if let field = field as? String, value = value as? String where request.valueForHTTPHeaderField(field) == nil {
+                mutableRequest.setValue(value, forHTTPHeaderField: field)
             }
         }
         
