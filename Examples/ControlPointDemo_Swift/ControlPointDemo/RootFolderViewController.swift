@@ -168,10 +168,9 @@ class RootFolderViewController: UIViewController {
                 if let upnpDevice = upnpObject as? AbstractUPnPDevice {
                     friendlyName = upnpDevice.friendlyName
                 }
-                else if let upnpService = upnpObject as? AbstractUPnPService {
-                    if let name = upnpService.device?.friendlyName {
+                else if let upnpService = upnpObject as? AbstractUPnPService,
+                    name = upnpService.device?.friendlyName {
                         friendlyName = name
-                    }
                 }
                 
                 let upnpArchivable = upnpObject.archivable(customMetadata: ["upnpType": upnpObject.className, "friendlyName": friendlyName])
