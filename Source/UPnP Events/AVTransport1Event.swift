@@ -92,7 +92,7 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
     func parse(#eventXML: NSData) -> Result<[String: AnyObject]> {
         switch super.parse(data: eventXML) {
         case .Success:
-            return .Success(_instanceState)
+            return .Success(RVW(_instanceState))
         case .Failure(let error):
             return .Failure(error)
         }
