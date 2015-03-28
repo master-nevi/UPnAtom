@@ -68,8 +68,8 @@ class Player {
     func startPlayback(#position: Int) {
         _position = position
         
-        if let item = _playlist?[position] as? ContentDirectory1VideoItem {
-            if let uri = item.resourceURL.absoluteString {
+        if let item = _playlist?[position] as? ContentDirectory1VideoItem,
+            uri = item.resourceURL.absoluteString {
                 let instanceID = _avTransportInstanceID
                 mediaRenderer?.avTransportService?.setAVTransportURI(instanceID: instanceID, currentURI: uri, currentURIMetadata: "", success: { () -> Void in
                     println("URI set succeeded!")
@@ -82,7 +82,6 @@ class Player {
                     }, failure: { (error) -> Void in
                         println("URI set failed: \(error)")
                 })
-            }
         }
     }
     
@@ -119,9 +118,9 @@ class Player {
         }
         
         _avTransportEventObserver = newRenderer?.avTransportService?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
-            if let avTransportEvent = event as? AVTransport1Event {
-                println("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
-                if let transportState = (avTransportEvent.instanceState["TransportState"] as? String)?.lowercaseString {
+            if let avTransportEvent = event as? AVTransport1Event,
+                transportState = (avTransportEvent.instanceState["TransportState"] as? String)?.lowercaseString {
+                    println("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
                     println("transport state: \(transportState)")
                     if transportState.rangeOfString("playing") != nil {
                         self._playerState = .Playing
@@ -135,7 +134,6 @@ class Player {
                     else {
                         self._playerState = .Unknown
                     }
-                }
             }
         })
     }
