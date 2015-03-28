@@ -79,11 +79,9 @@ public class ContentDirectory1Container: ContentDirectory1Object {
     public let childCount: Int?
     
     override init?(xmlElement: ONOXMLElement) {
+        self.childCount = (xmlElement.valueForAttribute("childCount") as? String)?.toInt() ?? nil
+        
         super.init(xmlElement: xmlElement)
-
-        if let childCount = (xmlElement.valueForAttribute("childCount") as? String)?.toInt() {
-            self.childCount = childCount
-        }
     }
 }
 
@@ -148,8 +146,6 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
     public let size: Int?
     
     override init?(xmlElement: ONOXMLElement) {
-        super.init(xmlElement: xmlElement)
-        
         bitrate = (xmlElement.firstChildWithTag("res").valueForAttribute("bitrate") as? String)?.toInt()
         
         if let durationString = xmlElement.firstChildWithTag("res").valueForAttribute("duration") as? String {
@@ -163,21 +159,22 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
             
             self.duration = NSTimeInterval(duration)
         }
+        else { self.duration = nil }
         
         audioChannelCount = (xmlElement.firstChildWithTag("res").valueForAttribute("nrAudioChannels") as? String)?.toInt()
         
         protocolInfo = xmlElement.firstChildWithTag("res").valueForAttribute("protocolInfo") as? String
         
-        if let resolutionString = xmlElement.firstChildWithTag("res").valueForAttribute("resolution") as? String {
-            let resolutionComponents = resolutionString.componentsSeparatedByString("x")
-            if count(resolutionComponents) == 2 {
-                resolution = CGSize(width: resolutionComponents[0].toInt()!, height: resolutionComponents[1].toInt()!)
-            }
+        if let resolutionComponents = (xmlElement.firstChildWithTag("res").valueForAttribute("resolution") as? String)?.componentsSeparatedByString("x") where count(resolutionComponents) == 2 {
+            resolution = CGSize(width: resolutionComponents[0].toInt()!, height: resolutionComponents[1].toInt()!)
         }
+        else { resolution = nil }
         
         sampleFrequency = (xmlElement.firstChildWithTag("res").valueForAttribute("sampleFrequency") as? String)?.toInt()
         
         size = (xmlElement.firstChildWithTag("res").valueForAttribute("size") as? String)?.toInt()
+        
+        super.init(xmlElement: xmlElement)
     }
 }
 
