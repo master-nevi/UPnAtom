@@ -155,8 +155,8 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                 // subscribe
                 UPnAtom.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
                     switch subscription {
-                    case .Success(let value):
-                        self._eventSubscription = value
+                    case .Success(let wrapper):
+                        self._eventSubscription = wrapper.value
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown subscribe error")
                         LogError("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")

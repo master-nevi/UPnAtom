@@ -100,8 +100,8 @@ class SOAPResponseSerializer: AFXMLParserResponseSerializer {
         let xmlParser = SOAPResponseParser()
         
         switch xmlParser.parse(soapResponseData: data) {
-        case .Success(let value):
-            responseObject = value
+        case .Success(let wrapper):
+            responseObject = wrapper.value
         case .Failure(let error):
             serializationError = error
         }
