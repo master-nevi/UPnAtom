@@ -42,12 +42,11 @@ func curlRep(request: NSURLRequest) -> String {
         curl += " -X \(httpMethod)"
     }
     
-    if let httpBody = request.HTTPBody {
-        if let body = NSString(data: httpBody, encoding: NSUTF8StringEncoding) {
+    if let httpBody = request.HTTPBody,
+        body = NSString(data: httpBody, encoding: NSUTF8StringEncoding) {
             curl += " -d '"
             curl += "\(body)"
             curl += "'"
-        }
     }
     
     for (key, value) in request.allHTTPHeaderFields as! [String: AnyObject] {

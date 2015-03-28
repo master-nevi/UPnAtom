@@ -270,10 +270,8 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service"], didStartParsingElement: { (elementName, attributeDict) -> Void in
             self._currentParserService = ParserUPnPService()
             }, didEndParsingElement: { (elementName) -> Void in
-                if let serviceType = self._currentParserService?.serviceType {
-                    if serviceType == self._upnpService.urn {
-                        self._foundParserService = self._currentParserService
-                    }
+                if let serviceType = self._currentParserService?.serviceType where serviceType == self._upnpService.urn {
+                    self._foundParserService = self._currentParserService
                 }
             }, foundInnerText: nil))
         

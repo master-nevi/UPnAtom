@@ -54,8 +54,8 @@ class AbstractSAXXMLParser: NSObject {
             else {
                 // * -> leafX -> leafY
                 // Maybe we have a wildchar, that means that the path after the wildchar must match
-                if elementObservation.elementPath.first == "*" {
-                    if elementStack.count >= elementObservation.elementPath.count {
+                if elementObservation.elementPath.first == "*" &&
+                    elementStack.count >= elementObservation.elementPath.count {
                         var tempElementStack = elementStack
                         var tempObservationElementPath = elementObservation.elementPath
                         
@@ -69,12 +69,11 @@ class AbstractSAXXMLParser: NSObject {
                         if tempObservationElementPath == tempElementStack {
                             return elementObservation
                         }
-                    }
                 }
                 
                 // leafX -> leafY -> *
-                if elementObservation.elementPath.last == "*" {
-                    if elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
+                if elementObservation.elementPath.last == "*" &&
+                    elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
                         var tempElementStack = elementStack
                         var tempObservationElementPath = elementObservation.elementPath
                         // Cut the last entry (which is * in one array and <element> in the other
@@ -83,7 +82,6 @@ class AbstractSAXXMLParser: NSObject {
                         if tempElementStack == tempObservationElementPath {
                             return elementObservation
                         }
-                    }
                 }
             }
         }
@@ -141,10 +139,9 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
     func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [NSObject : AnyObject]) {
         _elementStack += [elementName]
         
-        if let elementObservation = elementObservationForElementStack(_elementStack) {
-            if let didStartParsingElement = elementObservation.didStartParsingElement {
+        if let elementObservation = elementObservationForElementStack(_elementStack),
+            didStartParsingElement = elementObservation.didStartParsingElement {
                 didStartParsingElement(elementName: elementName, attributeDict: attributeDict)
-            }
         }
     }
     
