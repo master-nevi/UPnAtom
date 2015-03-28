@@ -296,7 +296,7 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         case .Success:
             if let foundDevice = _foundDevice {
                 foundDevice.baseURL = _baseURL
-                return .Success(foundDevice)
+                return .Success(RVW(foundDevice))
             }
             else {
                 return .Failure(createError("Parser error"))

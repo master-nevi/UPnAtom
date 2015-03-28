@@ -101,7 +101,7 @@ class SOAPResponseSerializer: AFXMLParserResponseSerializer {
         
         switch xmlParser.parse(soapResponseData: data) {
         case .Success(let value):
-            responseObject = value()
+            responseObject = value
         case .Failure(let error):
             serializationError = error
         }
@@ -135,7 +135,7 @@ class SOAPResponseParser: AbstractDOMXMLParser {
     func parse(#soapResponseData: NSData) -> Result<[String: String]> {
         switch super.parse(data: soapResponseData) {
         case .Success:
-            return .Success(_responseParameters)
+            return .Success(RVW(_responseParameters))
         case .Failure(let error):
             return .Failure(error)
         }
