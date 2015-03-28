@@ -102,13 +102,13 @@ class UPnPEventSubscriptionManager {
     private let _eventCallBackPath = "/Event/\(NSUUID().dashlessUUIDString)"
     
     init() {
-        _subscribeSessionManager.requestSerializer = UPnPEventSubscribeRequestSerializer() as AFHTTPRequestSerializer
+        _subscribeSessionManager.requestSerializer = UPnPEventSubscribeRequestSerializer()
         _subscribeSessionManager.responseSerializer = UPnPEventSubscribeResponseSerializer()
         
-        _renewSubscriptionSessionManager.requestSerializer = UPnPEventRenewSubscriptionRequestSerializer() as AFHTTPRequestSerializer
+        _renewSubscriptionSessionManager.requestSerializer = UPnPEventRenewSubscriptionRequestSerializer()
         _renewSubscriptionSessionManager.responseSerializer = UPnPEventRenewSubscriptionResponseSerializer()
         
-        _unsubscribeSessionManager.requestSerializer = UPnPEventUnsubscribeRequestSerializer() as AFHTTPRequestSerializer
+        _unsubscribeSessionManager.requestSerializer = UPnPEventUnsubscribeRequestSerializer()
         _unsubscribeSessionManager.responseSerializer = UPnPEventUnsubscribeResponseSerializer()
         
         #if os(iOS)
