@@ -76,7 +76,7 @@ extension FolderViewController: UITableViewDelegate {
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let item = _playlist[indexPath.row]
         if let containerItem = item as? ContentDirectory1Container {
-            let targetViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("FolderViewControllerScene") as FolderViewController
+            let targetViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("FolderViewControllerScene") as! FolderViewController
             targetViewController.configure(mediaServer: _mediaServer, title: containerItem.title, contentDirectoryID: containerItem.objectID)
             self.navigationController?.pushViewController(targetViewController, animated: true)
         }

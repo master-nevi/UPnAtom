@@ -36,7 +36,7 @@ class Player {
             didSetRenderer(oldRenderer: oldValue, newRenderer: mediaRenderer)
         }
     }
-    let playerButton: UIBarButtonItem!
+    private(set) var playerButton: UIBarButtonItem! // TODO: Should ideally be a constant, see Github issue #10
     
     private var _position: Int = 0
     private var _playlist: [ContentDirectory1Object]?
