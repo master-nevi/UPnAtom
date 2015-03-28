@@ -24,22 +24,27 @@
 import Foundation
 
 @objc public class UniqueServiceName {
-    public let uuid: String!
-    public let urn: String?
     public let rawValue: String
+    public let uuid: String
+    public let urn: String?
     public let rootDevice: Bool
     
     init?(rawValue: String) {
         self.rawValue = rawValue
         
-        rootDevice = UniqueServiceName.isRootDevice(usn: rawValue)
-        
         // all forms of usn should contain a uuid, otherwise it's invalid and nil will be returned
         if let uuid = returnIfContainsElements(UniqueServiceName.uuid(usn: rawValue)) {
             self.uuid = uuid
         }
-        else { return nil }
+        else {
+            /// TODO: Remove default initializations to simply return nil, see Github issue #11
+            self.uuid = ""
+            self.rootDevice = false
+            self.urn = nil
+            return nil
+        }
         
+        rootDevice = UniqueServiceName.isRootDevice(usn: rawValue)
         urn = returnIfContainsElements(UniqueServiceName.urn(usn: rawValue))
     }
     
