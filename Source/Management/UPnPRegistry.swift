@@ -271,8 +271,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
     /// Must be called within dispatch_barrier_async() to the UPnP object queue since the upnpObjects dictionary is being updated
     private func process(#upnpObjectsToKeep: [AbstractUPnP], inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
         let upnpObjectsSet = Set(upnpObjects.values.array)
-        upnpObjectsSet.subtract(Set(upnpObjectsToKeep))
-        let upnpObjectsToRemove = Array(upnpObjectsSet)
+        let upnpObjectsToRemove = upnpObjectsSet.subtract(Set(upnpObjectsToKeep))
         
         for upnpObjectToRemove in upnpObjectsToRemove {
             upnpObjects.removeValueForKey(upnpObjectToRemove.usn)
