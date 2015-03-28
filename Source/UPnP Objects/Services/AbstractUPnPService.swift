@@ -28,7 +28,7 @@ public class AbstractUPnPService: AbstractUPnP {
     public var serviceType: String {
         return urn
     }
-    public let serviceID: String!
+    public private(set) var serviceID: String! // TODO: Should ideally be a constant, see Github issue #10
     public var serviceDescriptionURL: NSURL {
         return NSURL(string: _relativeServiceDescriptionURL.absoluteString!, relativeToURL: baseURL)!
     }
@@ -50,14 +50,14 @@ public class AbstractUPnPService: AbstractUPnP {
     }
     
     // protected = 🔰
-    let sessionManager🔰: SOAPSessionManager!
+    private(set) var sessionManager🔰: SOAPSessionManager! // TODO: Should ideally be a constant, see Github issue #10
     
     // private
-    private let _baseURLFromXML: NSURL?
-    private let _relativeServiceDescriptionURL: NSURL!
-    private let _relativeControlURL: NSURL!
-    private let _relativeEventURL: NSURL!
-    private let _deviceUSN: UniqueServiceName!
+    private var _baseURLFromXML: NSURL? // TODO: Should ideally be a constant, see Github issue #10
+    private var _relativeServiceDescriptionURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
+    private var _relativeControlURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
+    private var _relativeEventURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
+    private var _deviceUSN: UniqueServiceName! // TODO: Should ideally be a constant, see Github issue #10
     
     // MARK: UPnP Event handling related
     /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
