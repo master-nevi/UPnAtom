@@ -124,6 +124,8 @@ public class AbstractUPnPService: AbstractUPnP {
 // MARK: UPnP Event handling
 
 extension AbstractUPnPService: UPnPEventSubscriber {
+    private static let UPnPEventKey = "UPnPEventKey"
+    
     private class EventObserver {
         let notificationCenterObserver: AnyObject
         init(notificationCenterObserver: AnyObject) {
@@ -135,15 +137,11 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         return "UPnPEventReceivedNotification.\(usn.rawValue)"
     }
     
-    private class func UPnPEventKey() -> String {
-        return "UPnPEventKey"
-    }
-    
     /// Returns an opaque object to act as the observer. Use it when the event observer needs to be removed.
     public func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent) -> Void) -> AnyObject {
         /// Use callBackBlock for event notifications. While the notifications are backed by NSNotifications for broadcasting, they should only be used internally in order to keep track of how many subscribers there are.
         let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
-            if let event = notification.userInfo?[AbstractUPnPService.UPnPEventKey()] as? UPnPEvent {
+            if let event = notification.userInfo?[AbstractUPnPService.UPnPEventKey] as? UPnPEvent {
                 callBackBlock(event: event)
             }
         })
@@ -192,7 +190,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     }
     
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventXML: NSData) {
-        NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService.UPnPEventKey(): self.createEvent(eventXML)])
+        NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService.UPnPEventKey: self.createEvent(eventXML)])
     }
     
     func subscriptionDidFail(eventSubscriptionManager: UPnPEventSubscriptionManager) {

@@ -29,6 +29,7 @@ class RootFolderViewController: UIViewController {
     private var _discoveredUPnPObjectCache = [UniqueServiceName: AbstractUPnP]()
     private var _archivedDeviceUSNs = [UniqueServiceName]()
     private var _archivedUPnPObjectCache = [UniqueServiceName: AbstractUPnP]()
+    private static let upnpObjectArchiveKey = "upnpObjectArchiveKey"
     private weak var _toolbarLabel: UILabel?
     @IBOutlet private weak var _tableView: UITableView!
     private let _archivingUnarchivingQueue: NSOperationQueue = {
@@ -158,10 +159,6 @@ class RootFolderViewController: UIViewController {
         }
     }
     
-    private class func upnpObjectArchiveKey() -> String {
-        return "upnpObjectArchiveKey"
-    }
-    
     private func archiveUPnPObjects() {
         _archivingUnarchivingQueue.addOperationWithBlock { () -> Void in
             // archive discovered objects
@@ -182,7 +179,7 @@ class RootFolderViewController: UIViewController {
             }
             
             let upnpArchivablesData = NSKeyedArchiver.archivedDataWithRootObject(upnpArchivables)
-            NSUserDefaults.standardUserDefaults().setObject(upnpArchivablesData, forKey: RootFolderViewController.upnpObjectArchiveKey())
+            NSUserDefaults.standardUserDefaults().setObject(upnpArchivablesData, forKey: RootFolderViewController.upnpObjectArchiveKey)
             
             // show archive complete alert
             NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
@@ -213,7 +210,7 @@ class RootFolderViewController: UIViewController {
         
         _archivingUnarchivingQueue.addOperationWithBlock { () -> Void in
             // load archived objects
-            if let upnpArchivablesData = NSUserDefaults.standardUserDefaults().objectForKey(RootFolderViewController.upnpObjectArchiveKey()) as? NSData {
+            if let upnpArchivablesData = NSUserDefaults.standardUserDefaults().objectForKey(RootFolderViewController.upnpObjectArchiveKey) as? NSData {
                 let upnpArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(upnpArchivablesData) as! [UPnPArchivableAnnex]
                 
                 for upnpArchivable in upnpArchivables {
