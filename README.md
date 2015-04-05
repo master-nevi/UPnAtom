@@ -1,4 +1,7 @@
 ![UPnAtom: Modern UPnP in Swift](https://raw.githubusercontent.com/master-nevi/UPnAtom/assets/UPnAtomLogo.png)
+[![Version](http://img.shields.io/cocoapods/v/UPnAtom.svg)](http://cocoapods.org/?q=UPnAtom)
+[![Platform](http://img.shields.io/cocoapods/p/UPnAtom.svg)](https://github.com/master-nevi/UPnAtom/blob/master/UPnAtom.podspec)
+[![License](http://img.shields.io/cocoapods/l/UPnAtom.svg)](https://github.com/master-nevi/UPnAtom/blob/master/LICENSE)
 
 An open source Universal Plug and Play library with a focus on media streaming coordination using the UPnP A/V profile; written in Swift but for both Objective-C and Swift apps. Supports only iOS 8 and higher due to iOS 7's limitation of not supporting dynamic libraries via Clang module.
 
