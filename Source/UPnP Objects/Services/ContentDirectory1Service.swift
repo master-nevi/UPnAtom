@@ -114,7 +114,7 @@ class ContentDirectoryBrowseResultParser: AbstractDOMXMLParser {
     func parse(#browseResultData: NSData) -> Result<[ContentDirectory1Object]> {
         switch super.parse(data: browseResultData) {
         case .Success:
-            return .Success(_contentDirectoryObjects)
+            return .Success(RVW(_contentDirectoryObjects))
         case .Failure(let error):
             return .Failure(error)
         }

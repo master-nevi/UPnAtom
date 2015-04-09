@@ -63,7 +63,7 @@ extension FolderViewController: UITableViewDataSource {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as UITableViewCell
+        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as! UITableViewCell
         let item = _playlist[indexPath.row]
         cell.textLabel?.text = item.title
         cell.accessoryType = item is ContentDirectory1Container ? .DisclosureIndicator : .None
@@ -76,7 +76,7 @@ extension FolderViewController: UITableViewDelegate {
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let item = _playlist[indexPath.row]
         if let containerItem = item as? ContentDirectory1Container {
-            let targetViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("FolderViewControllerScene") as FolderViewController
+            let targetViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("FolderViewControllerScene") as! FolderViewController
             targetViewController.configure(mediaServer: _mediaServer, title: containerItem.title, contentDirectoryID: containerItem.objectID)
             self.navigationController?.pushViewController(targetViewController, animated: true)
         }

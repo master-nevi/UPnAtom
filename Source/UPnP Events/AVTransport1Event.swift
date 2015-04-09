@@ -49,7 +49,7 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
         let result: EmptyResult = .Success
 
         // procedural vs series of nested if let's
-        let lastChangeXMLString = document.firstChildWithXPath("/e:propertyset/e:property/LastChange")?.stringValue()?
+        let lastChangeXMLString = document.firstChildWithXPath("/e:propertyset/e:property/LastChange")?.stringValue()
         if lastChangeXMLString == nil {
             return .Failure(createError("No LastChange element in UPnP service event XML"))
         }
@@ -92,7 +92,7 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
     func parse(#eventXML: NSData) -> Result<[String: AnyObject]> {
         switch super.parse(data: eventXML) {
         case .Success:
-            return .Success(_instanceState)
+            return .Success(RVW(_instanceState))
         case .Failure(let error):
             return .Failure(error)
         }

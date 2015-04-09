@@ -48,15 +48,15 @@ public class AbstractUPnPDevice: AbstractUPnP {
     public var udn: String {
         return uuid
     }
-    public let friendlyName: String!
-    public let manufacturer: String!
-    public let manufacturerURL: NSURL?
-    public let modelDescription: String?
-    public let modelName: String!
-    public let modelNumber: String?
-    public let modelURL: NSURL?
-    public let serialNumber: String?
-    public let iconDescriptions: [IconDescription]?
+    public private(set) var friendlyName: String! // TODO: Should ideally be a constant, see Github issue #10
+    public private(set) var manufacturer: String! // TODO: Should ideally be a constant, see Github issue #10
+    public private(set) var manufacturerURL: NSURL? // TODO: Should ideally be a constant, see Github issue #10
+    public private(set) var modelDescription: String? // TODO: Should ideally be a constant, see Github issue #10
+    public private(set) var modelName: String! // TODO: Should ideally be a constant, see Github issue #10
+    public private(set) var modelNumber: String? // TODO: Should ideally be a constant, see Github issue #10
+    public private(set) var modelURL: NSURL? // TODO: Should ideally be a constant, see Github issue #10
+    public private(set) var serialNumber: String? // TODO: Should ideally be a constant, see Github issue #10
+    public private(set) var iconDescriptions: [IconDescription]? // TODO: Should ideally be a constant, see Github issue #10
     public weak var serviceSource: UPnPServiceSource?
     override public var baseURL: NSURL! {
         if let baseURL = _baseURLFromXML {
@@ -66,7 +66,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
     
     // private
-    private let _baseURLFromXML: NSURL?
+    private var _baseURLFromXML: NSURL? // TODO: Should ideally be a constant, see Github issue #10
     
     required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
         super.init(usn: usn, descriptionURL: descriptionURL, descriptionXML: descriptionXML)
@@ -296,7 +296,7 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         case .Success:
             if let foundDevice = _foundDevice {
                 foundDevice.baseURL = _baseURL
-                return .Success(foundDevice)
+                return .Success(RVW(foundDevice))
             }
             else {
                 return .Failure(createError("Parser error"))
