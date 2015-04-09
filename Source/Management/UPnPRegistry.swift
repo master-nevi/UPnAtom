@@ -195,12 +195,17 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
             var upnpObjectsToKeep = [AbstractUPnP]()
             for ssdpDiscovery in ssdpDiscoveries {
                 // only concerned with objects with a device or service type urn
-                if ssdpDiscovery.usn.urn != nil && (ssdpDiscovery.notificationType == .Device || ssdpDiscovery.notificationType == .Service) {
-                    if let foundObject = self._upnpObjects[ssdpDiscovery.usn] {
-                        upnpObjectsToKeep.append(foundObject)
-                    }
-                    else {
-                        self.getUPnPDescription(forSSDPDiscovery: ssdpDiscovery)
+                if ssdpDiscovery.usn.urn != nil {
+                    switch ssdpDiscovery.type {
+                    case .Device, .Service:
+                        if let foundObject = self._upnpObjects[ssdpDiscovery.usn] {
+                            upnpObjectsToKeep.append(foundObject)
+                        }
+                        else {
+                            self.getUPnPDescription(forSSDPDiscovery: ssdpDiscovery)
+                        }
+                    default:
+                        LogVerbose("Discovery type will not be handled")
                     }
                 }
             }

@@ -21,25 +21,29 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-enum SSDPNotificationType {
+enum SSDPType {
+    case All
     case RootDevice
-    case UUID
-    case Device
-    case Service
+    case UUID(String)
+    case Device(String)
+    case Service(String)
     case Unknown
     
-    init(notificationType: String) {
-        if notificationType == "upnp:rootdevice" {
+    init(rawValue: String) {
+        if rawValue == "ssdp:all" {
+            self = .All
+        }
+        else if rawValue == "upnp:rootdevice" {
             self = .RootDevice
         }
-        else if notificationType.rangeOfString("uuid:") != nil {
-            self = .UUID
+        else if rawValue.rangeOfString("uuid:") != nil {
+            self = .UUID(rawValue)
         }
-        else if notificationType.rangeOfString(":device:") != nil {
-            self = .Device
+        else if rawValue.rangeOfString(":device:") != nil {
+            self = .Device(rawValue)
         }
-        else if notificationType.rangeOfString(":service:") != nil {
-            self = .Service
+        else if rawValue.rangeOfString(":service:") != nil {
+            self = .Service(rawValue)
         }
         else {
             self = .Unknown
@@ -50,7 +54,7 @@ enum SSDPNotificationType {
 struct SSDPDiscovery {
     let usn: UniqueServiceName
     let descriptionURL: NSURL
-    let notificationType: SSDPNotificationType
+    let type: SSDPType
 }
 
 extension SSDPDiscovery: Equatable { }
