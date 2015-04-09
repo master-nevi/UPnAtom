@@ -25,7 +25,7 @@ import Foundation
 
 func returnIfContainsElements<T: _CollectionType>(x: T?) -> T? {
     if let x = x {
-        if countElements(x) > 0 {
+        if count(x) > 0 {
             return x
         }
     }
@@ -42,15 +42,14 @@ func curlRep(request: NSURLRequest) -> String {
         curl += " -X \(httpMethod)"
     }
     
-    if let httpBody = request.HTTPBody {
-        if let body = NSString(data: httpBody, encoding: NSUTF8StringEncoding) {
+    if let httpBody = request.HTTPBody,
+        body = NSString(data: httpBody, encoding: NSUTF8StringEncoding) {
             curl += " -d '"
             curl += "\(body)"
             curl += "'"
-        }
     }
     
-    for (key, value) in request.allHTTPHeaderFields as [String: AnyObject] {
+    for (key, value) in request.allHTTPHeaderFields as! [String: AnyObject] {
         curl += " -H '\(key): \(value)'"
     }
     
@@ -62,12 +61,12 @@ func curlRep(request: NSURLRequest) -> String {
 typealias Error = NSError
 
 enum Result<T> {
-    // @autoclosure wierdness is to save us from a weird compiler error when using generic enums: http://owensd.io/2014/08/06/fixed-enum-layout.html
-    case Success(@autoclosure() -> T)
+    // TODO: Ideally the generic associated value shouldn't need to be wrapped inside an object, see Github issue #12
+    case Success(RVW<T>)
     case Failure(Error)
     
     init(_ value: T) {
-        self = .Success(value)
+        self = .Success(RVW(value))
     }
     
     init(_ error: Error) {
@@ -96,12 +95,20 @@ enum Result<T> {
     
     var value: T? {
         switch self {
-        case .Success(let value):
-            return value()
+        case .Success(let wrapper):
+            return wrapper.value
             
         default:
             return nil
         }
+    }
+}
+
+// Result value wrapper
+class RVW<T> {
+    let value: T
+    init(_ value: T) {
+        self.value = value
     }
 }
 

@@ -73,7 +73,7 @@ import AFNetworking
             let upnpDevices = upnpObjects.values.array.filter({$0 is AbstractUPnPDevice})
             
             completionQueue.addOperationWithBlock({ () -> Void in
-                completion(upnpDevices: upnpDevices as [AbstractUPnPDevice])
+                completion(upnpDevices: upnpDevices as! [AbstractUPnPDevice])
             })
         }
     }
@@ -84,7 +84,7 @@ import AFNetworking
             let upnpServices = upnpObjects.values.array.filter({$0 is AbstractUPnPService})
             
             completionQueue.addOperationWithBlock({ () -> Void in
-                completion(upnpServices: upnpServices as [AbstractUPnPService])
+                completion(upnpServices: upnpServices as! [AbstractUPnPService])
             })
         }
     }
@@ -102,16 +102,14 @@ import AFNetworking
         }
         _upnpObjectDescriptionSessionManager.GET(upnpArchivable.descriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject?) -> Void in
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-                if let xmlData = responseObject as? NSData {
-                    if let usn = UniqueServiceName(rawValue: upnpArchivable.usn) {
-                        if let upnpObject = self.createUPnPObject(usn: usn, descriptionURL: upnpArchivable.descriptionURL, descriptionXML: xmlData) {
-                            callbackQueue.addOperationWithBlock({ () -> Void in
-                                success(upnpObject: upnpObject)
-                            })
-                            
-                            return
-                        }
-                    }
+                if let xmlData = responseObject as? NSData,
+                    usn = UniqueServiceName(rawValue: upnpArchivable.usn),
+                    upnpObject = self.createUPnPObject(usn: usn, descriptionURL: upnpArchivable.descriptionURL, descriptionXML: xmlData) {
+                        callbackQueue.addOperationWithBlock({ () -> Void in
+                            success(upnpObject: upnpObject)
+                        })
+                        
+                        return
                 }
                 
                 failureCase(createError("Unable to create UPnP object"))
@@ -135,7 +133,7 @@ import AFNetworking
     
     /// Should be called on the background thread as every instance it creates parses XML
     private func createUPnPObject(#usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) -> AbstractUPnP? {
-        var upnpClass: AbstractUPnP.Type!
+        let upnpClass: AbstractUPnP.Type
         let urn = usn.urn! // checked for nil earlier
         
         if let registeredClass = _upnpClasses[urn] {
@@ -249,10 +247,10 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
                 }
                 
                 if newObject is AbstractUPnPDevice {
-                    (newObject as AbstractUPnPDevice).serviceSource = self
+                    (newObject as! AbstractUPnPDevice).serviceSource = self
                 }
                 else {
-                    (newObject as AbstractUPnPService).deviceSource = self
+                    (newObject as! AbstractUPnPService).deviceSource = self
                 }
                 
                 upnpObjects[usn] = newObject
@@ -270,9 +268,8 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
     
     /// Must be called within dispatch_barrier_async() to the UPnP object queue since the upnpObjects dictionary is being updated
     private func process(#upnpObjectsToKeep: [AbstractUPnP], inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
-        let upnpObjectsSet = NSMutableSet(array: Array(upnpObjects.values))
-        upnpObjectsSet.minusSet(NSSet(array: upnpObjectsToKeep))
-        let upnpObjectsToRemove = upnpObjectsSet.allObjects as [AbstractUPnP] // casting from [AnyObject]
+        let upnpObjectsSet = Set(upnpObjects.values.array)
+        let upnpObjectsToRemove = upnpObjectsSet.subtract(Set(upnpObjectsToKeep))
         
         for upnpObjectToRemove in upnpObjectsToRemove {
             upnpObjects.removeValueForKey(upnpObjectToRemove.usn)

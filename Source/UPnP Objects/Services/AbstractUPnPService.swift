@@ -28,7 +28,7 @@ public class AbstractUPnPService: AbstractUPnP {
     public var serviceType: String {
         return urn
     }
-    public let serviceID: String!
+    public private(set) var serviceID: String! // TODO: Should ideally be a constant, see Github issue #10
     public var serviceDescriptionURL: NSURL {
         return NSURL(string: _relativeServiceDescriptionURL.absoluteString!, relativeToURL: baseURL)!
     }
@@ -50,14 +50,14 @@ public class AbstractUPnPService: AbstractUPnP {
     }
     
     // protected = 🔰
-    let sessionManager🔰: SOAPSessionManager!
+    private(set) var sessionManager🔰: SOAPSessionManager! // TODO: Should ideally be a constant, see Github issue #10
     
     // private
-    private let _baseURLFromXML: NSURL?
-    private let _relativeServiceDescriptionURL: NSURL!
-    private let _relativeControlURL: NSURL!
-    private let _relativeEventURL: NSURL!
-    private let _deviceUSN: UniqueServiceName!
+    private var _baseURLFromXML: NSURL? // TODO: Should ideally be a constant, see Github issue #10
+    private var _relativeServiceDescriptionURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
+    private var _relativeControlURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
+    private var _relativeEventURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
+    private var _deviceUSN: UniqueServiceName! // TODO: Should ideally be a constant, see Github issue #10
     
     // MARK: UPnP Event handling related
     /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
@@ -124,6 +124,8 @@ public class AbstractUPnPService: AbstractUPnP {
 // MARK: UPnP Event handling
 
 extension AbstractUPnPService: UPnPEventSubscriber {
+    private static let UPnPEventKey = "UPnPEventKey"
+    
     private class EventObserver {
         let notificationCenterObserver: AnyObject
         init(notificationCenterObserver: AnyObject) {
@@ -135,15 +137,11 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         return "UPnPEventReceivedNotification.\(usn.rawValue)"
     }
     
-    private class func UPnPEventKey() -> String {
-        return "UPnPEventKey"
-    }
-    
     /// Returns an opaque object to act as the observer. Use it when the event observer needs to be removed.
     public func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent) -> Void) -> AnyObject {
         /// Use callBackBlock for event notifications. While the notifications are backed by NSNotifications for broadcasting, they should only be used internally in order to keep track of how many subscribers there are.
         let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
-            if let event = notification.userInfo?[AbstractUPnPService.UPnPEventKey()] as? UPnPEvent {
+            if let event = notification.userInfo?[AbstractUPnPService.UPnPEventKey] as? UPnPEvent {
                 callBackBlock(event: event)
             }
         })
@@ -155,8 +153,8 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                 // subscribe
                 UPnAtom.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
                     switch subscription {
-                    case .Success(let value):
-                        self._eventSubscription = value()
+                    case .Success(let wrapper):
+                        self._eventSubscription = wrapper.value
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown subscribe error")
                         LogError("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
@@ -192,7 +190,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     }
     
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventXML: NSData) {
-        NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService.UPnPEventKey(): self.createEvent(eventXML)])
+        NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService.UPnPEventKey: self.createEvent(eventXML)])
     }
     
     func subscriptionDidFail(eventSubscriptionManager: UPnPEventSubscriptionManager) {
@@ -272,10 +270,8 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service"], didStartParsingElement: { (elementName, attributeDict) -> Void in
             self._currentParserService = ParserUPnPService()
             }, didEndParsingElement: { (elementName) -> Void in
-                if let serviceType = self._currentParserService?.serviceType {
-                    if serviceType == self._upnpService.urn {
-                        self._foundParserService = self._currentParserService
-                    }
+                if let serviceType = self._currentParserService?.serviceType where serviceType == self._upnpService.urn {
+                    self._foundParserService = self._currentParserService
                 }
             }, foundInnerText: nil))
         
@@ -317,7 +313,7 @@ class UPnPServiceParser: AbstractSAXXMLParser {
                 if let deviceType = _deviceType {
                     foundParserService.deviceUSN = UniqueServiceName(uuid: _upnpService.uuid, urn: deviceType)
                 }
-                return .Success(foundParserService)
+                return .Success(RVW(foundParserService))
             }
             else {
                 return .Failure(createError("Parser error"))

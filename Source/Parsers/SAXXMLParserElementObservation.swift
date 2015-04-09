@@ -25,12 +25,12 @@ import Foundation
 
 class SAXXMLParserElementObservation {
     // internal
-    let didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?
+    private(set) var didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)? // TODO: Should ideally be a constant, see Github issue #10
     let didEndParsingElement: ((elementName: String) -> Void)?
     let foundInnerText: ((elementName: String, text: String) -> Void)?
     let elementPath: [String]
     var innerText: String? {
-        return _innerText?
+        return _innerText
     }
     
     // private
@@ -38,6 +38,9 @@ class SAXXMLParserElementObservation {
     
     init(elementPath: [String], didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?, didEndParsingElement: ((elementName: String) -> Void)?, foundInnerText: ((elementName: String, text: String) -> Void)?) {
         self.elementPath = elementPath
+        
+        self.didEndParsingElement = didEndParsingElement
+        self.foundInnerText = foundInnerText
         
         self.didStartParsingElement = {[unowned self] (elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void in
             // reset _innerText at the start of the element parse
@@ -47,15 +50,15 @@ class SAXXMLParserElementObservation {
                 didStartParsingElement(elementName: elementName, attributeDict: attributeDict)
             }
         }
-        self.didEndParsingElement = didEndParsingElement
-        self.foundInnerText = foundInnerText
     }
     
-    func appendInnerText(innerText: String) {
+    func appendInnerText(innerText: String?) {
         if _innerText == nil {
             _innerText = ""
         }
         
-        _innerText! += innerText
+        if let innerText = innerText {
+            _innerText! += innerText
+        }
     }
 }

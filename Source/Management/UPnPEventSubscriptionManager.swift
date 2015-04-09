@@ -102,13 +102,13 @@ class UPnPEventSubscriptionManager {
     private let _eventCallBackPath = "/Event/\(NSUUID().dashlessUUIDString)"
     
     init() {
-        _subscribeSessionManager.requestSerializer = UPnPEventSubscribeRequestSerializer() as AFHTTPRequestSerializer
+        _subscribeSessionManager.requestSerializer = UPnPEventSubscribeRequestSerializer()
         _subscribeSessionManager.responseSerializer = UPnPEventSubscribeResponseSerializer()
         
-        _renewSubscriptionSessionManager.requestSerializer = UPnPEventRenewSubscriptionRequestSerializer() as AFHTTPRequestSerializer
+        _renewSubscriptionSessionManager.requestSerializer = UPnPEventRenewSubscriptionRequestSerializer()
         _renewSubscriptionSessionManager.responseSerializer = UPnPEventRenewSubscriptionResponseSerializer()
         
-        _unsubscribeSessionManager.requestSerializer = UPnPEventUnsubscribeRequestSerializer() as AFHTTPRequestSerializer
+        _unsubscribeSessionManager.requestSerializer = UPnPEventUnsubscribeRequestSerializer()
         _unsubscribeSessionManager.responseSerializer = UPnPEventUnsubscribeResponseSerializer()
         
         #if os(iOS)
@@ -119,15 +119,12 @@ class UPnPEventSubscriptionManager {
         GCDWebServer.setLogLevel(Int32(3))
         
         _httpServer.addHandlerForMethod("NOTIFY", path: _eventCallBackPath, requestClass: GCDWebServerDataRequest.self) { (request: GCDWebServerRequest!) -> GCDWebServerResponse! in
-            if let dataRequest = request as? GCDWebServerDataRequest {
-                if let headers = dataRequest.headers as? [String: AnyObject] {
-                    if let data = dataRequest.data {
-                        LogVerbose("NOTIFY request: Final body with size: \(data.length)\nAll headers: \(headers)")
-                        if let sid = headers["SID"] as? String {
-                            self.handleIncomingEvent(subscriptionID: sid, eventData: data)
-                        }
-                    }
-                }
+            if let dataRequest = request as? GCDWebServerDataRequest,
+                headers = dataRequest.headers as? [String: AnyObject],
+                sid = headers["SID"] as? String,
+                data = dataRequest.data {
+                    LogVerbose("NOTIFY request: Final body with size: \(data.length)\nAll headers: \(headers)")
+                    self.handleIncomingEvent(subscriptionID: sid, eventData: data)
             }
             
             return GCDWebServerResponse()
@@ -154,7 +151,7 @@ class UPnPEventSubscriptionManager {
         subscriptions { [unowned self] (subscriptions: [String: Subscription]) -> Void in
             if let subscription = subscriptions[eventURLString] {
                 if let completion = completion {
-                    completion(result: .Success(subscription))
+                    completion(result: Result.Success(RVW(subscription)))
                 }
                 return
             }
@@ -186,7 +183,7 @@ class UPnPEventSubscriptionManager {
                     
                     self.add(subscription: subscription, completion: { () -> Void in
                         if let completion = completion {
-                            completion(result: .Success(subscription))
+                            completion(result: Result.Success(RVW(subscription)))
                         }
                     })
                     }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
@@ -227,7 +224,7 @@ class UPnPEventSubscriptionManager {
     
     private func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
         subscriptions { (subscriptions: [String: Subscription]) -> Void in
-            if let subscription: Subscription = (subscriptions.values.array as NSArray).firstUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)!) {
+            if let subscription: Subscription = (subscriptions.values.array as NSArray).firstUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)) {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     subscription.subscriber?.handleEvent(self, eventXML: eventData)
                     return
@@ -374,7 +371,7 @@ class UPnPEventSubscriptionManager {
             // read just in case it was removed
             self.add(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
-                    completion(result: .Success(subscription))
+                    completion(result: Result.Success(RVW(subscription)))
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
@@ -428,7 +425,7 @@ class UPnPEventSubscriptionManager {
                 
                 self.add(subscription: subscription, completion: { () -> Void in
                     if let completion = completion {
-                        completion(result: .Success(subscription))
+                        completion(result: Result.Success(RVW(subscription)))
                     }
                 })
                 }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in

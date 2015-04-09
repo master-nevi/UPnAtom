@@ -27,35 +27,35 @@ import Ono
 // MARK: ContentDirectory1Object
 
 @objc public class ContentDirectory1Object {
-    public let objectID: String!
-    public let parentID: String!
-    public let title: String!
-    public let rawType: String!
+    public let objectID: String
+    public let parentID: String
+    public let title: String
+    public let rawType: String
     public let albumArtURL: NSURL?
     
-    init?(xmlElement: ONOXMLElement) {        
-        if let objectID = xmlElement.valueForAttribute("id") as? String {
-            self.objectID = objectID
+    init?(xmlElement: ONOXMLElement) {
+        if let objectID = xmlElement.valueForAttribute("id") as? String,
+            parentID = xmlElement.valueForAttribute("parentID") as? String,
+            title = xmlElement.firstChildWithTag("title").stringValue(),
+            rawType = xmlElement.firstChildWithTag("class").stringValue() {
+                self.objectID = objectID
+                self.parentID = parentID
+                self.title = title
+                self.rawType = rawType
+                
+                if let albumArtURLString = xmlElement.firstChildWithTag("albumArtURI")?.stringValue() {
+                    self.albumArtURL = NSURL(string: albumArtURLString)
+                }
+                else { albumArtURL = nil }
         }
-        else { return nil }
-        
-        if let parentID = xmlElement.valueForAttribute("parentID") as? String {
-            self.parentID = parentID
-        }
-        else { return nil }
-        
-        if let title = xmlElement.firstChildWithTag("title").stringValue() {
-            self.title = title
-        }
-        else { return nil }
-        
-        if let rawType = xmlElement.firstChildWithTag("class").stringValue() {
-            self.rawType = rawType
-        }
-        else { return nil }
-        
-        if let albumArtURLString = xmlElement.firstChildWithTag("albumArtURI")?.stringValue() {
-            albumArtURL = NSURL(string: albumArtURLString)
+        else {
+            /// TODO: Remove default initializations to simply return nil, see Github issue #11
+            objectID = ""
+            parentID = ""
+            title = ""
+            rawType = ""
+            albumArtURL = nil
+            return nil
         }
     }
 }
@@ -79,11 +79,9 @@ public class ContentDirectory1Container: ContentDirectory1Object {
     public let childCount: Int?
     
     override init?(xmlElement: ONOXMLElement) {
+        self.childCount = (xmlElement.valueForAttribute("childCount") as? String)?.toInt() ?? nil
+        
         super.init(xmlElement: xmlElement)
-
-        if let childCount = (xmlElement.valueForAttribute("childCount") as? String)?.toInt() {
-            self.childCount = childCount
-        }
     }
 }
 
@@ -110,12 +108,17 @@ public class ContentDirectory1Item: ContentDirectory1Object {
     public let resourceURL: NSURL!
     
     override init?(xmlElement: ONOXMLElement) {
-        super.init(xmlElement: xmlElement)
-        
+        /// TODO: Return nil immediately instead of waiting, see Github issue #11
         if let resourceURLString = xmlElement.firstChildWithTag("res").stringValue() {
             resourceURL = NSURL(string: resourceURLString)
         }
-        else { return nil }
+        else { resourceURL = nil }
+        
+        super.init(xmlElement: xmlElement)
+        
+        if resourceURL == nil {
+            return nil
+        }
     }
 }
 
@@ -148,8 +151,6 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
     public let size: Int?
     
     override init?(xmlElement: ONOXMLElement) {
-        super.init(xmlElement: xmlElement)
-        
         bitrate = (xmlElement.firstChildWithTag("res").valueForAttribute("bitrate") as? String)?.toInt()
         
         if let durationString = xmlElement.firstChildWithTag("res").valueForAttribute("duration") as? String {
@@ -163,21 +164,22 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
             
             self.duration = NSTimeInterval(duration)
         }
+        else { self.duration = nil }
         
         audioChannelCount = (xmlElement.firstChildWithTag("res").valueForAttribute("nrAudioChannels") as? String)?.toInt()
         
         protocolInfo = xmlElement.firstChildWithTag("res").valueForAttribute("protocolInfo") as? String
         
-        if let resolutionString = xmlElement.firstChildWithTag("res").valueForAttribute("resolution") as? String {
-            let resolutionComponents = resolutionString.componentsSeparatedByString("x")
-            if countElements(resolutionComponents) == 2 {
-                resolution = CGSize(width: resolutionComponents[0].toInt()!, height: resolutionComponents[1].toInt()!)
-            }
+        if let resolutionComponents = (xmlElement.firstChildWithTag("res").valueForAttribute("resolution") as? String)?.componentsSeparatedByString("x") where count(resolutionComponents) == 2 {
+            resolution = CGSize(width: resolutionComponents[0].toInt()!, height: resolutionComponents[1].toInt()!)
         }
+        else { resolution = nil }
         
         sampleFrequency = (xmlElement.firstChildWithTag("res").valueForAttribute("sampleFrequency") as? String)?.toInt()
         
         size = (xmlElement.firstChildWithTag("res").valueForAttribute("size") as? String)?.toInt()
+        
+        super.init(xmlElement: xmlElement)
     }
 }
 

@@ -54,8 +54,8 @@ class AbstractSAXXMLParser: NSObject {
             else {
                 // * -> leafX -> leafY
                 // Maybe we have a wildchar, that means that the path after the wildchar must match
-                if elementObservation.elementPath.first == "*" {
-                    if elementStack.count >= elementObservation.elementPath.count {
+                if elementObservation.elementPath.first == "*" &&
+                    elementStack.count >= elementObservation.elementPath.count {
                         var tempElementStack = elementStack
                         var tempObservationElementPath = elementObservation.elementPath
                         
@@ -69,12 +69,11 @@ class AbstractSAXXMLParser: NSObject {
                         if tempObservationElementPath == tempElementStack {
                             return elementObservation
                         }
-                    }
                 }
                 
                 // leafX -> leafY -> *
-                if elementObservation.elementPath.last == "*" {
-                    if elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
+                if elementObservation.elementPath.last == "*" &&
+                    elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
                         var tempElementStack = elementStack
                         var tempObservationElementPath = elementObservation.elementPath
                         // Cut the last entry (which is * in one array and <element> in the other
@@ -83,7 +82,6 @@ class AbstractSAXXMLParser: NSObject {
                         if tempElementStack == tempObservationElementPath {
                             return elementObservation
                         }
-                    }
                 }
             }
         }
@@ -129,7 +127,7 @@ class AbstractSAXXMLParser: NSObject {
         var error: NSError?
         let regexOptional = NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .AnchorsMatchLines, error: &error)
         if xmlStringOptional != nil && regexOptional != nil {
-            let validXMLString = regexOptional!.stringByReplacingMatchesInString(xmlStringOptional!, options: NSMatchingOptions(0), range: NSMakeRange(0, xmlStringOptional!.length), withTemplate: "")
+            let validXMLString = regexOptional!.stringByReplacingMatchesInString(xmlStringOptional! as String, options: NSMatchingOptions(0), range: NSMakeRange(0, xmlStringOptional!.length), withTemplate: "")
             return validXMLString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
         }
         
@@ -138,17 +136,16 @@ class AbstractSAXXMLParser: NSObject {
 }
 
 extension AbstractSAXXMLParser: NSXMLParserDelegate {
-    func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
+    func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [NSObject : AnyObject]) {
         _elementStack += [elementName]
         
-        if let elementObservation = elementObservationForElementStack(_elementStack) {
-            if let didStartParsingElement = elementObservation.didStartParsingElement {
+        if let elementObservation = elementObservationForElementStack(_elementStack),
+            didStartParsingElement = elementObservation.didStartParsingElement {
                 didStartParsingElement(elementName: elementName, attributeDict: attributeDict)
-            }
         }
     }
     
-    func parser(parser: NSXMLParser!, didEndElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!) {
+    func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if let elementObservation = elementObservationForElementStack(_elementStack) {
             let foundInnerText = elementObservation.foundInnerText
             let innerText = elementObservation.innerText
@@ -170,7 +167,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         }
     }
     
-    func parser(parser: NSXMLParser!, foundCharacters string: String!) {
+    func parser(parser: NSXMLParser, foundCharacters string: String?) {
         // The parser object may send the delegate several parser:foundCharacters: messages to report the characters of an element. Because string may be only part of the total character content for the current element, you should append it to the current accumulation of characters until the element changes.
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {

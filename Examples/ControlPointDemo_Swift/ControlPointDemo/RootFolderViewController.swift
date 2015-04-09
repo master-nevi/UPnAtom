@@ -29,6 +29,7 @@ class RootFolderViewController: UIViewController {
     private var _discoveredUPnPObjectCache = [UniqueServiceName: AbstractUPnP]()
     private var _archivedDeviceUSNs = [UniqueServiceName]()
     private var _archivedUPnPObjectCache = [UniqueServiceName: AbstractUPnP]()
+    private static let upnpObjectArchiveKey = "upnpObjectArchiveKey"
     private weak var _toolbarLabel: UILabel?
     @IBOutlet private weak var _tableView: UITableView!
     private let _archivingUnarchivingQueue: NSOperationQueue = {
@@ -131,7 +132,7 @@ class RootFolderViewController: UIViewController {
     private func deviceForIndexPath(indexPath: NSIndexPath) -> AbstractUPnPDevice {
         let deviceUSN = indexPath.section == 0 ? _archivedDeviceUSNs[indexPath.row] : _discoveredDeviceUSNs[indexPath.row]
         let deviceCache = indexPath.section == 0 ? _archivedUPnPObjectCache : _discoveredUPnPObjectCache
-        return deviceCache[deviceUSN] as AbstractUPnPDevice
+        return deviceCache[deviceUSN] as! AbstractUPnPDevice
     }
     
     private func insertDevice(#deviceUSN: UniqueServiceName, inout deviceUSNs: [UniqueServiceName], inSection section: Int) {
@@ -158,10 +159,6 @@ class RootFolderViewController: UIViewController {
         }
     }
     
-    private class func upnpObjectArchiveKey() -> String {
-        return "upnpObjectArchiveKey"
-    }
-    
     private func archiveUPnPObjects() {
         _archivingUnarchivingQueue.addOperationWithBlock { () -> Void in
             // archive discovered objects
@@ -171,10 +168,9 @@ class RootFolderViewController: UIViewController {
                 if let upnpDevice = upnpObject as? AbstractUPnPDevice {
                     friendlyName = upnpDevice.friendlyName
                 }
-                else if let upnpService = upnpObject as? AbstractUPnPService {
-                    if let name = upnpService.device?.friendlyName {
+                else if let upnpService = upnpObject as? AbstractUPnPService,
+                    name = upnpService.device?.friendlyName {
                         friendlyName = name
-                    }
                 }
                 
                 let upnpArchivable = upnpObject.archivable(customMetadata: ["upnpType": upnpObject.className, "friendlyName": friendlyName])
@@ -182,7 +178,7 @@ class RootFolderViewController: UIViewController {
             }
             
             let upnpArchivablesData = NSKeyedArchiver.archivedDataWithRootObject(upnpArchivables)
-            NSUserDefaults.standardUserDefaults().setObject(upnpArchivablesData, forKey: RootFolderViewController.upnpObjectArchiveKey())
+            NSUserDefaults.standardUserDefaults().setObject(upnpArchivablesData, forKey: RootFolderViewController.upnpObjectArchiveKey)
             
             // show archive complete alert
             NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
@@ -213,8 +209,8 @@ class RootFolderViewController: UIViewController {
         
         _archivingUnarchivingQueue.addOperationWithBlock { () -> Void in
             // load archived objects
-            if let upnpArchivablesData = NSUserDefaults.standardUserDefaults().objectForKey(RootFolderViewController.upnpObjectArchiveKey()) as? NSData {
-                let upnpArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(upnpArchivablesData) as [UPnPArchivableAnnex]
+            if let upnpArchivablesData = NSUserDefaults.standardUserDefaults().objectForKey(RootFolderViewController.upnpObjectArchiveKey) as? NSData {
+                let upnpArchivables = NSKeyedUnarchiver.unarchiveObjectWithData(upnpArchivablesData) as! [UPnPArchivableAnnex]
                 
                 for upnpArchivable in upnpArchivables {
                     let upnpType = upnpArchivable.customMetadata["upnpType"] as? String
@@ -262,7 +258,7 @@ extension RootFolderViewController: UITableViewDataSource {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as UITableViewCell
+        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as! UITableViewCell
         let device = deviceForIndexPath(indexPath)
         cell.textLabel?.text = device.friendlyName
         cell.accessoryType = device is MediaServer1Device ? .DisclosureIndicator : .None
@@ -281,7 +277,7 @@ extension RootFolderViewController: UITableViewDelegate {
                 return
             }
             
-            let targetViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("FolderViewControllerScene") as FolderViewController
+            let targetViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("FolderViewControllerScene") as! FolderViewController
             targetViewController.configure(mediaServer: mediaServer, title: "Root", contentDirectoryID: "0")
             self.navigationController?.pushViewController(targetViewController, animated: true)
             

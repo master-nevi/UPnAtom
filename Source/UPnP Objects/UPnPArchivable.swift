@@ -33,8 +33,8 @@ public class UPnPArchivable: NSObject, NSCoding {
     }
     
     required public init(coder decoder: NSCoder) {
-        self.usn = decoder.decodeObjectForKey("usn") as String
-        self.descriptionURL = decoder.decodeObjectForKey("descriptionURL") as NSURL
+        self.usn = decoder.decodeObjectForKey("usn") as! String
+        self.descriptionURL = decoder.decodeObjectForKey("descriptionURL") as! NSURL
     }
     
     public func encodeWithCoder(coder: NSCoder) {
@@ -59,7 +59,7 @@ public class UPnPArchivableAnnex: UPnPArchivable {
     }
     
     required public init(coder decoder: NSCoder) {
-        self.customMetadata = decoder.decodeObjectForKey("customMetadata") as [String: AnyObject]
+        self.customMetadata = decoder.decodeObjectForKey("customMetadata") as! [String: AnyObject]
         super.init(coder: decoder)
     }
     

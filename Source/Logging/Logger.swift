@@ -67,28 +67,28 @@ func resetDefaultDebugLevel() {
     logLevel = defaultLogLevel
 }
 
-func Log(isAsynchronous: Bool, level: LogLevel, flag: LogFlag, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, string: @autoclosure () -> String) {
+func Log(isAsynchronous: Bool, level: LogLevel, flag: LogFlag, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, @autoclosure string: () -> String) {
     if level.rawValue & flag.rawValue != 0 {
         println(string())
     }
 }
 
-func LogDebug(logText: @autoclosure () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
+func LogDebug(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
     Log(async, level, .Debug, file: file, function: function, line: line, logText)
 }
 
-func LogInfo(logText: @autoclosure () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
+func LogInfo(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
     Log(async, level, .Info, file: file, function: function, line: line, logText)
 }
 
-func LogWarn(logText: @autoclosure () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
+func LogWarn(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
     Log(async, level, .Warning, file: file, function: function, line: line, logText)
 }
 
-func LogVerbose(logText: @autoclosure () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
+func LogVerbose(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
     Log(async, level, .Verbose, file: file, function: function, line: line, logText)
 }
 
-func LogError(logText: @autoclosure () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = false) {
+func LogError(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = false) {
     Log(async, level, .Error, file: file, function: function, line: line, logText)
 }
