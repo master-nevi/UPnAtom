@@ -33,8 +33,8 @@ import UPnAtom
 * [x] UPnP Version 1 Compliance
 * [x] Ability to archive UPnP objects after initial discovery and persist somewhere via NSCoder/NSCoding
 * [x] OSX 10.9+ support
-* [ ] Swift 1.2
-* [ ] In-house implementation of SSDP discovery
+* [ ] Swift 1.2 (in progress, see swift-1.2 branch)
+* [ ] In-house implementation of SSDP discovery (in progress)
 * [ ] Feature parity with upnpx library
 * [ ] UPnP Version 2 Compliance
 
