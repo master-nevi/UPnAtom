@@ -296,13 +296,13 @@ extension RootFolderViewController: UITableViewDelegate {
 }
 
 extension RootFolderViewController: UPnPServiceSource {
-    func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
+    func service(forUSN usn: UniqueServiceName) -> AbstractUPnPService? {
         return _archivedUPnPObjectCache[usn] as? AbstractUPnPService
     }
 }
 
 extension RootFolderViewController: UPnPDeviceSource {
-    func deviceFor(#usn: UniqueServiceName) -> AbstractUPnPDevice? {
+    func device(forUSN usn: UniqueServiceName) -> AbstractUPnPDevice? {
         return _archivedUPnPObjectCache[usn] as? AbstractUPnPDevice
     }
 }

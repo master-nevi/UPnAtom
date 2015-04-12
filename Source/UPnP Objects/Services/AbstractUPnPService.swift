@@ -46,7 +46,7 @@ public class AbstractUPnPService: AbstractUPnP {
     }
     public weak var deviceSource: UPnPDeviceSource?
     public var device: AbstractUPnPDevice? {
-        return deviceSource?.deviceFor(usn: _deviceUSN)
+        return deviceSource?.device(forUSN: _deviceUSN)
     }
     
     // protected = 🔰
@@ -232,7 +232,7 @@ extension AbstractUPnPService: ExtendedPrintable {
 }
 
 @objc public protocol UPnPDeviceSource: class {
-    func deviceFor(#usn: UniqueServiceName) -> AbstractUPnPDevice?
+    func device(forUSN usn: UniqueServiceName) -> AbstractUPnPDevice?
 }
 
 class UPnPServiceParser: AbstractSAXXMLParser {
