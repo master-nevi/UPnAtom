@@ -210,13 +210,13 @@
 
 #pragma mark - UPnPServiceSource methods
 
-- (AbstractUPnPService *)serviceForUsn:(UniqueServiceName *)usn {
+- (AbstractUPnPService *)serviceForUSN:(UniqueServiceName *)usn {
     return _archivedUPnPObjectCache[usn.rawValue];
 }
 
 #pragma mark - UPnPDeviceSource methods
 
-- (AbstractUPnPDevice *)deviceForUsn:(UniqueServiceName *)usn {
+- (AbstractUPnPDevice *)deviceForUSN:(UniqueServiceName *)usn {
     return _archivedUPnPObjectCache[usn.rawValue];
 }
 

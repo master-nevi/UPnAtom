@@ -291,13 +291,13 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
 }
 
 extension UPnPRegistry: UPnPServiceSource {
-    public func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService? {
+    public func service(forUSN usn: UniqueServiceName) -> AbstractUPnPService? {
         return _upnpObjectsMainThreadCopy[usn] as? AbstractUPnPService
     }
 }
 
 extension UPnPRegistry: UPnPDeviceSource {
-    public func deviceFor(#usn: UniqueServiceName) -> AbstractUPnPDevice? {
+    public func device(forUSN usn: UniqueServiceName) -> AbstractUPnPDevice? {
         return _upnpObjectsMainThreadCopy[usn] as? AbstractUPnPDevice
     }
 }

@@ -102,8 +102,8 @@ public class AbstractUPnPDevice: AbstractUPnP {
         self.iconDescriptions = parsedDevice?.iconDescriptions
     }
     
-    func serviceFor(#urn: String) -> AbstractUPnPService? {
-        return serviceSource?.serviceFor(usn: UniqueServiceName(uuid: uuid, urn: urn)!)
+    func service(forURN urn: String) -> AbstractUPnPService? {
+        return serviceSource?.service(forUSN: UniqueServiceName(uuid: uuid, urn: urn)!)
     }
 }
 
@@ -135,7 +135,7 @@ extension AbstractUPnPDevice: ExtendedPrintable {
 }
 
 @objc public protocol UPnPServiceSource: class {
-    func serviceFor(#usn: UniqueServiceName) -> AbstractUPnPService?
+    func service(forUSN usn: UniqueServiceName) -> AbstractUPnPService?
 }
 
 class UPnPDeviceParser: AbstractSAXXMLParser {
