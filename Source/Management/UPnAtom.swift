@@ -23,13 +23,9 @@
 
 import Foundation
 
-private let _UPnAtomSharedInstance = UPnAtom()
-
 @objc public class UPnAtom {
     // public
-    public class var sharedInstance: UPnAtom {
-        return _UPnAtomSharedInstance
-    }
+    public static let sharedInstance = UPnAtom()
     public let upnpRegistry: UPnPRegistry
     
     // internal
