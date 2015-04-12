@@ -152,7 +152,7 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         var modelURL: NSURL?
         var serialNumber: String?
         var iconDescriptions: [AbstractUPnPDevice.IconDescription] = []
-        private var currentIconDescription: ParserIconDescription?
+        private var _currentIconDescription: ParserIconDescription?
         init() { } // allow intializing with empty temp device
     }
     
@@ -246,44 +246,44 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
             var currentDevice = self._deviceStack.peek()
-            currentDevice?.currentIconDescription = ParserIconDescription()
+            currentDevice?._currentIconDescription = ParserIconDescription()
             }, didEndParsingElement: { [unowned self] (elementName) -> Void in
                 var currentDevice = self._deviceStack.peek()
-                if let iconDescription = currentDevice?.currentIconDescription?.iconDescription {
+                if let iconDescription = currentDevice?._currentIconDescription?.iconDescription {
                     currentDevice?.iconDescriptions.append(iconDescription)
                 }
-                currentDevice?.currentIconDescription = nil
+                currentDevice?._currentIconDescription = nil
             }, foundInnerText: nil))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "mimetype"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.peek()
-            currentDevice?.currentIconDescription?.mimeType = text
+            currentDevice?._currentIconDescription?.mimeType = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "width"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
                 var currentDevice = self._deviceStack.peek()
-                currentDevice?.currentIconDescription?.width = Int(textNumber.intValue)
+                currentDevice?._currentIconDescription?.width = Int(textNumber.intValue)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "height"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
                 var currentDevice = self._deviceStack.peek()
-                currentDevice?.currentIconDescription?.height = Int(textNumber.intValue)
+                currentDevice?._currentIconDescription?.height = Int(textNumber.intValue)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "depth"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
                 var currentDevice = self._deviceStack.peek()
-                currentDevice?.currentIconDescription?.depth = Int(textNumber.intValue)
+                currentDevice?._currentIconDescription?.depth = Int(textNumber.intValue)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "url"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             var currentDevice = self._deviceStack.peek()
-            currentDevice?.currentIconDescription?.relativeURL = NSURL(string: text)
+            currentDevice?._currentIconDescription?.relativeURL = NSURL(string: text)
         }))
     }
     
