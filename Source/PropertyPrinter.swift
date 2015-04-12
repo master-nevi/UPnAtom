@@ -28,30 +28,30 @@ protocol ExtendedPrintable: Printable {
 }
 
 struct PropertyPrinter {
-    private var properties = [String: String]()
+    private var _properties = [String: String]()
     
     mutating func add<T>(propertyName: String, property: T?) {
-        properties[propertyName] = prettyPrint(property)
+        _properties[propertyName] = prettyPrint(property)
     }
     
     mutating func add<T: Printable>(propertyName: String, property: T?) {
-        properties[propertyName] = prettyPrint(property)
+        _properties[propertyName] = prettyPrint(property)
     }
     
     mutating func add<T>(propertyName: String, property: [T]?) {
-        properties[propertyName] = prettyPrint(property)
+        _properties[propertyName] = prettyPrint(property)
     }
     
     mutating func add<T: Printable>(propertyName: String, property: [T]?) {
-        properties[propertyName] = prettyPrint(property)
+        _properties[propertyName] = prettyPrint(property)
     }
     
     mutating func add<K, V>(propertyName: String, property: [K: V]?) {
-        properties[propertyName] = prettyPrint(property)
+        _properties[propertyName] = prettyPrint(property)
     }
     
     mutating func add<K, V: Printable>(propertyName: String, property: [K: V]?) {
-        properties[propertyName] = prettyPrint(property)
+        _properties[propertyName] = prettyPrint(property)
     }
     
     //    subscript(key: String) -> Any? { // subscripts can't be used as the subscript function can't be Generic only class/struct-wide generic declarations can be made which isn't useful here
@@ -66,7 +66,7 @@ struct PropertyPrinter {
 
 extension PropertyPrinter: Printable {
     var description: String {
-        return dictionaryDescription(properties, "=")
+        return dictionaryDescription(_properties, "=")
     }
 }
 

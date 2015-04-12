@@ -25,13 +25,13 @@ import Foundation
 
 struct LogFlag : RawOptionSetType {
     typealias RawValue = UInt
-    private var value: UInt = 0
-    init(_ value: UInt) { self.value = value }
-    init(rawValue value: UInt) { self.value = value }
-    init(nilLiteral: ()) { self.value = 0 }
+    private var _value: UInt = 0
+    init(_ value: UInt) { self._value = value }
+    init(rawValue value: UInt) { self._value = value }
+    init(nilLiteral: ()) { self._value = 0 }
     static var allZeros: LogFlag { return self(0) }
     static func fromMask(raw: UInt) -> LogFlag { return self(raw) }
-    var rawValue: UInt { return self.value }
+    var rawValue: UInt { return self._value }
     
     static var Error: LogFlag { return self(1 << 0) } // 0...00001
     static var Warning: LogFlag { return self(1 << 1) } // 0...00010
@@ -42,13 +42,13 @@ struct LogFlag : RawOptionSetType {
 
 struct LogLevel : RawOptionSetType {
     typealias RawValue = UInt
-    private var value: UInt = 0
-    init(_ value: UInt) { self.value = value }
-    init(rawValue value: UInt) { self.value = value }
-    init(nilLiteral: ()) { self.value = 0 }
+    private var _value: UInt = 0
+    init(_ value: UInt) { self._value = value }
+    init(rawValue value: UInt) { self._value = value }
+    init(nilLiteral: ()) { self._value = 0 }
     static var allZeros: LogLevel { return self(0) }
     static func fromMask(raw: UInt) -> LogLevel { return self(raw) }
-    var rawValue: UInt { return self.value }
+    var rawValue: UInt { return self._value }
     
     static var Off: LogLevel { return self(0) }
     static var Error: LogLevel { return self(LogFlag.Error.rawValue) }
