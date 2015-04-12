@@ -59,7 +59,7 @@ typedef enum : NSUInteger {
 
 @implementation SSDPServiceBrowser
 
-- (id) initWithServiceType:(NSString *)serviceType onInterface:(NSString *)networkInterface {
+- (id)initWithServiceType:(NSString *)serviceType onInterface:(NSString *)networkInterface {
     self = [super init];
     if (self) {
         _serviceType = [serviceType copy];
@@ -112,13 +112,23 @@ typedef enum : NSUInteger {
 
     NSDictionary *interfaces = [SSDPServiceBrowser availableNetworkInterfaces];
     NSData *sourceAddress = _networkInterface? [interfaces objectForKey:_networkInterface] : nil;
-    if( !sourceAddress ) sourceAddress = [[interfaces allValues] firstObject];
-
-    if(![_socket bindToAddress:sourceAddress error:&err]) {
-        [self _notifyDelegateWithError:err];
-        return;
+    
+    if(sourceAddress) {
+        // Bind to address to receive unicast datagrams only
+        if(![_socket bindToAddress:sourceAddress error:&err]) {
+            [self _notifyDelegateWithError:err];
+            return;
+        }
+    }
+    else {
+        // Bind to port to receive unicast and multicast datagrams
+        if(![_socket bindToPort:SSDPMulticastUDPPort error:&err]) {
+            [self _notifyDelegateWithError:err];
+            return;
+        }
     }
 
+    // Join multicast group in order to receive multicast datagrams
     if(![_socket joinMulticastGroup:SSDPMulticastGroupAddress error:&err]) {
         [self _notifyDelegateWithError:err];
         return;
@@ -157,9 +167,17 @@ typedef enum : NSUInteger {
     NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     if( msg ) {
         NSDictionary *headers = [self _parseHeadersFromMessage:msg];
-        if( [headers objectForKey:SSDPResponseStatusKey] ) {
-            SSDPService *service = [[SSDPService alloc] initWithHeaders:headers];
+        SSDPService *service = [[SSDPService alloc] initWithHeaders:headers];
+        if( [[headers objectForKey:SSDPResponseStatusKey] isEqualToString:@"200"] ) {
             [self _notifyDelegateWithFoundService:service];
+        }
+        else if ([[headers objectForKey:SSDPRequestMethodKey] isEqualToString:@"NOTIFY"]) {
+            if ([[headers objectForKey:@"nts"] isEqualToString:@"ssdp:alive"]) {
+                [self _notifyDelegateWithFoundService:service];
+            }
+            else if ([[headers objectForKey:@"nts"] isEqualToString:@"ssdp:byebye"]) {
+                [self _notifyDelegateWithRemovedService:service];
+            }
         }
     }
     else {
@@ -231,8 +249,16 @@ typedef enum : NSUInteger {
     });
 }
 
+- (void)_notifyDelegateWithRemovedService:(SSDPService *)service
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
+            [_delegate ssdpBrowser:self didRemoveService:service];
+        }
+    });
+}
 
-+ (NSDictionary *) availableNetworkInterfaces {
++ (NSDictionary *)availableNetworkInterfaces {
     NSMutableDictionary *addresses = [NSMutableDictionary dictionary];
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *ifa = NULL;

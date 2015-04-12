@@ -30,7 +30,7 @@
     self = [super init];
     if (self) {
         _location = [NSURL URLWithString:[headers objectForKey:@"location"]];
-        _serviceType = [headers objectForKey:@"st"];
+        _serviceType = [headers objectForKey:@"st"] ? [headers objectForKey:@"st"] : [headers objectForKey:@"nt"];
         _uniqueServiceName = [headers objectForKey:@"usn"];
         _server = [headers objectForKey:@"server"];
     }

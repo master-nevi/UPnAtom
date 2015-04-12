@@ -27,9 +27,9 @@
 @class SSDPService;
 
 @protocol SSDPServiceBrowserDelegate
-- (void) ssdpBrowser:(SSDPServiceBrowser *)browser didNotStartBrowsingForServices:(NSError *)error;
-- (void) ssdpBrowser:(SSDPServiceBrowser *)browser didFindService:(SSDPService *)service;
-- (void) ssdpBrowser:(SSDPServiceBrowser *)browser didRemoveService:(SSDPService *)service;
+- (void)ssdpBrowser:(SSDPServiceBrowser *)browser didNotStartBrowsingForServices:(NSError *)error;
+- (void)ssdpBrowser:(SSDPServiceBrowser *)browser didFindService:(SSDPService *)service;
+- (void)ssdpBrowser:(SSDPServiceBrowser *)browser didRemoveService:(SSDPService *)service;
 @end
 
 
@@ -39,13 +39,12 @@
 @property(readonly, nonatomic) NSString *networkInterface;
 @property(assign, nonatomic) id<SSDPServiceBrowserDelegate> delegate;
 
-- (id) initWithServiceType:(NSString *)serviceType onInterface:(NSString *)networkInterface;
-- (id) initWithServiceType:(NSString *)serviceType;
+- (id)initWithServiceType:(NSString *)serviceType onInterface:(NSString *)networkInterface;
+- (id)initWithServiceType:(NSString *)serviceType;
 
-- (void) startBrowsingForServices;
-- (void) stopBrowsingForServices;
+- (void)startBrowsingForServices;
+- (void)stopBrowsingForServices;
 
-
-+ (NSDictionary *) availableNetworkInterfaces;
++ (NSDictionary *)availableNetworkInterfaces;
 
 @end

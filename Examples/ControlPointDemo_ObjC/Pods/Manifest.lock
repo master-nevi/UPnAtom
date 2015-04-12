@@ -34,11 +34,19 @@ PODS:
     - Ono (~> 1.2.0)
 
 DEPENDENCIES:
+  - CocoaSSDP (from `git@github.com:master-nevi/CocoaSSDP.git`)
   - UPnAtom (from `../..`)
 
 EXTERNAL SOURCES:
+  CocoaSSDP:
+    :git: git@github.com:master-nevi/CocoaSSDP.git
   UPnAtom:
     :path: ../..
+
+CHECKOUT OPTIONS:
+  CocoaSSDP:
+    :commit: 815a33de95fccbe5be1814e18c7f89d641754f20
+    :git: git@github.com:master-nevi/CocoaSSDP.git
 
 SPEC CHECKSUMS:
   AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
