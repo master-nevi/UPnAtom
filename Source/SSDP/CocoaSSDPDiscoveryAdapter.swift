@@ -63,9 +63,8 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
 
 extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
     @objc func ssdpBrowser(browser: SSDPServiceBrowser!, didNotStartBrowsingForServices error: NSError!) {
-        if let delegate = self.delegate {
-            delegate.ssdpDiscoveryAdapter(self, didFailWithError: error)
-        }
+        failed🔰()
+        delegate?.ssdpDiscoveryAdapter(self, didFailWithError: error)
     }
     
     @objc func ssdpBrowser(browser: SSDPServiceBrowser!, didFindService ssdpDiscoveryUnadapted: SSDPService!) {
@@ -75,16 +74,13 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
                 ssdpDiscoveryUnadapted.location != nil &&
                 returnIfContainsElements(ssdpDiscoveryUnadapted.serviceType) != nil {
                     if let usn = UniqueServiceName(rawValue: ssdpDiscoveryUnadapted.uniqueServiceName),
-                        descriptionURL = ssdpDiscoveryUnadapted.location {
-                            let ssdpType = SSDPType(rawValue: ssdpDiscoveryUnadapted.serviceType)
-                            
+                        descriptionURL = ssdpDiscoveryUnadapted.location,
+                        ssdpType = SSDPType(rawValue: ssdpDiscoveryUnadapted.serviceType) {
                             let ssdpDiscovery = SSDPDiscovery(usn: usn, descriptionURL: descriptionURL, type: ssdpType)
                             
                             self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] = ssdpDiscovery
-                            
-                            if let delegate = self.delegate {
-                                delegate.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
-                            }
+
+                            self.delegate?.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
                     }
             }
         })
@@ -96,9 +92,7 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
             if self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] != nil {
                 self._ssdpDiscoveries.removeValueForKey(ssdpDiscoveryUnadapted.uniqueServiceName)
                 
-                if let delegate = self.delegate {
-                    delegate.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
-                }
+                self.delegate?.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
             }
         })
     }

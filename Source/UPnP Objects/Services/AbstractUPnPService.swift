@@ -49,7 +49,7 @@ public class AbstractUPnPService: AbstractUPnP {
         return deviceSource?.device(forUSN: _deviceUSN)
     }
     
-    // protected = 🔰
+    /// 🔰 = protected
     private(set) var sessionManager🔰: SOAPSessionManager! // TODO: Should ideally be a constant, see Github issue #10
     
     // private
