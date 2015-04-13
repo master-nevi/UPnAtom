@@ -23,13 +23,15 @@
 
 import Foundation
 
-@objc public class UniqueServiceName {
-    public let rawValue: String
+@objc public class UniqueServiceName: RawRepresentable {
+    public let rawValue: RawValue
     public let uuid: String
     public let urn: String?
     public let rootDevice: Bool
     
-    init?(rawValue: String) {
+    public typealias RawValue = String
+    
+    public required init?(rawValue: RawValue) {
         self.rawValue = rawValue
         
         // all forms of usn should contain a uuid, otherwise it's invalid and nil will be returned
