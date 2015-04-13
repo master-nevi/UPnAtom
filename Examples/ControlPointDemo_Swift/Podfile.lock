@@ -1,35 +1,33 @@
 PODS:
-  - AFNetworking (2.5.1):
-    - AFNetworking/NSURLConnection (= 2.5.1)
-    - AFNetworking/NSURLSession (= 2.5.1)
-    - AFNetworking/Reachability (= 2.5.1)
-    - AFNetworking/Security (= 2.5.1)
-    - AFNetworking/Serialization (= 2.5.1)
-    - AFNetworking/UIKit (= 2.5.1)
-  - AFNetworking/NSURLConnection (2.5.1):
+  - AFNetworking (2.5.2):
+    - AFNetworking/NSURLConnection (= 2.5.2)
+    - AFNetworking/NSURLSession (= 2.5.2)
+    - AFNetworking/Reachability (= 2.5.2)
+    - AFNetworking/Security (= 2.5.2)
+    - AFNetworking/Serialization (= 2.5.2)
+    - AFNetworking/UIKit (= 2.5.2)
+  - AFNetworking/NSURLConnection (2.5.2):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.5.1):
+  - AFNetworking/NSURLSession (2.5.2):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.5.1)
-  - AFNetworking/Security (2.5.1)
-  - AFNetworking/Serialization (2.5.1)
-  - AFNetworking/UIKit (2.5.1):
+  - AFNetworking/Reachability (2.5.2)
+  - AFNetworking/Security (2.5.2)
+  - AFNetworking/Serialization (2.5.2)
+  - AFNetworking/UIKit (2.5.2):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - CocoaAsyncSocket (7.4.1)
-  - CocoaSSDP (0.1.0):
-    - CocoaAsyncSocket
   - GCDWebServer (3.2.2):
     - GCDWebServer/Core (= 3.2.2)
   - GCDWebServer/Core (3.2.2)
-  - Ono (1.2.0)
-  - UPnAtom (0.0.1.beta.2):
+  - Ono (1.2.1)
+  - UPnAtom (0.0.1.beta.4):
     - AFNetworking (~> 2.5.0)
-    - CocoaSSDP (~> 0.1.0)
+    - CocoaAsyncSocket (~> 7.4.1)
     - GCDWebServer (~> 3.2.2)
     - Ono (~> 1.2.0)
 
@@ -41,11 +39,10 @@ EXTERNAL SOURCES:
     :path: ../..
 
 SPEC CHECKSUMS:
-  AFNetworking: 8bee59492a6ff15d69130efa4d0dc67e0094a52a
-  CocoaAsyncSocket: b0a1a89e7ea4c1c0ea4ec83f57d55117d3cdae06
-  CocoaSSDP: 2ad6688b1475da6860651c2e0b43a102e8cd4b46
-  GCDWebServer: 285fde9951ab2cd87c2d9d74735fee977a16fe04
-  Ono: 2c9f6c8c50af1b40e988ff85a3f200574ee445cd
-  UPnAtom: 3760a0976ef796247f63b951f895b51631d0f3e9
+  AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
+  CocoaAsyncSocket: 7cbf214b27f8e7f7574db6a3fd96352ffaed433d
+  GCDWebServer: 5320220ad0d497da8e7beca1396f0c82d4f83730
+  Ono: 1122212de602280cc7af19d7ab12ee98a3fc0339
+  UPnAtom: bc6b3b4cac8936f489b86fcda988cab372265db7
 
 COCOAPODS: 0.36.0

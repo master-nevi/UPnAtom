@@ -22,8 +22,8 @@
     "osx": "10.9"
   },
   "dependencies": {
-    "CocoaSSDP": [
-      "~> 0.1.0"
+    "CocoaAsyncSocket": [
+      "~> 7.4.1"
     ],
     "AFNetworking": [
       "~> 2.5.0"

@@ -1,6 +1,6 @@
 {
   "name": "UPnAtom",
-  "version": "0.0.1.beta.2",
+  "version": "0.0.1.beta.4",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -12,17 +12,18 @@
   },
   "source": {
     "git": "https://github.com/master-nevi/UPnAtom.git",
-    "tag": "0.0.1.beta.2"
+    "tag": "0.0.1.beta.4"
   },
   "source_files": "Source/**/*.{swift}",
   "exclude_files": "Source/SSDP/UPNPXSSDPDiscoveryAdapter.swift",
   "requires_arc": true,
   "platforms": {
-    "ios": "8.0"
+    "ios": "8.0",
+    "osx": "10.9"
   },
   "dependencies": {
-    "CocoaSSDP": [
-      "~> 0.1.0"
+    "CocoaAsyncSocket": [
+      "~> 7.4.1"
     ],
     "AFNetworking": [
       "~> 2.5.0"

@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.platform = :ios
   s.ios.deployment_target = '8.0'
   s.osx.deployment_target = '10.9'
-  s.dependency 'CocoaSSDP', '~> 0.1.0' # UPnP object discovery
+  s.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
   s.dependency 'AFNetworking', '~> 2.5.0' # Network calls over HTTP
   s.dependency 'Ono', '~> 1.2.0' # XML parsing
   s.dependency 'GCDWebServer', '~> 3.2.2' # UPnP event notification handling

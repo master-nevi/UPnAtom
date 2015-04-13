@@ -50,7 +50,6 @@ code_sign() {
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'AFNetworking.framework'
   install_framework 'CocoaAsyncSocket.framework'
-  install_framework 'CocoaSSDP.framework'
   install_framework 'GCDWebServer.framework'
   install_framework 'Ono.framework'
   install_framework 'UPnAtom.framework'
@@ -58,7 +57,6 @@ fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'AFNetworking.framework'
   install_framework 'CocoaAsyncSocket.framework'
-  install_framework 'CocoaSSDP.framework'
   install_framework 'GCDWebServer.framework'
   install_framework 'Ono.framework'
   install_framework 'UPnAtom.framework'

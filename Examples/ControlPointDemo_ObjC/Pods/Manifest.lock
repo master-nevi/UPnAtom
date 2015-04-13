@@ -21,39 +21,28 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - CocoaAsyncSocket (7.4.1)
-  - CocoaSSDP (0.1.0):
-    - CocoaAsyncSocket
   - GCDWebServer (3.2.2):
     - GCDWebServer/Core (= 3.2.2)
   - GCDWebServer/Core (3.2.2)
   - Ono (1.2.1)
   - UPnAtom (0.0.1.beta.4):
     - AFNetworking (~> 2.5.0)
-    - CocoaSSDP (~> 0.1.0)
+    - CocoaAsyncSocket (~> 7.4.1)
     - GCDWebServer (~> 3.2.2)
     - Ono (~> 1.2.0)
 
 DEPENDENCIES:
-  - CocoaSSDP (from `git@github.com:master-nevi/CocoaSSDP.git`)
   - UPnAtom (from `../..`)
 
 EXTERNAL SOURCES:
-  CocoaSSDP:
-    :git: git@github.com:master-nevi/CocoaSSDP.git
   UPnAtom:
     :path: ../..
-
-CHECKOUT OPTIONS:
-  CocoaSSDP:
-    :commit: 815a33de95fccbe5be1814e18c7f89d641754f20
-    :git: git@github.com:master-nevi/CocoaSSDP.git
 
 SPEC CHECKSUMS:
   AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
   CocoaAsyncSocket: 7cbf214b27f8e7f7574db6a3fd96352ffaed433d
-  CocoaSSDP: ef376c3343aa8971c3eb09eba92a2c336ca7cd79
   GCDWebServer: 5320220ad0d497da8e7beca1396f0c82d4f83730
   Ono: 1122212de602280cc7af19d7ab12ee98a3fc0339
-  UPnAtom: d88effaf04743a7f9e7f6560fc40d12ec6716ddc
+  UPnAtom: bc6b3b4cac8936f489b86fcda988cab372265db7
 
 COCOAPODS: 0.36.0
