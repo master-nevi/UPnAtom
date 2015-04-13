@@ -5,4 +5,3 @@ source 'https://github.com/CocoaPods/Specs.git'
 xcodeproj 'ControlPointDemo'
 
 pod 'UPnAtom', :path => '../..'
-pod 'CocoaSSDP', :git => 'git@github.com:master-nevi/CocoaSSDP.git'
