@@ -21,15 +21,30 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-enum SSDPType {
+enum SSDPTypeConstant: String {
+    // General
+    case All = "ssdp:all"
+    case RootDevice = "upnp:rootdevice"
+    
+    // UPnP A/V profile
+    case MediaServerDevice1 = "urn:schemas-upnp-org:device:MediaServer:1"
+    case MediaRendererDevice1 = "urn:schemas-upnp-org:device:MediaRenderer:1"
+    case ContentDirectory1Service = "urn:schemas-upnp-org:service:ContentDirectory:1"
+    case ConnectionManager1Service = "urn:schemas-upnp-org:service:ConnectionManager:1"
+    case RenderingControl1Service = "urn:schemas-upnp-org:service:RenderingControl:1"
+    case AVTransport1Service = "urn:schemas-upnp-org:service:AVTransport:1"
+}
+
+enum SSDPType: RawRepresentable {
     case All
     case RootDevice
     case UUID(String)
     case Device(String)
     case Service(String)
-    case Unknown
     
-    init(rawValue: String) {
+    typealias RawValue = String
+    
+    init?(rawValue: RawValue) {
         if rawValue == "ssdp:all" {
             self = .All
         }
@@ -46,8 +61,50 @@ enum SSDPType {
             self = .Service(rawValue)
         }
         else {
-            self = .Unknown
+            return nil
         }
+    }
+    
+    init?(typeConstant: SSDPTypeConstant) {
+        self.init(rawValue: typeConstant.rawValue)
+    }
+    
+    var rawValue: RawValue {
+        switch self {
+        case .All:
+            return "ssdp:all"
+        case .RootDevice:
+            return "upnp:rootdevice"
+        case .UUID(let rawValue):
+            return rawValue
+        case .Device(let rawValue):
+            return rawValue
+        case .Service(let rawValue):
+            return rawValue
+        }
+    }
+}
+
+extension SSDPType: Hashable {
+    var hashValue: Int {
+        return self.rawValue.hashValue
+    }
+}
+
+func ==(lhs: SSDPType, rhs: SSDPType) -> Bool {
+    switch (lhs, rhs) {
+    case (.All, .All):
+        return true
+    case (.RootDevice, .RootDevice):
+        return true
+    case (.UUID(let lhsRawValue), .UUID(let rhsRawValue)):
+        return lhsRawValue == rhsRawValue
+    case (.Device(let lhsRawValue), .Device(let rhsRawValue)):
+        return lhsRawValue == rhsRawValue
+    case (.Service(let lhsRawValue), .Service(let rhsRawValue)):
+        return lhsRawValue == rhsRawValue
+    default:
+        return false
     }
 }
 

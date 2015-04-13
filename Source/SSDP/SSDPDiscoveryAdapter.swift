@@ -23,6 +23,7 @@
 
 protocol SSDPDiscoveryAdapterDelegate: class {
     func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didUpdateSSDPDiscoveries ssdpDiscoveries: [SSDPDiscovery])
+    /// Assume discovery adapter has stopped after a failure.
     func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didFailWithError error: NSError)
 }
 
@@ -53,5 +54,12 @@ class AbstractSSDPDiscoveryAdapter: SSDPDiscoveryAdapter {
             stop()
         }
         start()
+    }
+    
+    /// 🔰 = protected
+    ///
+    /// Sets running = false.
+    func failed🔰() {
+        running = false
     }
 }

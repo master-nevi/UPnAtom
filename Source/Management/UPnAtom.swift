@@ -66,6 +66,6 @@ import Foundation
     
     /// Override to use a different SSDP adapter if another SSDP system is preferred over CocoaSSDP
     class func ssdpDiscoveryAdapterClass() -> AbstractSSDPDiscoveryAdapter.Type {
-        return CocoaSSDPDiscoveryAdapter.self
+        return SSDPExplorerDiscoveryAdapter.self
     }
 }
