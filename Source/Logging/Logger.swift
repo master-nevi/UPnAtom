@@ -59,7 +59,7 @@ struct LogLevel : RawOptionSetType {
     static var All: LogLevel { return self(UInt.max) }
 }
 
-let defaultLogLevel = LogLevel.Info
+let defaultLogLevel = LogLevel.Debug
 
 var logLevel = defaultLogLevel
 
