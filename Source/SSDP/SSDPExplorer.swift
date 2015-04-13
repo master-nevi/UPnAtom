@@ -47,6 +47,7 @@ class SSDPExplorer {
     private static let _multicastGroupAddress = "239.255.255.250"
     private static let _multicastUDPPort: UInt16 = 1900
     private var _socket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
+    private var _types: Set<SSDPType> = []
     
     func startExploring(forTypes types: Set<SSDPType>) -> EmptyResult {
         assert(_socket == nil, "Socket is already open, stop it first!")
@@ -76,6 +77,7 @@ class SSDPExplorer {
             return .Failure(error ?? createError("Could not begin receiving error"))
         }
         
+        _types = types
         for type in types {
             if let data = searchRequestData(forType: type) {
                 socket.sendData(data, toHost: SSDPExplorer._multicastGroupAddress, port: SSDPExplorer._multicastUDPPort, withTimeout: -1, tag: CLong(type.hashValue))
@@ -87,6 +89,7 @@ class SSDPExplorer {
     
     func stopExploring() {
         _socket?.close()
+        _types = []
         _socket = nil
     }
     
@@ -124,7 +127,7 @@ class SSDPExplorer {
             locationString = headers["location"],
             locationURL = NSURL(string: locationString),
             ssdpTypeRawValue = (headers["st"] != nil ? headers["st"] : headers["nt"]),
-            ssdpType = SSDPType(rawValue: ssdpTypeRawValue) {
+            ssdpType = SSDPType(rawValue: ssdpTypeRawValue) where _types.contains(ssdpType) {
                 let discovery = SSDPDiscovery(usn: usn, descriptionURL: locationURL, type: ssdpType)
                 switch messageType {
                 case .SearchResponse, .AvailableNotification, .UpdateNotification:

@@ -27,6 +27,7 @@ protocol SSDPDiscoveryAdapterDelegate: class {
     func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didFailWithError error: NSError)
 }
 
+/// Provides an interface to allow any SSDP library to be used an adapted into UPnAtom for SSDP discovery.
 protocol SSDPDiscoveryAdapter: class {
     weak var delegate: SSDPDiscoveryAdapterDelegate? { get set }
     var running: Bool { get }
@@ -35,6 +36,7 @@ protocol SSDPDiscoveryAdapter: class {
     func restart()
 }
 
+/// An abstract class to allow any SSDP library to be used an adapted into UPnAtom for SSDP discovery.
 class AbstractSSDPDiscoveryAdapter: SSDPDiscoveryAdapter {
     weak var delegate: SSDPDiscoveryAdapterDelegate?
     private(set) var running = false
