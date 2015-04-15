@@ -74,9 +74,9 @@ GCDWebServerLoggingLevel GCDWebServerLogLevel = kGCDWebServerLoggingLevel_Info;
 #endif
 #elif defined(__GCDWEBSERVER_LOGGING_FACILITY_COCOALUMBERJACK__)
 #if DEBUG
-int GCDWebServerLogLevel = LOG_LEVEL_DEBUG;
+DDLogLevel GCDWebServerLogLevel = DDLogLevelDebug;
 #else
-int GCDWebServerLogLevel = LOG_LEVEL_INFO;
+DDLogLevel GCDWebServerLogLevel = DDLogLevelInfo;
 #endif
 #endif
 
@@ -171,6 +171,7 @@ static void _ExecuteMainThreadRunLoopSources() {
   dispatch_source_t _source6;
   CFNetServiceRef _registrationService;
   CFNetServiceRef _resolutionService;
+  BOOL _bindToLocalhost;
 #if TARGET_OS_IPHONE
   BOOL _suspendInBackground;
   UIBackgroundTaskIdentifier _backgroundTask;
@@ -554,6 +555,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
   _source4 = [self _createDispatchSourceWithListeningSocket:listeningSocket4 isIPv6:NO];
   _source6 = [self _createDispatchSourceWithListeningSocket:listeningSocket6 isIPv6:YES];
   _port = port;
+  _bindToLocalhost = bindToLocalhost;
   
   NSString* bonjourName = _GetOption(_options, GCDWebServerOption_BonjourName, nil);
   NSString* bonjourType = _GetOption(_options, GCDWebServerOption_BonjourType, @"_http._tcp");
@@ -619,6 +621,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
 #endif
   _source4 = NULL;
   _port = 0;
+  _bindToLocalhost = NO;
   
   _serverName = nil;
   _authenticationRealm = nil;
@@ -664,7 +667,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
 
 - (BOOL)startWithOptions:(NSDictionary*)options error:(NSError**)error {
   if (_options == nil) {
-    _options = [options copy];
+    _options = options ? [options copy] : @{};
 #if TARGET_OS_IPHONE
     _suspendInBackground = [_GetOption(_options, GCDWebServerOption_AutomaticallySuspendInBackground, @YES) boolValue];
     if (((_suspendInBackground == NO) || ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground)) && ![self _start:error])
@@ -715,7 +718,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
 
 - (NSURL*)serverURL {
   if (_source4) {
-    NSString* ipAddress = GCDWebServerGetPrimaryIPAddress(NO);  // We can't really use IPv6 anyway as it doesn't work great with HTTP URLs in practice
+    NSString* ipAddress = _bindToLocalhost ? @"localhost" : GCDWebServerGetPrimaryIPAddress(NO);  // We can't really use IPv6 anyway as it doesn't work great with HTTP URLs in practice
     if (ipAddress) {
       if (_port != 80) {
         return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:%i/", ipAddress, (int)_port]];

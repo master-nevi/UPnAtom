@@ -21,9 +21,9 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - CocoaAsyncSocket (7.4.1)
-  - GCDWebServer (3.2.2):
-    - GCDWebServer/Core (= 3.2.2)
-  - GCDWebServer/Core (3.2.2)
+  - GCDWebServer (3.2.3):
+    - GCDWebServer/Core (= 3.2.3)
+  - GCDWebServer/Core (3.2.3)
   - Ono (1.2.1)
   - UPnAtom (0.0.1.beta.4):
     - AFNetworking (~> 2.5.0)
@@ -41,7 +41,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
   CocoaAsyncSocket: 7cbf214b27f8e7f7574db6a3fd96352ffaed433d
-  GCDWebServer: 5320220ad0d497da8e7beca1396f0c82d4f83730
+  GCDWebServer: 0f68bdc06d035f285f2d1ef0ac35ed46be040a71
   Ono: 1122212de602280cc7af19d7ab12ee98a3fc0339
   UPnAtom: d2a26e4801a505cac87afdc0486c24f45787039a
 
