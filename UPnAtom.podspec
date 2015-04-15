@@ -9,7 +9,6 @@ Pod::Spec.new do |s|
   s.source_files = 'Source/**/*.{swift}'
   s.exclude_files = 'Source/CocoaSSDP Support/CocoaSSDPDiscoveryAdapter.swift' # Available in case CocoaSSDP library is preferred for UPnP discovery using SSDP
   s.requires_arc = true
-  s.platform = :ios
   s.ios.deployment_target = '8.0'
   s.osx.deployment_target = '10.9'
   s.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
