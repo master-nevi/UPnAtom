@@ -15,6 +15,7 @@
     "tag": "0.0.1.beta.4"
   },
   "source_files": "Source/**/*.{swift}",
+  "exclude_files": "Source/SSDP/Discovery Adapters/CocoaSSDPDiscoveryAdapter.swift",
   "requires_arc": true,
   "platforms": {
     "ios": "8.0",
