@@ -27,21 +27,28 @@ import Foundation
     // public
     public static let sharedInstance = UPnAtom()
     public let upnpRegistry: UPnPRegistry
+    public var ssdpTypes: Set<String> {
+        get { return ssdpDiscoveryAdapter.rawSSDPTypes }
+        set { ssdpDiscoveryAdapter.rawSSDPTypes = newValue }
+    }
     
     // internal
     unowned let ssdpDiscoveryAdapter: SSDPDiscoveryAdapter
-    let eventSubscriptionManager: UPnPEventSubscriptionManager
+    let eventSubscriptionManager = UPnPEventSubscriptionManager()
     
     init() {
         if !NSThread.isMainThread() {
             fatalError("UPnAtom singleton must be initialized on main thread")
         }
         
+        // configure discovery adapter
         let adapterClass = UPnAtom.ssdpDiscoveryAdapterClass()
         let adapter = adapterClass()
         ssdpDiscoveryAdapter = adapter
+
+        // configure UPNP registry
         upnpRegistry = UPnPRegistry(ssdpDiscoveryAdapter: ssdpDiscoveryAdapter)
-        eventSubscriptionManager = UPnPEventSubscriptionManager()
+        UPnAtom.upnpClasses().map({ self.upnpRegistry.register(upnpClass: $0.upnpClass, forURN: $0.forURN) })
     }
     
     deinit {
@@ -67,5 +74,17 @@ import Foundation
     /// Override to use a different SSDP adapter if another SSDP system is preferred over CocoaSSDP
     class func ssdpDiscoveryAdapterClass() -> AbstractSSDPDiscoveryAdapter.Type {
         return SSDPExplorerDiscoveryAdapter.self
+    }
+    
+    /// Override to use a different default set of UPnP classes. Alternatively, registrations can be replaced, see UPnAtom.upnpRegistry.register()
+    class func upnpClasses() -> [(upnpClass: AbstractUPnP.Type, forURN: String)] {
+        return [
+            (upnpClass: MediaRenderer1Device.self, forURN: "urn:schemas-upnp-org:device:MediaRenderer:1"),
+            (upnpClass: MediaServer1Device.self, forURN: "urn:schemas-upnp-org:device:MediaServer:1"),
+            (upnpClass: AVTransport1Service.self, forURN: "urn:schemas-upnp-org:service:AVTransport:1"),
+            (upnpClass: ConnectionManager1Service.self, forURN: "urn:schemas-upnp-org:service:ConnectionManager:1"),
+            (upnpClass: ContentDirectory1Service.self, forURN: "urn:schemas-upnp-org:service:ContentDirectory:1"),
+            (upnpClass: RenderingControl1Service.self, forURN: "urn:schemas-upnp-org:service:RenderingControl:1")
+        ]
     }
 }

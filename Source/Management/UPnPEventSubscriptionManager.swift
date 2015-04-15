@@ -30,6 +30,7 @@ protocol UPnPEventSubscriber: class {
     func subscriptionDidFail(eventSubscriptionManager: UPnPEventSubscriptionManager)
 }
 
+/// Must be initialized on the main thread.
 class UPnPEventSubscriptionManager {
     // Subclasses NSObject in order to filter collections of this class using NSPredicate
     class Subscription: NSObject {

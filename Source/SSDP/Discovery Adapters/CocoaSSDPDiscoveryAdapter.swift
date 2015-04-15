@@ -24,24 +24,19 @@
 import CocoaSSDP
 
 class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
-    private let _ssdpBrowsers = [
-        SSDPServiceBrowser(serviceType: SSDPServiceType_All),
-        SSDPServiceBrowser(serviceType: SSDPServiceType_UPnP_MediaServer1),
-        SSDPServiceBrowser(serviceType: SSDPServiceType_UPnP_MediaRenderer1),
-        SSDPServiceBrowser(serviceType: SSDPServiceType_UPnP_ContentDirectory1),
-        SSDPServiceBrowser(serviceType: SSDPServiceType_UPnP_ConnectionManager1),
-        SSDPServiceBrowser(serviceType: SSDPServiceType_UPnP_RenderingControl1),
-        SSDPServiceBrowser(serviceType: SSDPServiceType_UPnP_AVTransport1)
-    ]
+    /// Must be set before calling start()
+    lazy private var _ssdpBrowsers: Set<SSDPServiceBrowser> = {
+        var ssdpBrowsers = Set<SSDPServiceBrowser>()
+        for type in self.rawSSDPTypes {
+            let ssdpBrowser = SSDPServiceBrowser(serviceType: type)
+            ssdpBrowser.delegate = self
+            ssdpBrowsers.insert(ssdpBrowser)
+        }
+        
+        return ssdpBrowsers
+    }()
     private let _serialSSDPDiscoveryQueue = dispatch_queue_create("com.upnatom.cocoa-ssdp-discovery-adapter.ssdp-discovery-queue", DISPATCH_QUEUE_SERIAL)
     private var _ssdpDiscoveries = [String: SSDPDiscovery]()
-    
-    required init() {
-        super.init()
-        for ssdpBrowser in _ssdpBrowsers {
-            ssdpBrowser.delegate = self
-        }
-    }
     
     override func start() {
         super.start()

@@ -42,7 +42,15 @@ class RootFolderViewController: UIViewController {
         super.viewDidLoad()
         
         // initialize
-        UPnAtom.sharedInstance
+        UPnAtom.sharedInstance.ssdpTypes = [
+            SSDPTypeConstant.All.rawValue,
+            SSDPTypeConstant.MediaServerDevice1.rawValue,
+            SSDPTypeConstant.MediaRendererDevice1.rawValue,
+            SSDPTypeConstant.ContentDirectory1Service.rawValue,
+            SSDPTypeConstant.ConnectionManager1Service.rawValue,
+            SSDPTypeConstant.RenderingControl1Service.rawValue,
+            SSDPTypeConstant.AVTransport1Service.rawValue
+        ]
         
         loadArchivedUPnPObjects()
         
