@@ -80,6 +80,7 @@ class SSDPExplorer {
         _types = types
         for type in types {
             if let data = searchRequestData(forType: type) {
+                LogVerbose("Sending data with tag \(CLong(type.hashValue)):\n\(NSString(data: data, encoding: NSUTF8StringEncoding))")
                 socket.sendData(data, toHost: SSDPExplorer._multicastGroupAddress, port: SSDPExplorer._multicastUDPPort, withTimeout: -1, tag: CLong(type.hashValue))
             }
         }

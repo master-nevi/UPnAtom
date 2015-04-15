@@ -21,7 +21,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-enum SSDPTypeConstant: String {
+public enum SSDPTypeConstant: String {
     // General
     case All = "ssdp:all"
     case RootDevice = "upnp:rootdevice"
@@ -35,7 +35,7 @@ enum SSDPTypeConstant: String {
     case AVTransport1Service = "urn:schemas-upnp-org:service:AVTransport:1"
 }
 
-enum SSDPType: RawRepresentable {
+enum SSDPType: RawRepresentable, Printable {
     case All
     case RootDevice
     case UUID(String)
@@ -82,6 +82,12 @@ enum SSDPType: RawRepresentable {
         case .Service(let rawValue):
             return rawValue
         }
+    }
+}
+
+extension SSDPType: Printable {
+    var description: String {
+        return self.rawValue
     }
 }
 

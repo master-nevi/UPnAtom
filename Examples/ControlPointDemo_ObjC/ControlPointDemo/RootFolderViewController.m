@@ -52,7 +52,13 @@
     _archivingUnarchivingQueue.name = @"Archiving and unarchiving queue";
     
     // initialize
-    [UPnAtom sharedInstance];
+    [UPnAtom sharedInstance].ssdpTypes = [[NSSet alloc] initWithArray:@[@"ssdp:all",
+                                                                        @"urn:schemas-upnp-org:device:MediaServer:1",
+                                                                        @"urn:schemas-upnp-org:device:MediaRenderer:1",
+                                                                        @"urn:schemas-upnp-org:service:ContentDirectory:1",
+                                                                        @"urn:schemas-upnp-org:service:ConnectionManager:1",
+                                                                        @"urn:schemas-upnp-org:service:RenderingControl:1",
+                                                                        @"urn:schemas-upnp-org:service:AVTransport:1"]];
     
     [self loadArchivedUPnPObjects];
     

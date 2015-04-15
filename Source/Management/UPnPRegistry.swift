@@ -54,16 +54,7 @@ import AFNetworking
         _upnpObjectDescriptionSessionManager.requestSerializer = AFHTTPRequestSerializer()
         _upnpObjectDescriptionSessionManager.responseSerializer = AFHTTPResponseSerializer()
         
-        _ssdpDiscoveryAdapter = ssdpDiscoveryAdapter
-        
-        register(upnpClass: MediaRenderer1Device.self, forURN: "urn:schemas-upnp-org:device:MediaRenderer:1")
-        register(upnpClass: MediaServer1Device.self, forURN: "urn:schemas-upnp-org:device:MediaServer:1")
-        register(upnpClass: AVTransport1Service.self, forURN: "urn:schemas-upnp-org:service:AVTransport:1")
-        register(upnpClass: ConnectionManager1Service.self, forURN: "urn:schemas-upnp-org:service:ConnectionManager:1")
-        register(upnpClass: ContentDirectory1Service.self, forURN: "urn:schemas-upnp-org:service:ContentDirectory:1")
-        register(upnpClass: RenderingControl1Service.self, forURN: "urn:schemas-upnp-org:service:RenderingControl:1")
-        
-        // prevent callbacks until all the default upnp classes have been registered
+        _ssdpDiscoveryAdapter = ssdpDiscoveryAdapter        
         ssdpDiscoveryAdapter.delegate = self
     }
     

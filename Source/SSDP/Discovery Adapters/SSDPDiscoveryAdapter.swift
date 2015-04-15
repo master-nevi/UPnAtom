@@ -29,6 +29,7 @@ protocol SSDPDiscoveryAdapterDelegate: class {
 
 /// Provides an interface to allow any SSDP library to be used an adapted into UPnAtom for SSDP discovery.
 protocol SSDPDiscoveryAdapter: class {
+    var rawSSDPTypes: Set<String> { get set }
     weak var delegate: SSDPDiscoveryAdapterDelegate? { get set }
     var running: Bool { get }
     func start()
@@ -38,6 +39,7 @@ protocol SSDPDiscoveryAdapter: class {
 
 /// An abstract class to allow any SSDP library to be used an adapted into UPnAtom for SSDP discovery.
 class AbstractSSDPDiscoveryAdapter: SSDPDiscoveryAdapter {
+    var rawSSDPTypes: Set<String> = []
     weak var delegate: SSDPDiscoveryAdapterDelegate?
     private(set) var running = false
     

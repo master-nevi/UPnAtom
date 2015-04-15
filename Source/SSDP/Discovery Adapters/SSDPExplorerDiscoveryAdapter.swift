@@ -37,15 +37,12 @@ class SSDPExplorerDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
     override func start() {
         super.start()
         
-        let types: Set = [
-            SSDPType(typeConstant: .All)!,
-            SSDPType(typeConstant: .MediaServerDevice1)!,
-            SSDPType(typeConstant: .MediaRendererDevice1)!,
-            SSDPType(typeConstant: .ContentDirectory1Service)!,
-            SSDPType(typeConstant: .ConnectionManager1Service)!,
-            SSDPType(typeConstant: .RenderingControl1Service)!,
-            SSDPType(typeConstant: .AVTransport1Service)!
-        ]
+        var types = Set<SSDPType>()
+        for rawSSDPType in rawSSDPTypes {
+            if let ssdpType = SSDPType(rawValue: rawSSDPType) {
+                types.insert(ssdpType)
+            }
+        }
         if let resultError = _ssdpExplorer.startExploring(forTypes: types).error {
             failed🔰()
             delegate?.ssdpDiscoveryAdapter(self, didFailWithError: resultError)
