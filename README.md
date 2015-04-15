@@ -8,7 +8,7 @@ An open source Universal Plug and Play library with a focus on media streaming c
 ### Requirements:
 * iOS 8.0+
 * OSX 10.9+
-* Xcode 6.1
+* Xcode 6.3
 
 ### Install:
 Add following to Podfile:
@@ -33,8 +33,8 @@ import UPnAtom
 * [x] UPnP Version 1 Compliance
 * [x] Ability to archive UPnP objects after initial discovery and persist somewhere via NSCoder/NSCoding
 * [x] OSX 10.9+ support
-* [ ] Swift 1.2 (in progress, see swift-1.2 branch)
-* [ ] In-house implementation of SSDP discovery (in progress)
+* [x] Swift 1.2 (in progress, see swift-1.2 branch)
+* [x] In-house implementation of SSDP discovery (in progress)
 * [ ] Feature parity with upnpx library
 * [ ] UPnP Version 2 Compliance
 
