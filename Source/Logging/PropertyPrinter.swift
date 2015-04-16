@@ -105,7 +105,7 @@ func prettyPrint<T>(someArray: [T]?) -> String {
 
 func prettyPrint<T: Printable>(something: T?) -> String {
     if let something = something {
-        return something.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
+        return something.description.stringByReplacingOccurrencesOfString("\n", withString: "\n\t", options: .LiteralSearch)
     }
     
     return "nil"
@@ -113,7 +113,7 @@ func prettyPrint<T: Printable>(something: T?) -> String {
 
 func prettyPrint<T>(something: T?) -> String {
     if let something = something {
-        return "\(something)".stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
+        return "\(something)".stringByReplacingOccurrencesOfString("\n", withString: "\n\t", options: .LiteralSearch)
     }
     
     return "nil"
@@ -122,7 +122,7 @@ func prettyPrint<T>(something: T?) -> String {
 func dictionaryDescription<K, V: Printable>(properties: [K: V], pointsToSymbol: String) -> String {
     var description = "{ \n"
     for (key, value) in properties {
-        let valueDescription = value.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
+        let valueDescription = value.description.stringByReplacingOccurrencesOfString("\n", withString: "\n\t", options: .LiteralSearch)
         description += "\t\(key) \(pointsToSymbol) \(valueDescription) \n"
     }
     description += "}"
@@ -141,7 +141,7 @@ func dictionaryDescription<K, V>(properties: [K: V], pointsToSymbol: String) -> 
 func arrayDescription<T: Printable>(array: [T]) -> String {
     var description = "{ \n"
     for item in array {
-        let itemDescription = item.description.stringByReplacingOccurrencesOfString("\n", replacement: "\n\t")
+        let itemDescription = item.description.stringByReplacingOccurrencesOfString("\n", withString: "\n\t", options: .LiteralSearch)
         description += "\t\(itemDescription)\n"
     }
     description += "}"
@@ -155,10 +155,4 @@ func arrayDescription<T>(array: [T]) -> String {
     }
     description += "}"
     return description
-}
-
-extension String {
-    func stringByReplacingOccurrencesOfString(string: String, replacement: String) -> String {
-        return self.stringByReplacingOccurrencesOfString(string, withString: replacement, options: NSStringCompareOptions.LiteralSearch, range: nil)
-    }
 }
