@@ -101,7 +101,7 @@ class SSDPExplorer {
         _types = types
         for type in types {
             if let data = searchRequestData(forType: type) {
-                LogVerbose(">>>>SENDING SEARCH REQUEST\n\(NSString(data: data, encoding: NSUTF8StringEncoding))")
+//                println(">>>> SENDING SEARCH REQUEST\n\(NSString(data: data, encoding: NSUTF8StringEncoding))")
                 unicastSocket.sendData(data, toHost: SSDPExplorer._multicastGroupAddress, port: SSDPExplorer._multicastUDPPort, withTimeout: -1, tag: type.hashValue)
             }
         }
@@ -179,10 +179,10 @@ extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
     
     @objc func udpSocket(sock: GCDAsyncUdpSocket!, didReceiveData data: NSData!, fromAddress address: NSData!, withFilterContext filterContext: AnyObject!) {
         if let message = NSString(data: data, encoding: NSUTF8StringEncoding) as? String {
-            LogVerbose({ () -> String in
-                let socketType = (sock === self._unicastSocket) ? "UNICAST" : "MULTICAST"
-                return "<<<<\(socketType) SOCKET\n\(message)"
-            }())
+//            println({ () -> String in
+//                let socketType = (sock === self._unicastSocket) ? "UNICAST" : "MULTICAST"
+//                return "<<<< RECEIVED ON \(socketType) SOCKET\n\(message)"
+//            }())
             var httpMethodLine: String?
             var headers = [String: String]()
             var regularExpressionError: NSError?
