@@ -25,19 +25,20 @@ PODS:
     - GCDWebServer/Core (= 3.2.3)
   - GCDWebServer/Core (3.2.3)
   - Ono (1.2.1)
-  - UPnAtom (0.0.1.beta.4):
-    - UPnAtom/Default (= 0.0.1.beta.4)
-  - UPnAtom/AV Profile (0.0.1.beta.4):
+  - UPnAtom (0.0.1.beta.5):
+    - UPnAtom/Default (= 0.0.1.beta.5)
+  - UPnAtom/AV Profile (0.0.1.beta.5):
     - UPnAtom/Core
-  - UPnAtom/Core (0.0.1.beta.4):
+  - UPnAtom/Core (0.0.1.beta.5):
     - AFNetworking (~> 2.5.0)
     - GCDWebServer (~> 3.2.2)
     - Ono (~> 1.2.0)
     - UPnAtom/SSDP Explorer
-  - UPnAtom/Default (0.0.1.beta.4):
+  - UPnAtom/Default (0.0.1.beta.5):
     - UPnAtom/AV Profile
     - UPnAtom/Core
-  - UPnAtom/SSDP Explorer (0.0.1.beta.4):
+  - UPnAtom/SSDP Explorer (0.0.1.beta.5):
+    - AFNetworking/Serialization (~> 2.5.0)
     - CocoaAsyncSocket (~> 7.4.1)
 
 DEPENDENCIES:
@@ -52,6 +53,6 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 7cbf214b27f8e7f7574db6a3fd96352ffaed433d
   GCDWebServer: 0f68bdc06d035f285f2d1ef0ac35ed46be040a71
   Ono: 1122212de602280cc7af19d7ab12ee98a3fc0339
-  UPnAtom: a843ff9f1e0be06f0689dfcd0a192e24321158a2
+  UPnAtom: 200c71bff09176fb098cad1e72ba366dcec8f5bf
 
 COCOAPODS: 0.36.0

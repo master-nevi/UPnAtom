@@ -77,33 +77,33 @@
 // This library does not follow semantic-versioning,
 // so we were not able to define version macros.
 // Please contact the author.
-// Version: 0.0.1.beta.4.
+// Version: 0.0.1.beta.5.
 
 // UPnAtom/AV Profile
 #define COCOAPODS_POD_AVAILABLE_UPnAtom_AV_Profile
 // This library does not follow semantic-versioning,
 // so we were not able to define version macros.
 // Please contact the author.
-// Version: 0.0.1.beta.4.
+// Version: 0.0.1.beta.5.
 
 // UPnAtom/Core
 #define COCOAPODS_POD_AVAILABLE_UPnAtom_Core
 // This library does not follow semantic-versioning,
 // so we were not able to define version macros.
 // Please contact the author.
-// Version: 0.0.1.beta.4.
+// Version: 0.0.1.beta.5.
 
 // UPnAtom/Default
 #define COCOAPODS_POD_AVAILABLE_UPnAtom_Default
 // This library does not follow semantic-versioning,
 // so we were not able to define version macros.
 // Please contact the author.
-// Version: 0.0.1.beta.4.
+// Version: 0.0.1.beta.5.
 
 // UPnAtom/SSDP Explorer
 #define COCOAPODS_POD_AVAILABLE_UPnAtom_SSDP_Explorer
 // This library does not follow semantic-versioning,
 // so we were not able to define version macros.
 // Please contact the author.
-// Version: 0.0.1.beta.4.
+// Version: 0.0.1.beta.5.
 
