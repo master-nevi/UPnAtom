@@ -41,6 +41,7 @@ protocol SSDPDiscoveryAdapter: class {
 class AbstractSSDPDiscoveryAdapter: SSDPDiscoveryAdapter {
     var rawSSDPTypes: Set<String> = []
     weak var delegate: SSDPDiscoveryAdapterDelegate?
+    var delegateQueue = dispatch_get_main_queue()
     private(set) var running = false
     
     required init() { }
