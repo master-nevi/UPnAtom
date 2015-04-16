@@ -34,9 +34,16 @@
       }
     },
     {
+      "name": "UPnP Foundation",
+      "source_files": "Source/UPnP Foundation/*.swift"
+    },
+    {
       "name": "SSDP Explorer",
       "source_files": "Source/SSDP/Explorer/*.swift",
       "dependencies": {
+        "UPnAtom/UPnP Foundation": [
+
+        ],
         "CocoaAsyncSocket": [
           "~> 7.4.1"
         ],
@@ -48,7 +55,6 @@
     {
       "name": "Core",
       "source_files": [
-        "Source/GlobalLib.swift",
         "Source/{HTTP Client Session Managers and Serializers,Logging,Management,Parsers,UPnP Objects}/*.swift",
         "Source/SSDP/Discovery Adapter/*.swift"
       ],

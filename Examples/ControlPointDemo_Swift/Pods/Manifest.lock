@@ -40,6 +40,8 @@ PODS:
   - UPnAtom/SSDP Explorer (0.0.1.beta.5):
     - AFNetworking/Serialization (~> 2.5.0)
     - CocoaAsyncSocket (~> 7.4.1)
+    - UPnAtom/UPnP Foundation
+  - UPnAtom/UPnP Foundation (0.0.1.beta.5)
 
 DEPENDENCIES:
   - UPnAtom (from `../..`)
@@ -53,6 +55,6 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 7cbf214b27f8e7f7574db6a3fd96352ffaed433d
   GCDWebServer: 0f68bdc06d035f285f2d1ef0ac35ed46be040a71
   Ono: 1122212de602280cc7af19d7ab12ee98a3fc0339
-  UPnAtom: 200c71bff09176fb098cad1e72ba366dcec8f5bf
+  UPnAtom: 457d160bffc536dda1e7ad4b40a75ed5c608fb4f
 
 COCOAPODS: 0.36.0
