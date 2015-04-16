@@ -50,7 +50,12 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
         for ssdpBrowser in _ssdpBrowsers {
             ssdpBrowser.stopBrowsingForServices()
         }
-        _ssdpDiscoveries.removeAll(keepCapacity: false)
+        
+        dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
+            self._ssdpDiscoveries.removeAll(keepCapacity: false)
+            
+            self.delegate?.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
+        })
         
         super.stop()
     }
@@ -81,7 +86,6 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
         })
     }
     
-    /// Untested as it isn't implemented in CocoaSSDP library
     @objc func ssdpBrowser(browser: SSDPServiceBrowser!, didRemoveService ssdpDiscoveryUnadapted: SSDPService!) {
         dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
             if self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] != nil {

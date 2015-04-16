@@ -51,7 +51,12 @@ class SSDPExplorerDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
     
     override func stop() {
         _ssdpExplorer.stopExploring()
-        _ssdpDiscoveries.removeAll(keepCapacity: false)
+        
+        dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
+            self._ssdpDiscoveries.removeAll(keepCapacity: false)
+            
+            self.delegate?.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
+        })
         
         super.stop()
     }

@@ -206,6 +206,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
     }
     
     func ssdpDiscoveryAdapter(adapter: SSDPDiscoveryAdapter, didFailWithError error: NSError) {
+        LogError("SSDP discovery did fail with error: \(error)")
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             NSNotificationCenter.defaultCenter().postNotificationName(UPnPRegistry.UPnPDiscoveryErrorNotification(), object: self, userInfo: [UPnPRegistry.UPnPDiscoveryErrorKey(): error])
         })

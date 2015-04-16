@@ -46,33 +46,54 @@ class SSDPExplorer {
     // private
     private static let _multicastGroupAddress = "239.255.255.250"
     private static let _multicastUDPPort: UInt16 = 1900
-    private var _socket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
+    private var _multicastSocket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
+    private var _unicastSocket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
     private var _types: Set<SSDPType> = []
     
-    func startExploring(forTypes types: Set<SSDPType>) -> EmptyResult {
-        assert(_socket == nil, "Socket is already open, stop it first!")
+    func startExploring(forTypes types: Set<SSDPType>, onInterface interface: String = "en0") -> EmptyResult {
+        assert(_multicastSocket == nil, "Socket is already open, stop it first!")
         
-        let socket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
-        if socket == nil {
+        // create sockets
+        let multicastSocket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
+        let unicastSocket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
+        if multicastSocket == nil || unicastSocket == nil {
             return .Failure(createError("Socket could not be created"))
         }
         else {
-            _socket = socket
+            _multicastSocket = multicastSocket
+            _unicastSocket = unicastSocket
         }
-        socket.setIPv6Enabled(false)
-        
+        multicastSocket.setIPv6Enabled(false)
+        unicastSocket.setIPv6Enabled(false)
+
         var error: NSError?
-        if !socket.bindToPort(SSDPExplorer._multicastUDPPort, error: &error) {
+        
+        // Configure unicast socket
+        // Bind to address on the specified interface to a random port to receive unicast datagrams
+        if !unicastSocket.bindToPort(0, interface: interface, error: &error) {
             stopExploring()
             return .Failure(error ?? createError("Could not bind socket to port"))
         }
         
-        if !socket.joinMulticastGroup(SSDPExplorer._multicastGroupAddress, error: &error) {
+        if !unicastSocket.beginReceiving(&error) {
+            stopExploring()
+            return .Failure(error ?? createError("Could not begin receiving error"))
+        }
+        
+        // Configure multicast socket
+        // Bind to port without defining the interface to bind to the address INADDR_ANY (0.0.0.0). This prevents any address filtering which allows datagrams sent to the multicast group to be receives
+        if !multicastSocket.bindToPort(SSDPExplorer._multicastUDPPort, error: &error) {
+            stopExploring()
+            return .Failure(error ?? createError("Could not bind socket to port"))
+        }
+        
+        // Join multicast group to express interest to router of receiving multicast datagrams
+        if !multicastSocket.joinMulticastGroup(SSDPExplorer._multicastGroupAddress, error: &error) {
             stopExploring()
             return .Failure(error ?? createError("Could not join multicast group"))
         }
         
-        if !socket.beginReceiving(&error) {
+        if !multicastSocket.beginReceiving(&error) {
             stopExploring()
             return .Failure(error ?? createError("Could not begin receiving error"))
         }
@@ -80,8 +101,8 @@ class SSDPExplorer {
         _types = types
         for type in types {
             if let data = searchRequestData(forType: type) {
-                LogVerbose("Sending data with tag \(CLong(type.hashValue)):\n\(NSString(data: data, encoding: NSUTF8StringEncoding))")
-                socket.sendData(data, toHost: SSDPExplorer._multicastGroupAddress, port: SSDPExplorer._multicastUDPPort, withTimeout: -1, tag: CLong(type.hashValue))
+                LogVerbose(">>>>SENDING SEARCH REQUEST\n\(NSString(data: data, encoding: NSUTF8StringEncoding))")
+                unicastSocket.sendData(data, toHost: SSDPExplorer._multicastGroupAddress, port: SSDPExplorer._multicastUDPPort, withTimeout: -1, tag: type.hashValue)
             }
         }
         
@@ -89,9 +110,11 @@ class SSDPExplorer {
     }
     
     func stopExploring() {
-        _socket?.close()
+        _multicastSocket?.close()
+        _multicastSocket = nil
+        _unicastSocket?.close()
+        _unicastSocket = nil
         _types = []
-        _socket = nil
     }
     
     private func searchRequestData(forType type: SSDPType) -> NSData? {
@@ -103,7 +126,7 @@ class SSDPExplorer {
             "MX: 3"]
         
         if let userAgent = AFHTTPRequestSerializer().valueForHTTPHeaderField("User-Agent") {
-            requestBody += ["USER-AGENT: \(userAgent)"]
+            requestBody += ["USER-AGENT: \(userAgent)\r\n\r\n\r\n"]
         }
         
         let requestBodyString = join("\r\n", requestBody)
@@ -149,7 +172,6 @@ extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
     }
     
     @objc func udpSocketDidClose(sock: GCDAsyncUdpSocket!, withError error: NSError!) {
-        stopExploring()
         if let error = error {
             notifyDelegate(ofFailure: error)
         }
@@ -157,6 +179,10 @@ extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
     
     @objc func udpSocket(sock: GCDAsyncUdpSocket!, didReceiveData data: NSData!, fromAddress address: NSData!, withFilterContext filterContext: AnyObject!) {
         if let message = NSString(data: data, encoding: NSUTF8StringEncoding) as? String {
+            LogVerbose({ () -> String in
+                let socketType = (sock === self._unicastSocket) ? "UNICAST" : "MULTICAST"
+                return "<<<<\(socketType) SOCKET\n\(message)"
+            }())
             var httpMethodLine: String?
             var headers = [String: String]()
             var regularExpressionError: NSError?
