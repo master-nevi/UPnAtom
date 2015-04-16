@@ -35,7 +35,9 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
         
         return ssdpBrowsers
     }()
+    /// Never reading without writing so a serial queue is adequate
     private let _serialSSDPDiscoveryQueue = dispatch_queue_create("com.upnatom.cocoa-ssdp-discovery-adapter.ssdp-discovery-queue", DISPATCH_QUEUE_SERIAL)
+    /// Must be accessed and updated within dispatch_sync() or dispatch_async() to the serial queue
     private var _ssdpDiscoveries = [String: SSDPDiscovery]()
     
     override func start() {
@@ -54,10 +56,22 @@ class CocoaSSDPDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
         dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
             self._ssdpDiscoveries.removeAll(keepCapacity: false)
             
-            self.delegate?.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
+            self.notifyDelegate(ofDiscoveries: self._ssdpDiscoveries.values.array)
         })
         
         super.stop()
+    }
+    
+    private func notifyDelegate(ofFailure error: NSError) {
+        dispatch_async(delegateQueue, { () -> Void in
+            delegate?.ssdpDiscoveryAdapter(self, didFailWithError: error)
+        })
+    }
+    
+    private func notifyDelegate(ofDiscoveries discoveries: [SSDPDiscovery]) {
+        dispatch_async(delegateQueue, { () -> Void in
+            self.delegate?.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: discoveries)
+        })
     }
 }
 
@@ -80,7 +94,7 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
                             
                             self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] = ssdpDiscovery
 
-                            self.delegate?.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
+                            self.notifyDelegate(ofDiscoveries: self._ssdpDiscoveries.values.array)
                     }
             }
         })
@@ -91,7 +105,7 @@ extension CocoaSSDPDiscoveryAdapter: SSDPServiceBrowserDelegate {
             if self._ssdpDiscoveries[ssdpDiscoveryUnadapted.uniqueServiceName] != nil {
                 self._ssdpDiscoveries.removeValueForKey(ssdpDiscoveryUnadapted.uniqueServiceName)
                 
-                self.delegate?.ssdpDiscoveryAdapter(self, didUpdateSSDPDiscoveries: self._ssdpDiscoveries.values.array)
+                self.notifyDelegate(ofDiscoveries: self._ssdpDiscoveries.values.array)
             }
         })
     }
