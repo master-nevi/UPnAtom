@@ -235,7 +235,7 @@ extension NSArray {
 
 extension NSUUID {
     var dashlessUUIDString: String {
-        return self.UUIDString.stringByReplacingOccurrencesOfString("-", replacement: "")
+        return self.UUIDString.stringByReplacingOccurrencesOfString("-", withString: "", options: .LiteralSearch)
     }
 }
 
