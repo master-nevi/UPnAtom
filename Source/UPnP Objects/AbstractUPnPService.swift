@@ -151,7 +151,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
             
             if self._eventObservers.count >= 1 {
                 // subscribe
-                UPnAtom.sharedInstance.eventSubscriptionManager.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
+                UPnPEventSubscriptionManager.sharedInstance.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
                     switch subscription {
                     case .Success(let wrapper):
                         self._eventSubscription = wrapper.value
@@ -178,7 +178,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                 if let eventSubscription: AnyObject = self._eventSubscription {
                     self._eventSubscription = nil
                     
-                    UPnAtom.sharedInstance.eventSubscriptionManager.unsubscribe(eventSubscription, completion: { (result: EmptyResult) -> Void in
+                    UPnPEventSubscriptionManager.sharedInstance.unsubscribe(eventSubscription, completion: { (result: EmptyResult) -> Void in
                         if let error = result.error {
                             let errorDescription = error.localizedDescription("Unknown unsubscribe error")
                             LogError("Unable to unsubscribe to UPnP events from \(self.eventURL): \(errorDescription)")

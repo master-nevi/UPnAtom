@@ -30,7 +30,6 @@ protocol UPnPEventSubscriber: class {
     func subscriptionDidFail(eventSubscriptionManager: UPnPEventSubscriptionManager)
 }
 
-/// Must be initialized on the main thread.
 class UPnPEventSubscriptionManager {
     // Subclasses NSObject in order to filter collections of this class using NSPredicate
     class Subscription: NSObject {
@@ -90,11 +89,15 @@ class UPnPEventSubscriptionManager {
         }
     }
     
+    // internal
+    static let sharedInstance = UPnPEventSubscriptionManager()
+    
     // private
     /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
     private var _subscriptions = [String: Subscription]() /* [eventURLString: Subscription] */
     private let _concurrentSubscriptionQueue = dispatch_queue_create("com.upnatom.upnp-event-subscription-manager.subscription-queue", DISPATCH_QUEUE_CONCURRENT)
-    private let _httpServer = GCDWebServer()
+    /// Must be accessed within the subscription manager's concurrent queue
+    private var _httpServer: GCDWebServer! // TODO: Should ideally be a constant, non-optional, see Github issue #10
     private let _httpServerPort: UInt = 52808
     private let _subscribeSessionManager = AFHTTPSessionManager()
     private let _renewSubscriptionSessionManager = AFHTTPSessionManager()
@@ -117,19 +120,26 @@ class UPnPEventSubscriptionManager {
             NSNotificationCenter.defaultCenter().addObserver(self, selector: "applicationWillEnterForeground:", name: UIApplicationWillEnterForegroundNotification, object: nil)
         #endif
         
-        GCDWebServer.setLogLevel(Int32(3))
-        
-        _httpServer.addHandlerForMethod("NOTIFY", path: _eventCallBackPath, requestClass: GCDWebServerDataRequest.self) { (request: GCDWebServerRequest!) -> GCDWebServerResponse! in
-            if let dataRequest = request as? GCDWebServerDataRequest,
-                headers = dataRequest.headers as? [String: AnyObject],
-                sid = headers["SID"] as? String,
-                data = dataRequest.data {
-                    LogVerbose("NOTIFY request: Final body with size: \(data.length)\nAll headers: \(headers)")
-                    self.handleIncomingEvent(subscriptionID: sid, eventData: data)
-            }
-            
-            return GCDWebServerResponse()
-        }
+        /// GCDWebServer must be initialized on the main thread. In order to guarantee this, it's initialization is dispatched on the main queue. To prevent critical sections from accessing it before it is initialized, the dispatch is synchronized within a dispatch barrier to the subscription manager's critical section queue.
+        dispatch_barrier_async(_concurrentSubscriptionQueue, { () -> Void in
+            dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+                self._httpServer = GCDWebServer()
+                
+                GCDWebServer.setLogLevel(Int32(3))
+                
+                self._httpServer.addHandlerForMethod("NOTIFY", path: self._eventCallBackPath, requestClass: GCDWebServerDataRequest.self) { (request: GCDWebServerRequest!) -> GCDWebServerResponse! in
+                    if let dataRequest = request as? GCDWebServerDataRequest,
+                        headers = dataRequest.headers as? [String: AnyObject],
+                        sid = headers["SID"] as? String,
+                        data = dataRequest.data {
+                            LogVerbose("NOTIFY request: Final body with size: \(data.length)\nAll headers: \(headers)")
+                            self.handleIncomingEvent(subscriptionID: sid, eventData: data)
+                    }
+                    
+                    return GCDWebServerResponse()
+                }
+            })
+        })
     }
     
     /// Subscribers should hold on to a weak reference of the subscription object returned. It's ok to call subscribe for a subscription that already exists, the subscription will simply be looked up and returned.

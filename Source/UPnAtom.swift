@@ -34,13 +34,8 @@ import Foundation
     
     // internal
     unowned let ssdpDiscoveryAdapter: SSDPDiscoveryAdapter
-    let eventSubscriptionManager = UPnPEventSubscriptionManager()
     
     init() {
-        if !NSThread.isMainThread() {
-            fatalError("UPnAtom singleton must be initialized on main thread")
-        }
-        
         // configure discovery adapter
         let adapterClass = UPnAtom.ssdpDiscoveryAdapterClass()
         let adapter = adapterClass()
