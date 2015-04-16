@@ -18,13 +18,19 @@ Pod::Spec.new do |s|
     ss.dependency 'UPnAtom/AV Profile'
   end
 
+  s.subspec 'UPnP Foundation' do |ss|
+    ss.source_files = 'Source/UPnP Foundation/*.swift'
+  end
+
   s.subspec 'SSDP Explorer' do |ss|
     ss.source_files = 'Source/SSDP/Explorer/*.swift'
+    ss.dependency 'UPnAtom/UPnP Foundation'
     ss.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
+    ss.dependency 'AFNetworking/Serialization', '~> 2.5.0' # Used for computing the User-Agent
   end  
 
   s.subspec 'Core' do |ss|
-    ss.source_files = 'Source/GlobalLib.swift', 'Source/{HTTP Client Session Managers and Serializers,Logging,Management,Parsers,UPnP Objects}/*.swift', 'Source/SSDP/Discovery Adapter/*.swift'
+    ss.source_files = 'Source/{HTTP Client Session Managers and Serializers,Logging,Management,Parsers,UPnP Objects}/*.swift', 'Source/SSDP/Discovery Adapter/*.swift'
     ss.dependency 'UPnAtom/SSDP Explorer'
     ss.dependency 'AFNetworking', '~> 2.5.0' # Network calls over HTTP
     ss.dependency 'Ono', '~> 1.2.0' # XML parsing
