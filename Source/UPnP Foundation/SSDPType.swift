@@ -35,7 +35,7 @@ public enum SSDPTypeConstant: String {
     case AVTransport1Service = "urn:schemas-upnp-org:service:AVTransport:1"
 }
 
-enum SSDPType: RawRepresentable, Printable {
+enum SSDPType: RawRepresentable {
     case All
     case RootDevice
     case UUID(String)
