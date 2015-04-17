@@ -9,42 +9,50 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.ios.deployment_target = '8.0'
   s.osx.deployment_target = '10.9'
+
+  s.source_files = 'Source/**/*.swift'
+  s.exclude_files = 'Source/CocoaSSDP Support/*.swift'
+  s.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
+  s.dependency 'AFNetworking', '~> 2.5.0' # HTTP Client
+  s.dependency 'Ono', '~> 1.2.0' # XML parsing
+  s.dependency 'GCDWebServer', '~> 3.2.2' # UPnP event notification handling
+
   
-  s.default_subspecs = 'Default'
+  # NOTE: I really did try to be a good pod architect and modularize the library into subspecs, however there are still bugs in the Swift compiler which cause it to crash when building release/archive versions of UPnAtom. Because the problem areas may consistantly or inconsistanly cause the compiler crash, the fewer subspecs or no subspecs the better when it comes to tracking them down (i.e. less hair being pulled out). I look forward to doing it in the future however. Here's a sneak peek:
 
-  s.subspec 'Default' do |ss|
-    ss.source_files = 'Source/UPnAtom.swift'
-    ss.dependency 'UPnAtom/Core'
-    ss.dependency 'UPnAtom/AV Profile'
-  end
+  # s.default_subspecs = 'Default'
 
-  s.subspec 'UPnP Foundation' do |ss|
-    ss.source_files = 'Source/UPnP Foundation/*.swift'
-  end
+  # s.subspec 'Default' do |ss|
+  #   ss.source_files = 'Source/UPnAtom.swift'
+  #   ss.dependency 'UPnAtom/AV Profile'
+  # end
 
-  s.subspec 'SSDP Explorer' do |ss|
-    ss.source_files = 'Source/SSDP/Explorer/*.swift'
-    ss.dependency 'UPnAtom/UPnP Foundation'
-    ss.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
-    ss.dependency 'AFNetworking/Serialization', '~> 2.5.0' # Used for computing the User-Agent
-  end  
+  # s.subspec 'UPnP Foundation' do |ss|
+  #   ss.source_files = 'Source/UPnP Foundation/*.swift'
+  # end
 
-  s.subspec 'Core' do |ss|
-    ss.source_files = 'Source/{HTTP Client Session Managers and Serializers,Logging,Management,Parsers,UPnP Objects}/*.swift', 'Source/SSDP/Discovery Adapter/*.swift'
-    ss.dependency 'UPnAtom/SSDP Explorer'
-    ss.dependency 'AFNetworking', '~> 2.5.0' # Network calls over HTTP
-    ss.dependency 'Ono', '~> 1.2.0' # XML parsing
-    ss.dependency 'GCDWebServer', '~> 3.2.2' # UPnP event notification handling
-  end
+  # s.subspec 'SSDP Explorer' do |ss|
+  #   ss.source_files = 'Source/SSDP/Explorer/*.swift'
+  #   ss.dependency 'UPnAtom/UPnP Foundation'
+  #   ss.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
+  #   ss.dependency 'AFNetworking', '~> 2.5.0' # HTTP Client
+  # end  
 
-  s.subspec 'AV Profile' do |ss|
-    ss.source_files = 'Source/AV Profile/**/*.swift'
-    ss.dependency 'UPnAtom/Core'
-  end
+  # s.subspec 'Core' do |ss|
+  #   ss.source_files = 'Source/{HTTP Client Session Managers and Serializers,Logging,Management,Parsers,UPnP Objects}/*.swift', 'Source/SSDP/Discovery Adapter/*.swift'
+  #   ss.dependency 'UPnAtom/SSDP Explorer'
+  #   ss.dependency 'Ono', '~> 1.2.0' # XML parsing
+  #   ss.dependency 'GCDWebServer', '~> 3.2.2' # UPnP event notification handling
+  # end
 
-  s.subspec 'CocoaSSDP Support' do |ss|
-    ss.source_files = 'Source/CocoaSSDP Support/*.swift'
-    ss.dependency 'UPnAtom/Core'
-    ss.dependency 'CocoaSSDP', '~> 0.1.0'
-  end
+  # s.subspec 'AV Profile' do |ss|
+  #   ss.source_files = 'Source/AV Profile/**/*.swift'
+  #   ss.dependency 'UPnAtom/Core'
+  # end
+
+  # s.subspec 'CocoaSSDP Support' do |ss|
+  #   ss.source_files = 'Source/CocoaSSDP Support/*.swift'
+  #   ss.dependency 'UPnAtom/Core'
+  #   ss.dependency 'CocoaSSDP', '~> 0.1.0'
+  # end
 end
