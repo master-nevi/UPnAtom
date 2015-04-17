@@ -48,9 +48,9 @@ class SSDPExplorer {
     private static let _multicastUDPPort: UInt16 = 1900
     private var _multicastSocket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
     private var _unicastSocket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
-    private var _types: Set<SSDPType> = []
+    private var _types = [SSDPType]() // TODO: Should ideally be a Set<SSDPType>, see Github issue #13
     
-    func startExploring(forTypes types: Set<SSDPType>, onInterface interface: String = "en0") -> EmptyResult {
+    func startExploring(forTypes types: [SSDPType], onInterface interface: String = "en0") -> EmptyResult {
         assert(_multicastSocket == nil, "Socket is already open, stop it first!")
         
         // create sockets
@@ -151,7 +151,7 @@ class SSDPExplorer {
             locationString = headers["location"],
             locationURL = NSURL(string: locationString),
             ssdpTypeRawValue = (headers["st"] != nil ? headers["st"] : headers["nt"]),
-            ssdpType = SSDPType(rawValue: ssdpTypeRawValue) where _types.contains(ssdpType) {
+            ssdpType = SSDPType(rawValue: ssdpTypeRawValue) where find(_types, ssdpType) != nil {
                 let discovery = SSDPDiscovery(usn: usn, descriptionURL: locationURL, type: ssdpType)
                 switch messageType {
                 case .SearchResponse, .AvailableNotification, .UpdateNotification:

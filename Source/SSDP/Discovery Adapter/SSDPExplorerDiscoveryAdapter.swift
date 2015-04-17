@@ -39,10 +39,10 @@ class SSDPExplorerDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
     override func start() {
         super.start()
         
-        var types = Set<SSDPType>()
+        var types = [SSDPType]() // TODO: Should ideally be a Set<SSDPType>, see Github issue #13
         for rawSSDPType in rawSSDPTypes {
             if let ssdpType = SSDPType(rawValue: rawSSDPType) {
-                types.insert(ssdpType)
+                types.append(ssdpType)
             }
         }
         if let resultError = _ssdpExplorer.startExploring(forTypes: types).error {
