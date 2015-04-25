@@ -51,8 +51,8 @@ public class AbstractUPnPService: AbstractUPnP {
         return deviceSource?.device(forUSN: _deviceUSN)
     }
     
-    /// 🔰 = protected
-    private(set) var soapSessionManager🔰: SOAPSessionManager! // TODO: Should ideally be a constant, see Github issue #10
+    /// protected
+    public private(set) var soapSessionManager: SOAPSessionManager! // TODO: Should ideally be a constant, see Github issue #10
     
     // private
     private var _baseURLFromXML: NSURL? // TODO: Should ideally be a constant, see Github issue #10
@@ -72,7 +72,7 @@ public class AbstractUPnPService: AbstractUPnP {
     required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
         super.init(usn: usn, descriptionURL: descriptionURL, descriptionXML: descriptionXML)
         
-        soapSessionManager🔰 = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
+        soapSessionManager = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
         
         _concurrentEventObserverQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
         let serviceParser = UPnPServiceParser(upnpService: self, descriptionXML: descriptionXML)
@@ -124,9 +124,10 @@ public class AbstractUPnPService: AbstractUPnP {
         }
     }
     
-    func supportsSOAPAction(#actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
+    public func supportsSOAPAction(#actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
         let performQuery = { (serviceDescriptionDocument: ONOXMLDocument) -> Void in
             let prefix = self._serviceDescriptionDefaultPrefix
+            // For better performance, check the action name only for now. If this proves inadequite in the future the argument list can also be compared with the SOAP parameters passed in.
             let xPathQuery = "/\(prefix):scpd/\(prefix):actionList/\(prefix):action[\(prefix):name='\(actionParameters.soapAction)']"
             if let actionListItem = serviceDescriptionDocument.firstChildWithXPath(xPathQuery) {
                 completion(isSupported: true)
@@ -237,17 +238,17 @@ extension AbstractUPnPService: UPnPEventSubscriber {
         })
     }
     
+    /// overridable by service subclasses
+    public func createEvent(eventXML: NSData) -> UPnPEvent {
+        return UPnPEvent(eventXML: eventXML, service: self)
+    }
+    
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventXML: NSData) {
         NSNotificationCenter.defaultCenter().postNotificationName(UPnPEventReceivedNotification(), object: nil, userInfo: [AbstractUPnPService._upnpEventKey: self.createEvent(eventXML)])
     }
     
     func subscriptionDidFail(eventSubscriptionManager: UPnPEventSubscriptionManager) {
         LogWarn("Event subscription did fail for service: \(self)")
-    }
-    
-    /// overridable by service subclasses
-    func createEvent(eventXML: NSData) -> UPnPEvent {
-        return UPnPEvent(eventXML: eventXML, service: self)
     }
 }
 

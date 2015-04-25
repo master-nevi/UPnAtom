@@ -24,7 +24,7 @@
 import Foundation
 import AFNetworking
 
-class SOAPSessionManager: AFHTTPSessionManager {    
+public class SOAPSessionManager: AFHTTPSessionManager {
     override init!(baseURL url: NSURL!, sessionConfiguration configuration: NSURLSessionConfiguration!) {
         super.init(baseURL: url, sessionConfiguration: configuration)
         
@@ -32,7 +32,7 @@ class SOAPSessionManager: AFHTTPSessionManager {
         self.responseSerializer = SOAPResponseSerializer()
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 }

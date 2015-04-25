@@ -102,7 +102,7 @@ public class AbstractUPnPDevice: AbstractUPnP {
         self.iconDescriptions = parsedDevice?.iconDescriptions
     }
     
-    func service(forURN urn: String) -> AbstractUPnPService? {
+    public func service(forURN urn: String) -> AbstractUPnPService? {
         return serviceSource?.service(forUSN: UniqueServiceName(uuid: uuid, urn: urn)!)
     }
 }

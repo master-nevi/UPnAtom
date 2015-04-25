@@ -23,7 +23,7 @@
 
 import Foundation
 
-class SAXXMLParserElementObservation {
+public class SAXXMLParserElementObservation {
     // internal
     private(set) var didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)? // TODO: Should ideally be a constant, see Github issue #10
     let didEndParsingElement: ((elementName: String) -> Void)?
@@ -36,7 +36,7 @@ class SAXXMLParserElementObservation {
     // private
     private var _innerText: String?
     
-    init(elementPath: [String], didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?, didEndParsingElement: ((elementName: String) -> Void)?, foundInnerText: ((elementName: String, text: String) -> Void)?) {
+    public init(elementPath: [String], didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?, didEndParsingElement: ((elementName: String) -> Void)?, foundInnerText: ((elementName: String, text: String) -> Void)?) {
         self.elementPath = elementPath
         
         self.didEndParsingElement = didEndParsingElement

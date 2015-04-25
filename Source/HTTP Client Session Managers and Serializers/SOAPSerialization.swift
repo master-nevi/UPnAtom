@@ -28,20 +28,20 @@ import Foundation
 import AFNetworking
 import Ono
 
-class SOAPRequestSerializer: AFHTTPRequestSerializer {
-    class Parameters {
+public class SOAPRequestSerializer: AFHTTPRequestSerializer {
+    public class Parameters {
         let soapAction: String
         let serviceURN: String
         let arguments: NSDictionary?
         
-        init(soapAction: String, serviceURN: String, arguments: NSDictionary?) {
+        public init(soapAction: String, serviceURN: String, arguments: NSDictionary?) {
             self.soapAction = soapAction
             self.serviceURN = serviceURN
             self.arguments = arguments
         }
     }
     
-    override func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
+    override public func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
         let requestParameters: Parameters! = parameters as? Parameters
         if requestParameters == nil {
             return nil
@@ -83,8 +83,8 @@ class SOAPRequestSerializer: AFHTTPRequestSerializer {
     }
 }
 
-class SOAPResponseSerializer: AFXMLParserResponseSerializer {    
-    override func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
+public class SOAPResponseSerializer: AFXMLParserResponseSerializer {
+    override public func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
         if !validateResponse(response as! NSHTTPURLResponse, data: data, error: error) {
             if error == nil {
                 return nil
