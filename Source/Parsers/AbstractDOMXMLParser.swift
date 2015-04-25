@@ -24,8 +24,8 @@
 import Foundation
 import Ono
 
-class AbstractDOMXMLParser {
-    func parse(#data: NSData) -> EmptyResult {
+public class AbstractDOMXMLParser {
+    public func parse(#data: NSData) -> EmptyResult {
         LogVerbose("Parsing XML:\nSTART\n\(NSString(data: data, encoding: NSUTF8StringEncoding))\nEND")
         
         var parserResult: EmptyResult = .Failure(createError("Parser failure"))
@@ -38,7 +38,7 @@ class AbstractDOMXMLParser {
         return parserResult
     }
     
-    func parse(#document: ONOXMLDocument) -> EmptyResult {
+    public func parse(#document: ONOXMLDocument) -> EmptyResult {
         fatalError("Implement in subclass")
     }
     

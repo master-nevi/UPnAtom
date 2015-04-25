@@ -24,12 +24,12 @@
 import Foundation
 
 // Subclassing NSObject in order to be a NSXMLParserDelegate
-class AbstractSAXXMLParser: NSObject {
+public class AbstractSAXXMLParser: NSObject {
     private let _supportNamespaces: Bool
     lazy private var _elementStack = [String]()
     lazy private var _elementObservations = [SAXXMLParserElementObservation]()
     
-    init(supportNamespaces: Bool) {
+    public init(supportNamespaces: Bool) {
         _supportNamespaces = supportNamespaces
     }
     
@@ -37,11 +37,11 @@ class AbstractSAXXMLParser: NSObject {
         self.init(supportNamespaces: false)
     }
     
-    func addElementObservation(elementObservation: SAXXMLParserElementObservation) {
+    public func addElementObservation(elementObservation: SAXXMLParserElementObservation) {
         _elementObservations.append(elementObservation)
     }
     
-    func clearAllElementObservations() {
+    public func clearAllElementObservations() {
         _elementObservations.removeAll(keepCapacity: false)
     }
     
@@ -89,7 +89,7 @@ class AbstractSAXXMLParser: NSObject {
         return nil
     }
     
-    func parse(#data: NSData) -> EmptyResult {
+    public func parse(#data: NSData) -> EmptyResult {
         var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
@@ -136,7 +136,7 @@ class AbstractSAXXMLParser: NSObject {
 }
 
 extension AbstractSAXXMLParser: NSXMLParserDelegate {
-    func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [NSObject : AnyObject]) {
+    public func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [NSObject : AnyObject]) {
         _elementStack += [elementName]
         
         if let elementObservation = elementObservationForElementStack(_elementStack),
@@ -145,7 +145,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         }
     }
     
-    func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+    public func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if let elementObservation = elementObservationForElementStack(_elementStack) {
             let foundInnerText = elementObservation.foundInnerText
             let innerText = elementObservation.innerText
@@ -167,7 +167,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         }
     }
     
-    func parser(parser: NSXMLParser, foundCharacters string: String?) {
+    public func parser(parser: NSXMLParser, foundCharacters string: String?) {
         // The parser object may send the delegate several parser:foundCharacters: messages to report the characters of an element. Because string may be only part of the total character content for the current element, you should append it to the current accumulation of characters until the element changes.
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {

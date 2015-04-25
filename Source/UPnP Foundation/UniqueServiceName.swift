@@ -50,11 +50,11 @@ import Foundation
         urn = returnIfContainsElements(UniqueServiceName.urn(usn: rawValue))
     }
     
-    convenience init?(uuid: String, urn: String) {
+    convenience public init?(uuid: String, urn: String) {
         self.init(rawValue: "\(uuid)::\(urn)")
     }
     
-    convenience init?(uuid: String, rootDevice: Bool) {
+    convenience public init?(uuid: String, rootDevice: Bool) {
         let rawValue = rootDevice ? "\(uuid)::upnp:rootdevice" : "\(uuid)"
         self.init(rawValue: rawValue)
     }

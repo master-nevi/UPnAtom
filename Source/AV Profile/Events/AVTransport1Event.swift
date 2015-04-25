@@ -26,7 +26,7 @@ import Ono
 public class AVTransport1Event: UPnPEvent {
     public var instanceState = [String: AnyObject]()
     
-    override init(eventXML: NSData, service: AbstractUPnPService) {
+    override public init(eventXML: NSData, service: AbstractUPnPService) {
         super.init(eventXML: eventXML, service: service)
         
         if let parsedInstanceState = AVTransport1EventParser().parse(eventXML: eventXML).value {

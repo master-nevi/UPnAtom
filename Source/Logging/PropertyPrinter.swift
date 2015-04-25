@@ -23,34 +23,36 @@
 
 import Foundation
 
-protocol ExtendedPrintable: Printable {
+public protocol ExtendedPrintable: Printable {
     var className: String { get }
 }
 
-struct PropertyPrinter {
+public struct PropertyPrinter {
     private var _properties = [String: String]()
     
-    mutating func add<T>(propertyName: String, property: T?) {
+    public init() { }
+    
+    public mutating func add<T>(propertyName: String, property: T?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
-    mutating func add<T: Printable>(propertyName: String, property: T?) {
+    public mutating func add<T: Printable>(propertyName: String, property: T?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
-    mutating func add<T>(propertyName: String, property: [T]?) {
+    public mutating func add<T>(propertyName: String, property: [T]?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
-    mutating func add<T: Printable>(propertyName: String, property: [T]?) {
+    public mutating func add<T: Printable>(propertyName: String, property: [T]?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
-    mutating func add<K, V>(propertyName: String, property: [K: V]?) {
+    public mutating func add<K, V>(propertyName: String, property: [K: V]?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
-    mutating func add<K, V: Printable>(propertyName: String, property: [K: V]?) {
+    public mutating func add<K, V: Printable>(propertyName: String, property: [K: V]?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
@@ -65,7 +67,7 @@ struct PropertyPrinter {
 }
 
 extension PropertyPrinter: Printable {
-    var description: String {
+    public var description: String {
         return dictionaryDescription(_properties, "=")
     }
 }

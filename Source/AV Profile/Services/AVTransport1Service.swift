@@ -32,7 +32,7 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "SetAVTransportURI", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             success()
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
@@ -46,7 +46,7 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Play", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in            
+        soapSessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in            
             success()
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
@@ -58,14 +58,14 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Pause", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             success()
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
         })
     }
     
-    override func createEvent(eventXML: NSData) -> UPnPEvent {
+    override public func createEvent(eventXML: NSData) -> UPnPEvent {
         return AVTransport1Event(eventXML: eventXML, service: self)
     }
 }
