@@ -22,6 +22,8 @@
 //  SOFTWARE.
 
 import Foundation
+import Ono
+import AFNetworking
 
 public class AbstractUPnPService: AbstractUPnP {
     // public
@@ -58,6 +60,8 @@ public class AbstractUPnPService: AbstractUPnP {
     private var _relativeControlURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
     private var _relativeEventURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
     private var _deviceUSN: UniqueServiceName! // TODO: Should ideally be a constant, see Github issue #10
+    private var _serviceDescriptionDocument: ONOXMLDocument?
+    private let _serviceDescriptionDefaultPrefix = "service"
     
     // MARK: UPnP Event handling related
     /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
@@ -117,6 +121,50 @@ public class AbstractUPnPService: AbstractUPnP {
         
         for eventObserver in eventObservers {
             NSNotificationCenter.defaultCenter().removeObserver(eventObserver.notificationCenterObserver)
+        }
+    }
+    
+    func supportsSOAPAction(#actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
+        let performQuery = { (serviceDescriptionDocument: ONOXMLDocument) -> Void in
+            let prefix = self._serviceDescriptionDefaultPrefix
+            let xPathQuery = "/\(prefix):scpd/\(prefix):actionList/\(prefix):action[\(prefix):name='\(actionParameters.soapAction)']"
+            if let actionListItem = serviceDescriptionDocument.firstChildWithXPath(xPathQuery) {
+                completion(isSupported: true)
+            }
+            else {
+                completion(isSupported: false)
+            }
+            }
+        
+        if let serviceDescriptionDocument = _serviceDescriptionDocument {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                performQuery(serviceDescriptionDocument)
+            })
+        }
+        else {
+            let httpSessionManager = AFHTTPSessionManager()
+            httpSessionManager.requestSerializer = AFHTTPRequestSerializer()
+            httpSessionManager.responseSerializer = AFHTTPResponseSerializer()
+            httpSessionManager.GET(serviceDescriptionURL.absoluteString, parameters: nil, success: { (task, responseObject) -> Void in
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                    var parseError: NSError?
+                    if let xmlData = responseObject as? NSData,
+                        serviceDescriptionDocument = ONOXMLDocument(data: xmlData, error: &parseError) {
+                            LogVerbose("Parsing service description XML:\nSTART\n\(NSString(data: xmlData, encoding: NSUTF8StringEncoding))\nEND")
+                            
+                            serviceDescriptionDocument.definePrefix(self._serviceDescriptionDefaultPrefix, forDefaultNamespace: "urn:schemas-upnp-org:service-1-0")
+                            self._serviceDescriptionDocument = serviceDescriptionDocument
+                            performQuery(serviceDescriptionDocument)
+                    }
+                    else {
+                        LogError("Failed to parse service description for SOAP action support check: \(parseError)")
+                        completion(isSupported: false)
+                    }
+                })
+            }, failure: { (task, error) -> Void in
+                LogError("Failed to retrieve service description for SOAP action support check: \(error)")
+                completion(isSupported: false)
+            })
         }
     }
 }
