@@ -29,12 +29,7 @@ public class SAXXMLParserElementObservation {
     let didEndParsingElement: ((elementName: String) -> Void)?
     let foundInnerText: ((elementName: String, text: String) -> Void)?
     let elementPath: [String]
-    var innerText: String? {
-        return _innerText
-    }
-    
-    // private
-    private var _innerText: String?
+    private(set) var innerText: String?
     
     public init(elementPath: [String], didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?, didEndParsingElement: ((elementName: String) -> Void)?, foundInnerText: ((elementName: String, text: String) -> Void)?) {
         self.elementPath = elementPath
@@ -44,7 +39,7 @@ public class SAXXMLParserElementObservation {
         
         self.didStartParsingElement = {[unowned self] (elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void in
             // reset _innerText at the start of the element parse
-            self._innerText = nil
+            self.innerText = nil
             
             if let didStartParsingElement = didStartParsingElement {
                 didStartParsingElement(elementName: elementName, attributeDict: attributeDict)
@@ -53,12 +48,12 @@ public class SAXXMLParserElementObservation {
     }
     
     func appendInnerText(innerText: String?) {
-        if _innerText == nil {
-            _innerText = ""
+        if self.innerText == nil {
+            self.innerText = ""
         }
         
         if let innerText = innerText {
-            _innerText! += innerText
+            self.innerText! += innerText
         }
     }
 }
