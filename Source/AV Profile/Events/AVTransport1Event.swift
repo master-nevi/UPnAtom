@@ -54,6 +54,8 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
             return .Failure(createError("No LastChange element in UPnP service event XML"))
         }
         
+        LogVerbose("Parsing LastChange XML:\nSTART\n\(lastChangeXMLString)\nEND")
+        
         var parseError: NSError?
         let lastChangeEventDocument = ONOXMLDocument(string: lastChangeXMLString!, encoding: NSUTF8StringEncoding, error: &parseError)
         if parseError != nil {
@@ -68,6 +70,8 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
                     if parseError != nil {
                         return
                     }
+                    
+                    LogVerbose("Parsing MetaData XML:\nSTART\n\(stateValue)\nEND")
                     
                     var metaData = [String: String]()
                     
