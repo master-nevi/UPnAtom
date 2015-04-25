@@ -32,7 +32,7 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "SetAVTransportURI", serviceURN: urn, arguments: arguments)
         
-        sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             success()
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
@@ -46,7 +46,7 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Play", serviceURN: urn, arguments: arguments)
         
-        sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in            
+        soapSessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in            
             success()
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
@@ -58,7 +58,7 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Pause", serviceURN: urn, arguments: arguments)
         
-        sessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager🔰.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             success()
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
