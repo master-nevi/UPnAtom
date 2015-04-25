@@ -50,7 +50,7 @@ public class AbstractUPnPService: AbstractUPnP {
     }
     
     /// 🔰 = protected
-    private(set) var sessionManager🔰: SOAPSessionManager! // TODO: Should ideally be a constant, see Github issue #10
+    private(set) var soapSessionManager🔰: SOAPSessionManager! // TODO: Should ideally be a constant, see Github issue #10
     
     // private
     private var _baseURLFromXML: NSURL? // TODO: Should ideally be a constant, see Github issue #10
@@ -68,7 +68,7 @@ public class AbstractUPnPService: AbstractUPnP {
     required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
         super.init(usn: usn, descriptionURL: descriptionURL, descriptionXML: descriptionXML)
         
-        sessionManager🔰 = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
+        soapSessionManager🔰 = SOAPSessionManager(baseURL: baseURL, sessionConfiguration: nil)
         
         _concurrentEventObserverQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.event-observer-queue.\(usn.rawValue)", DISPATCH_QUEUE_CONCURRENT)
         let serviceParser = UPnPServiceParser(upnpService: self, descriptionXML: descriptionXML)
