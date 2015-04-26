@@ -36,7 +36,8 @@ class Player {
             didSetRenderer(oldRenderer: oldValue, newRenderer: mediaRenderer)
         }
     }
-    private(set) var playerButton: UIBarButtonItem! // TODO: Should ideally be a constant, see Github issue #10
+    private(set) var playPauseButton: UIBarButtonItem! // TODO: Should ideally be a constant, see Github issue #10
+    private(set) var stopButton: UIBarButtonItem! // TODO: Should ideally be a constant, see Github issue #10
     
     private var _position: Int = 0
     private var _playlist: [ContentDirectory1Object]?
@@ -56,7 +57,8 @@ class Player {
     }
     
     init() {
-        playerButton = UIBarButtonItem(image: UIImage(named: "play_button"), style: .Plain, target: self, action: "playerButtonTapped:")
+        playPauseButton = UIBarButtonItem(image: UIImage(named: "play_button"), style: .Plain, target: self, action: "playPauseButtonTapped:")
+        stopButton = UIBarButtonItem(image: UIImage(named: "stop_button"), style: .Plain, target: self, action: "stopButtonTapped:")
     }
     
     func startPlayback(playlist: [ContentDirectory1Object], position: Int) {
@@ -85,8 +87,8 @@ class Player {
         }
     }
     
-    @objc private func playerButtonTapped(sender: AnyObject) {
-        println("player button tapped")
+    @objc private func playPauseButtonTapped(sender: AnyObject) {
+        println("play/pause button tapped")
         
         switch _playerState {
         case .Playing:
@@ -95,20 +97,31 @@ class Player {
             }, failure: { (error) -> Void in
                 println("Pause command failed: \(error)")
             })
-        case .Paused:
-            play({ () -> Void in
-                println("Play command succeeded!")
-                }, failure: { (error) -> Void in
-                    println("Play command failed: \(error)")
-            })
-        case .Stopped:
+        case .Paused, .Stopped:
             play({ () -> Void in
                 println("Play command succeeded!")
                 }, failure: { (error) -> Void in
                     println("Play command failed: \(error)")
             })
         default:
-            println("Player button cannot be used in this state.")
+            println("Play/pause button cannot be used in this state.")
+        }
+    }
+    
+    @objc private func stopButtonTapped(sender: AnyObject) {
+        println("stop button tapped")
+        
+        switch _playerState {
+        case .Playing, .Paused:
+            stop({ () -> Void in
+                println("Stop command succeeded!")
+                }, failure: { (error) -> Void in
+                    println("Stop command failed: \(error)")
+            })
+        case .Stopped:
+            println("Stop button cannot be used in this state.")
+        default:
+            println("Stop button cannot be used in this state.")
         }
     }
     
@@ -141,13 +154,13 @@ class Player {
     private func playerStateDidChange() {
         switch _playerState {
         case .Stopped:
-            playerButton.image = UIImage(named: "play_button")
+            playPauseButton.image = UIImage(named: "play_button")
         case .Playing:
-            playerButton.image = UIImage(named: "pause_button")
+            playPauseButton.image = UIImage(named: "pause_button")
         case .Paused:
-            playerButton.image = UIImage(named: "play_button")
+            playPauseButton.image = UIImage(named: "play_button")
         case .Unknown:
-            playerButton.image = UIImage(named: "play_button")
+            playPauseButton.image = UIImage(named: "play_button")
         }
     }
     
@@ -157,5 +170,9 @@ class Player {
     
     private func pause(success: () -> Void, failure:(error: NSError) -> Void) {
         self.mediaRenderer?.avTransportService?.pause(instanceID: _avTransportInstanceID, success: success, failure: failure)
+    }
+    
+    private func stop(success: () -> Void, failure:(error: NSError) -> Void) {
+        self.mediaRenderer?.avTransportService?.stop(instanceID: _avTransportInstanceID, success: success, failure: failure)
     }
 }

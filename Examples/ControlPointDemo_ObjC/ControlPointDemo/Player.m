@@ -33,7 +33,8 @@ typedef NS_ENUM(NSInteger, PlayerState) {
 
 @interface Player ()
 @property (nonatomic, readwrite) NSArray *playlist;
-@property (nonatomic, readwrite) UIBarButtonItem *playerButton;
+@property (nonatomic, readwrite) UIBarButtonItem *playPauseButton;
+@property (nonatomic, readwrite) UIBarButtonItem *stopButton;
 @property (nonatomic) PlayerState playerState;
 @end
 
@@ -50,7 +51,8 @@ typedef NS_ENUM(NSInteger, PlayerState) {
     dispatch_once(&onceToken, ^{
         instance = [Player new];
         
-        instance.playerButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"play_button"] style:UIBarButtonItemStylePlain target:instance action:@selector(playerButtonTapped:)];
+        instance.playPauseButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"play_button"] style:UIBarButtonItemStylePlain target:instance action:@selector(playPauseButtonTapped:)];
+        instance.stopButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"stop_button"] style:UIBarButtonItemStylePlain target:instance action:@selector(stopButtonTapped:)];
         instance->_avTransportInstanceID = @"0";
     });
     
@@ -131,7 +133,7 @@ typedef NS_ENUM(NSInteger, PlayerState) {
 
 #pragma mark - Internal lib
 
-- (void)playerButtonTapped:(id)sender {
+- (void)playPauseButtonTapped:(id)sender {
     switch (self.playerState) {
         case PlayerStatePlaying:
             [self pauseWithSuccess:^{
@@ -158,7 +160,35 @@ typedef NS_ENUM(NSInteger, PlayerState) {
             break;
             
         default:
-            NSLog(@"Player button cannot be used in this state.");
+            NSLog(@"Play/Pause button cannot be used in this state.");
+            break;
+    }
+}
+
+- (void)stopButtonTapped:(id)sender {
+    switch (self.playerState) {
+        case PlayerStatePlaying:
+            [self stopWithSuccess:^{
+                NSLog(@"Stop command succeeded!");
+            } failure:^(NSError *error) {
+                NSLog(@"Stop command failed: %@", error.localizedDescription);
+            }];
+            break;
+            
+        case PlayerStatePaused:
+            [self stopWithSuccess:^{
+                NSLog(@"Stop command succeeded!");
+            } failure:^(NSError *error) {
+                NSLog(@"Stop command failed: %@", error.localizedDescription);
+            }];
+            break;
+            
+        case PlayerStateStopped:
+            NSLog(@"Stop button cannot be used in this state.");
+            break;
+            
+        default:
+            NSLog(@"Stop button cannot be used in this state.");
             break;
     }
 }
@@ -168,19 +198,19 @@ typedef NS_ENUM(NSInteger, PlayerState) {
     
     switch (playerState) {
         case PlayerStateStopped:
-            self.playerButton.image = [UIImage imageNamed:@"play_button"];
+            self.playPauseButton.image = [UIImage imageNamed:@"play_button"];
             break;
             
         case PlayerStatePlaying:
-            self.playerButton.image = [UIImage imageNamed:@"pause_button"];
+            self.playPauseButton.image = [UIImage imageNamed:@"pause_button"];
             break;
             
         case PlayerStatePaused:
-            self.playerButton.image = [UIImage imageNamed:@"play_button"];
+            self.playPauseButton.image = [UIImage imageNamed:@"play_button"];
             break;
             
         default:
-            self.playerButton.image = [UIImage imageNamed:@"play_button"];
+            self.playPauseButton.image = [UIImage imageNamed:@"play_button"];
             break;
     }
 }
@@ -191,6 +221,10 @@ typedef NS_ENUM(NSInteger, PlayerState) {
 
 - (void)pauseWithSuccess:(void (^)(void))success failure:(void (^)(NSError *))failure {
     [self.mediaRenderer.avTransportService pauseWithInstanceID:_avTransportInstanceID success:success failure:failure];
+}
+
+- (void)stopWithSuccess:(void (^)(void))success failure:(void (^)(NSError *))failure {
+    [self.mediaRenderer.avTransportService stopWithInstanceID:_avTransportInstanceID success:success failure:failure];
 }
 
 @end
