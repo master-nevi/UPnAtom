@@ -39,6 +39,50 @@ public class AVTransport1Service: AbstractUPnPService {
         })
     }
     
+    public func setNextAVTransportURI(#instanceID: String, nextURI: String, nextURIMetadata: String, success: () -> Void, failure:(error: NSError) -> Void) {
+        let arguments = [
+            "InstanceID" : instanceID,
+            "NextURI" : nextURI,
+            "NextURIMetaData": nextURIMetadata]
+        
+        let parameters = SOAPRequestSerializer.Parameters(soapAction: "SetNextAVTransportURI", serviceURN: urn, arguments: arguments)
+        
+        // Check if the optional SOAP action "SetNextAVTransportURI" is supported
+        supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
+            soapSessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+                success()
+                }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                    failure(error: error)
+            })            
+        }
+    }
+    
+    public func getMediaInfo(#instanceID: String, success: (numberOfTracks: Int, mediaDuration: String?, currentURI: String?, currentURIMetaData: String?, nextURI: String?, nextURIMetaData: String?, playMedium: String?, recordMedium: String?, writeStatus: String?) -> Void, failure: (error: NSError) -> Void) {
+        let arguments = ["InstanceID" : instanceID]
+        
+        let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetMediaInfo", serviceURN: urn, arguments: arguments)
+        
+        soapSessionManager.POST(self.controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+            let responseObject = responseObject as? [String: String]
+            LogDebug("responseObject: \(responseObject)")
+            success(numberOfTracks: responseObject?["NrTracks"]?.toInt() ?? 0, mediaDuration: responseObject?["MediaDuration"], currentURI: responseObject?["CurrentURI"], currentURIMetaData: responseObject?["CurrentURIMetaData"], nextURI: responseObject?["NextURI"], nextURIMetaData: responseObject?["NextURIMetaData"], playMedium: responseObject?["PlayMedium"], recordMedium: responseObject?["RecordMedium"], writeStatus: responseObject?["WriteStatus"])
+            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                failure(error: error)
+        })
+    }
+    
+    public func stop(#instanceID: String, success: () -> Void, failure:(error: NSError) -> Void) {
+        let arguments = ["InstanceID" : instanceID]
+        
+        let parameters = SOAPRequestSerializer.Parameters(soapAction: "Stop", serviceURN: urn, arguments: arguments)
+        
+        soapSessionManager.POST(controlURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+            success()
+            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                failure(error: error)
+        })
+    }
+    
     public func play(#instanceID: String, speed: String, success: () -> Void, failure:(error: NSError) -> Void) {
         let arguments = [
             "InstanceID" : instanceID,
