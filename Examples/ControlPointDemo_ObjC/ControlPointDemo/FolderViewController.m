@@ -53,7 +53,6 @@
         NSLog(@"failed to get sort capabilities");
     }];
     
-    UIBarButtonItem *playerButton = [[Player sharedInstance] playerButton];
     CGFloat viewWidth = self.navigationController.view.frame.size.width;
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, viewWidth - (viewWidth * 0.2), 21.0f)];
     [titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
@@ -68,7 +67,7 @@
     
     [titleLabel setTextAlignment:NSTextAlignmentLeft];
     UIBarButtonItem *title = [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
-    NSArray *items = @[playerButton, title];
+    NSArray *items = @[[[Player sharedInstance] playPauseButton], [[Player sharedInstance] stopButton], title];
     self.toolbarItems = items;
     
     self.navigationController.toolbarHidden = NO;

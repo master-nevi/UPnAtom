@@ -56,7 +56,6 @@ class RootFolderViewController: UIViewController {
         
         self.title = "Control Point Demo"
         
-        let playerButton = Player.sharedInstance.playerButton
         let viewWidth = self.navigationController!.view.frame.size.width
         let titleLabel = UILabel(frame: CGRect(x: 0.0, y: 11.0, width: viewWidth - (viewWidth * 0.2), height: 21.0))
         _toolbarLabel = titleLabel
@@ -66,7 +65,7 @@ class RootFolderViewController: UIViewController {
         titleLabel.textAlignment = .Left
         titleLabel.text = ""
         let barButton = UIBarButtonItem(customView: titleLabel)
-        self.toolbarItems = [playerButton, barButton]
+        self.toolbarItems = [Player.sharedInstance.playPauseButton, Player.sharedInstance.stopButton, barButton]
         
         self.navigationController?.toolbarHidden = false
     }

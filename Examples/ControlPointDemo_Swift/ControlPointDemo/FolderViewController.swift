@@ -42,7 +42,6 @@ class FolderViewController: UIViewController {
             println("Failed to get sort capabilities: \(error)")
         })
         
-        let playerButton = Player.sharedInstance.playerButton
         let viewWidth = self.navigationController!.view.frame.size.width
         let titleLabel = UILabel(frame: CGRect(x: 0.0, y: 11.0, width: viewWidth - (viewWidth * 0.2), height: 21.0))
         titleLabel.font = UIFont(name: "Helvetica", size: 18)
@@ -51,7 +50,7 @@ class FolderViewController: UIViewController {
         titleLabel.textAlignment = .Left
         titleLabel.text = Player.sharedInstance.mediaRenderer == nil ? "No Renderer Selected" : Player.sharedInstance.mediaRenderer?.friendlyName
         let barButton = UIBarButtonItem(customView: titleLabel)
-        self.toolbarItems = [playerButton, barButton]
+        self.toolbarItems = [Player.sharedInstance.playPauseButton, Player.sharedInstance.stopButton, barButton]
         
         self.navigationController?.toolbarHidden = false
     }

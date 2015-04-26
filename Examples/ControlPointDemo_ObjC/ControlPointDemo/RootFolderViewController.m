@@ -64,7 +64,6 @@
     
     self.title = @"Control Point Demo";
     
-    UIBarButtonItem *playerButton = [[Player sharedInstance] playerButton];
     CGFloat viewWidth = self.navigationController.view.frame.size.width;
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, viewWidth - (viewWidth * 0.2), 21.0f)];
     _toolbarLabel = titleLabel;
@@ -74,7 +73,7 @@
     [titleLabel setText:@""];
     [titleLabel setTextAlignment:NSTextAlignmentLeft];
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
-    NSArray *items = @[playerButton, barButton];
+    NSArray *items = @[[[Player sharedInstance] playPauseButton], [[Player sharedInstance] stopButton], barButton];
     self.toolbarItems = items;
     
     self.navigationController.toolbarHidden = NO;

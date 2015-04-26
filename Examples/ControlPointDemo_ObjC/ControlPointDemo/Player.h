@@ -37,7 +37,8 @@
 @property (nonatomic, readonly) NSArray *playlist;
 @property (nonatomic) MediaServer1Device *mediaServer;
 @property (nonatomic) MediaRenderer1Device *mediaRenderer;
-@property (nonatomic, readonly) UIBarButtonItem *playerButton;
+@property (nonatomic, readonly) UIBarButtonItem *playPauseButton;
+@property (nonatomic, readonly) UIBarButtonItem *stopButton;
 
 @end
 
