@@ -61,12 +61,15 @@ public class AbstractUPnPService: AbstractUPnP {
     private var _relativeEventURL: NSURL! // TODO: Should ideally be a constant, see Github issue #10
     private var _deviceUSN: UniqueServiceName! // TODO: Should ideally be a constant, see Github issue #10
     private var _serviceDescriptionDocument: ONOXMLDocument?
-    private let _serviceDescriptionDefaultPrefix = "service"
+    private static let _serviceDescriptionDefaultPrefix = "service"
+    /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
+    private var _soapActionsSupportCache = [String: Bool]()
     
     // MARK: UPnP Event handling related
     /// Must be accessed within dispatch_sync() or dispatch_async() and updated within dispatch_barrier_async() to the concurrent queue
     lazy private var _eventObservers = [EventObserver]()
     private var _concurrentEventObserverQueue: dispatch_queue_t!
+    private var _concurrentSOAPActionsSupportCacheQueue = dispatch_queue_create("com.upnatom.abstract-upnp-service.soap-actions-support-cache-queue", DISPATCH_QUEUE_CONCURRENT)
     private weak var _eventSubscription: AnyObject?
     
     required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
@@ -124,49 +127,73 @@ public class AbstractUPnPService: AbstractUPnP {
         }
     }
     
-    public func supportsSOAPAction(#actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
-        let performQuery = { (serviceDescriptionDocument: ONOXMLDocument) -> Void in
-            let prefix = self._serviceDescriptionDefaultPrefix
-            // For better performance, check the action name only for now. If this proves inadequite in the future the argument list can also be compared with the SOAP parameters passed in.
-            let xPathQuery = "/\(prefix):scpd/\(prefix):actionList/\(prefix):action[\(prefix):name='\(actionParameters.soapAction)']"
-            if let actionListItem = serviceDescriptionDocument.firstChildWithXPath(xPathQuery) {
-                completion(isSupported: true)
-            }
-            else {
-                completion(isSupported: false)
-            }
-            }
-        
+    /// The service description document can be used for querying for service specific support i.e. SOAP action arguments
+    public func serviceDescriptionDocument(completion: (serviceDescriptionDocument: ONOXMLDocument?, defaultPrefix: String) -> Void) {
         if let serviceDescriptionDocument = _serviceDescriptionDocument {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-                performQuery(serviceDescriptionDocument)
-            })
+            completion(serviceDescriptionDocument: serviceDescriptionDocument, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
         }
         else {
             let httpSessionManager = AFHTTPSessionManager()
             httpSessionManager.requestSerializer = AFHTTPRequestSerializer()
             httpSessionManager.responseSerializer = AFHTTPResponseSerializer()
-            httpSessionManager.GET(serviceDescriptionURL.absoluteString, parameters: nil, success: { (task, responseObject) -> Void in
+            httpSessionManager.GET(serviceDescriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
                     var parseError: NSError?
                     if let xmlData = responseObject as? NSData,
                         serviceDescriptionDocument = ONOXMLDocument(data: xmlData, error: &parseError) {
                             LogVerbose("Parsing service description XML:\nSTART\n\(NSString(data: xmlData, encoding: NSUTF8StringEncoding))\nEND")
                             
-                            serviceDescriptionDocument.definePrefix(self._serviceDescriptionDefaultPrefix, forDefaultNamespace: "urn:schemas-upnp-org:service-1-0")
+                            serviceDescriptionDocument.definePrefix(AbstractUPnPService._serviceDescriptionDefaultPrefix, forDefaultNamespace: "urn:schemas-upnp-org:service-1-0")
                             self._serviceDescriptionDocument = serviceDescriptionDocument
-                            performQuery(serviceDescriptionDocument)
+                            completion(serviceDescriptionDocument: serviceDescriptionDocument, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
                     }
                     else {
                         LogError("Failed to parse service description for SOAP action support check: \(parseError)")
-                        completion(isSupported: false)
+                    completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
                     }
                 })
-            }, failure: { (task, error) -> Void in
-                LogError("Failed to retrieve service description for SOAP action support check: \(error)")
-                completion(isSupported: false)
+                }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                    LogError("Failed to retrieve service description for SOAP action support check: \(error)")
+                    completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
             })
         }
+    }
+    
+    /// Used for determining support of optional SOAP actions for this service.
+    public func supportsSOAPAction(#actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
+        let soapActionName = actionParameters.soapAction
+        
+        // only reading SOAP actions support cache, so distpach_async is appropriate to allow for concurrent reads
+        dispatch_async(_concurrentSOAPActionsSupportCacheQueue, { () -> Void in
+            let soapActionsSupportCache = self._soapActionsSupportCache
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
+                if let isSupported = soapActionsSupportCache[soapActionName] {
+                    completion(isSupported: isSupported)
+                }
+                else {
+                    self.serviceDescriptionDocument { (serviceDescriptionDocument: ONOXMLDocument?, defaultPrefix: String) -> Void in
+                        if let serviceDescriptionDocument = serviceDescriptionDocument {
+                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
+                                // For better performance, check the action name only for now. If this proves inadequite in the future the argument list can also be compared with the SOAP parameters passed in.
+                                let prefix = defaultPrefix
+                                let xPathQuery = "/\(prefix):scpd/\(prefix):actionList/\(prefix):action[\(prefix):name='\(soapActionName)']"
+                                let isSupported = serviceDescriptionDocument.firstChildWithXPath(xPathQuery) != nil ? true : false
+                                
+                                dispatch_barrier_async(self._concurrentSOAPActionsSupportCacheQueue) { () -> Void in
+                                    self._soapActionsSupportCache[soapActionName] = isSupported
+                                }
+                                
+                                completion(isSupported: isSupported)
+                            }
+                        }
+                        else {
+                            // Failed to retrieve service description. This result does not warrant recording false in the cache as the service description may still show the action as supported when retreived in a subsequent attempt.
+                            completion(isSupported: false)
+                        }
+                    }
+                }
+            }
+        })
     }
 }
 
