@@ -13,7 +13,7 @@ An open source Universal Plug and Play library with a focus on media streaming c
 ### Install:
 Add following to Podfile:
 ```ruby
-pod 'UPnAtom', '~> 0.0.1.beta.5'
+pod 'UPnAtom'
 ```
 
 ### Usage:
@@ -35,7 +35,8 @@ import UPnAtom
 * [x] OSX 10.9+ support
 * [x] Swift 1.2
 * [x] In-house implementation of SSDP discovery
-* [ ] Feature parity with upnpx library
+* [x] A/V Profile Feature parity with upnpx library
+* [ ] Documentation
 * [ ] UPnP Version 2 Compliance
 
 ### Tested Support On:
