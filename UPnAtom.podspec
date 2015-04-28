@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'UPnAtom'
-  s.version      = '0.0.1.beta.5'
+  s.version      = '0.6.0'
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
   s.summary      = 'An open source Universal Plug and Play library with a focus on media streaming coordination using the UPnP A/V profile.'
   s.homepage     = 'https://github.com/master-nevi/UPnAtom'
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.source_files = 'Source/**/*.swift'
   s.exclude_files = 'Source/CocoaSSDP Support/*.swift'
   s.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
-  s.dependency 'AFNetworking', '~> 2.5.0' # HTTP Client
+  s.dependency 'AFNetworking', '~> 2.5.2' # HTTP Client
   s.dependency 'Ono', '~> 1.2.0' # XML parsing
   s.dependency 'GCDWebServer', '~> 3.2.2' # UPnP event notification handling
 

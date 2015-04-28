@@ -1,6 +1,6 @@
 {
   "name": "UPnAtom",
-  "version": "0.0.1.beta.5",
+  "version": "0.6.0",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -12,7 +12,7 @@
   },
   "source": {
     "git": "https://github.com/master-nevi/UPnAtom.git",
-    "tag": "0.0.1.beta.5"
+    "tag": "0.6.0"
   },
   "requires_arc": true,
   "platforms": {
@@ -26,7 +26,7 @@
       "~> 7.4.1"
     ],
     "AFNetworking": [
-      "~> 2.5.0"
+      "~> 2.5.2"
     ],
     "Ono": [
       "~> 1.2.0"
