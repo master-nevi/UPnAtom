@@ -258,3 +258,23 @@ struct Stack<T> {
         return elements.isEmpty
     }
 }
+
+func +<K,V> (left: Dictionary<K,V>, right: Dictionary<K,V>) -> Dictionary<K,V> {
+    var result = Dictionary<K,V>()
+    
+    for (k, v) in left {
+        result[k] = v
+    }
+    
+    for (k, v) in right {
+        result[k] = v
+    }
+    
+    return result
+}
+
+func +=<K,V> (inout left: Dictionary<K,V>, right: Dictionary<K,V>) {
+    for (k, v) in right {
+        left[k] = v
+    }
+}
