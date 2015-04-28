@@ -30,10 +30,8 @@ class FolderViewController: UIViewController {
                 sortCapabilities = "+dc:title"
             }
             
-            self._mediaServer?.contentDirectoryService?.browse(objectID: self._contentDirectoryID, browseFlag: "BrowseDirectChildren", filter: "*", startingIndex: "0", requestedCount: "0", sortCriteria: sortCapabilities, success: { (result: [ContentDirectory1Object]?, numberReturned: Int, totalMatches: Int, updateID: String?) -> Void in
-                if let result = result {
-                    self._playlist = result
-                }
+            self._mediaServer?.contentDirectoryService?.browse(objectID: self._contentDirectoryID, browseFlag: "BrowseDirectChildren", filter: "*", startingIndex: "0", requestedCount: "0", sortCriteria: sortCapabilities, success: { (result: [ContentDirectory1Object], numberReturned: Int, totalMatches: Int, updateID: String?) -> Void in
+                self._playlist = result
                 self._tableView.reloadData()
                 }, failure: { (error: NSError) -> Void in
                     println("Failed to browse content directory: \(error)")
