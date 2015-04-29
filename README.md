@@ -27,6 +27,9 @@ pod 'UPnAtom'
 import UPnAtom
 ```
 
+###### More documentation is on the way.
+For now, it is highly recommended you check out the [example projects](https://github.com/master-nevi/UPnAtom/tree/master/Examples). They are exactly the same app however one is in Swift, and the other is in Objective-C. They demonstrate almost all of the library's features minus the ability to add your own UPnP service/device classes. If you create your own service/device classes simply register them following  [UPnAtom.swift](https://github.com/master-nevi/UPnAtom/blob/master/Source/UPnAtom.swift) as an example.
+
 ### Milestones:
 * [x] Usable in both Swift and Objective-C projects via CocoaPod framework
 * [x] Create your own service and device object via class registration
@@ -36,7 +39,7 @@ import UPnAtom
 * [x] Swift 1.2
 * [x] In-house implementation of SSDP discovery
 * [x] A/V Profile Feature parity with upnpx library
-* [ ] Documentation
+* [ ] Documentation (Until then please check out the [example projects](https://github.com/master-nevi/UPnAtom/tree/master/Examples))
 * [ ] UPnP Version 2 Compliance
 
 ### Tested Support On:
