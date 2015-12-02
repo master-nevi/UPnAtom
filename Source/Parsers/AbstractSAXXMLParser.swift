@@ -123,15 +123,13 @@ public class AbstractSAXXMLParser: NSObject {
     }
     
     private func validateForParsing(data: NSData) -> NSData? {
-        let xmlStringOptional = NSString(data: data, encoding: NSUTF8StringEncoding)
-        var error: NSError?
-        let regexOptional = NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .AnchorsMatchLines, error: &error)
-        if xmlStringOptional != nil && regexOptional != nil {
-            let validXMLString = regexOptional!.stringByReplacingMatchesInString(xmlStringOptional! as String, options: NSMatchingOptions(0), range: NSMakeRange(0, xmlStringOptional!.length), withTemplate: "")
-            return validXMLString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+        guard let xmlStringOptional = NSString(data: data, encoding: NSUTF8StringEncoding),
+            let regexOptional = try? NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .AnchorsMatchLines) else {
+                return nil
         }
-        
-        return nil
+
+        let validXMLString = regexOptional.stringByReplacingMatchesInString(xmlStringOptional as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, xmlStringOptional.length), withTemplate: "")
+        return validXMLString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
     }
 }
 
@@ -167,7 +165,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         }
     }
     
-    public func parser(parser: NSXMLParser, foundCharacters string: String?) {
+    public func parser(parser: NSXMLParser, foundCharacters string: String) {
         // The parser object may send the delegate several parser:foundCharacters: messages to report the characters of an element. Because string may be only part of the total character content for the current element, you should append it to the current accumulation of characters until the element changes.
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {

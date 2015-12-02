@@ -75,7 +75,7 @@ public class SOAPRequestSerializer: AFHTTPRequestSerializer {
         body += "</s:Body></s:Envelope>"
         LogVerbose("SOAP request body: \(body)")
         
-        mutableRequest.setValue("\(count(body.utf8))", forHTTPHeaderField: "Content-Length")
+        mutableRequest.setValue("\(body.utf8.count)", forHTTPHeaderField: "Content-Length")
         
         mutableRequest.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         

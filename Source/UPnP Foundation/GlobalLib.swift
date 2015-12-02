@@ -23,7 +23,8 @@
 
 import Foundation
 
-func returnIfContainsElements<T: _CollectionType>(x: T?) -> T? {
+/// TODO: evaluate if this function is necessary anymore when it can now be replaced with a guard-else statements paird with 'where !x.isEmpty' pattern
+func returnIfContainsElements<T: CollectionType>(x: T?) -> T? {
     if let x = x {
         if x.count > 0 {
             return x
@@ -49,8 +50,10 @@ func curlRep(request: NSURLRequest) -> String {
             curl += "'"
     }
     
-    for (key, value) in request.allHTTPHeaderFields as! [String: AnyObject] {
-        curl += " -H '\(key): \(value)'"
+    if let allHTTPHeaderFields = request.allHTTPHeaderFields {
+        for (key, value) in allHTTPHeaderFields {
+            curl += " -H '\(key): \(value)'"
+        }
     }
     
     curl += " \"\(request.URL)\""
@@ -149,6 +152,7 @@ func createError(message: String) -> Error {
     return NSError(domain: "UPnAtom", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
 }
 
+/// TODO: replace with CollectionType protocol extension
 func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {
     if let found = arr.indexOf(object) {
         return arr.removeAtIndex(found)

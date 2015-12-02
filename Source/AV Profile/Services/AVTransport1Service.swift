@@ -69,7 +69,12 @@ public class AVTransport1Service: AbstractUPnPService {
         
         soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
             let responseObject = responseObject as? [String: String]
-            success(numberOfTracks: responseObject?["NrTracks"]?.toInt() ?? 0, mediaDuration: responseObject?["MediaDuration"], currentURI: responseObject?["CurrentURI"], currentURIMetaData: responseObject?["CurrentURIMetaData"], nextURI: responseObject?["NextURI"], nextURIMetaData: responseObject?["NextURIMetaData"], playMedium: responseObject?["PlayMedium"], recordMedium: responseObject?["RecordMedium"], writeStatus: responseObject?["WriteStatus"])
+            var numberOfTracks: Int?
+            if let numberOfTracksString = responseObject?["NrTracks"] {
+                numberOfTracks = Int(numberOfTracksString)
+            }
+            
+            success(numberOfTracks: numberOfTracks ?? 0, mediaDuration: responseObject?["MediaDuration"], currentURI: responseObject?["CurrentURI"], currentURIMetaData: responseObject?["CurrentURIMetaData"], nextURI: responseObject?["NextURI"], nextURIMetaData: responseObject?["NextURIMetaData"], playMedium: responseObject?["PlayMedium"], recordMedium: responseObject?["RecordMedium"], writeStatus: responseObject?["WriteStatus"])
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                 failure(error: error)
         })
