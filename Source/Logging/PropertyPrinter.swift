@@ -23,6 +23,7 @@
 
 import Foundation
 
+// TODO: check if class name can be obtained in Swift 2.1
 public protocol ExtendedPrintable: CustomStringConvertible {
     var className: String { get }
 }

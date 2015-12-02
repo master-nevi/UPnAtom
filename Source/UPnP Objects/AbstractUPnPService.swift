@@ -138,18 +138,20 @@ public class AbstractUPnPService: AbstractUPnP {
             httpSessionManager.responseSerializer = AFHTTPResponseSerializer()
             httpSessionManager.GET(serviceDescriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-                    var parseError: NSError?
-                    if let xmlData = responseObject as? NSData,
-                        serviceDescriptionDocument = ONOXMLDocument(data: xmlData, error: &parseError) {
-                            LogVerbose("Parsing service description XML:\nSTART\n\(NSString(data: xmlData, encoding: NSUTF8StringEncoding))\nEND")
-                            
-                            serviceDescriptionDocument.definePrefix(AbstractUPnPService._serviceDescriptionDefaultPrefix, forDefaultNamespace: "urn:schemas-upnp-org:service-1-0")
-                            self._serviceDescriptionDocument = serviceDescriptionDocument
-                            completion(serviceDescriptionDocument: serviceDescriptionDocument, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
+                    guard let xmlData = responseObject as? NSData else {
+                        completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
                     }
-                    else {
+                    
+                    do {
+                        let serviceDescriptionDocument = try ONOXMLDocument(data: xmlData)
+                        LogVerbose("Parsing service description XML:\nSTART\n\(NSString(data: xmlData, encoding: NSUTF8StringEncoding))\nEND")
+                        
+                        serviceDescriptionDocument.definePrefix(AbstractUPnPService._serviceDescriptionDefaultPrefix, forDefaultNamespace: "urn:schemas-upnp-org:service-1-0")
+                        self._serviceDescriptionDocument = serviceDescriptionDocument
+                        completion(serviceDescriptionDocument: serviceDescriptionDocument, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
+                    } catch let parseError as NSError {
                         LogError("Failed to parse service description for SOAP action support check: \(parseError)")
-                    completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
+                        completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
                     }
                 })
                 }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
@@ -216,7 +218,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     /// Returns an opaque object to act as the observer. Use it when the event observer needs to be removed.
     public func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent) -> Void) -> AnyObject {
         /// Use callBackBlock for event notifications. While the notifications are backed by NSNotifications for broadcasting, they should only be used internally in order to keep track of how many subscribers there are.
-        let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
+        let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { (notification: NSNotification!) -> Void in
             if let event = notification.userInfo?[AbstractUPnPService._upnpEventKey] as? UPnPEvent {
                 callBackBlock(event: event)
             }

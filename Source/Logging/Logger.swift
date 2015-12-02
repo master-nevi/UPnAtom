@@ -23,43 +23,28 @@
 
 import Foundation
 
-struct LogFlag : RawOptionSetType {
-    typealias RawValue = UInt
-    private var _value: UInt = 0
-    init(_ value: UInt) { self._value = value }
-    init(rawValue value: UInt) { self._value = value }
-    init(nilLiteral: ()) { self._value = 0 }
-    static var allZeros: LogFlag { return self(0) }
-    static func fromMask(raw: UInt) -> LogFlag { return self(raw) }
-    var rawValue: UInt { return self._value }
+struct LogFlag : OptionSetType {    
+    let rawValue: UInt
     
-    static var Error: LogFlag { return self(1 << 0) } // 0...00001
-    static var Warning: LogFlag { return self(1 << 1) } // 0...00010
-    static var Info: LogFlag { return self(1 << 2) } // 0...00100
-    static var Debug: LogFlag { return self(1 << 3) } // 0...01000
-    static var Verbose: LogFlag { return self(1 << 4) }  // 0...10000
+    static let Error = LogFlag(rawValue: 1 << 0) // 0...00001
+    static let Warning = LogFlag(rawValue: 1 << 1) // 0...00010
+    static let Info = LogFlag(rawValue: 1 << 2) // 0...00100
+    static let Debug = LogFlag(rawValue: 1 << 3) // 0...01000
+    static let Verbose = LogFlag(rawValue: 1 << 4) // 0...10000
 }
 
-struct LogLevel : RawOptionSetType {
-    typealias RawValue = UInt
-    private var _value: UInt = 0
-    init(_ value: UInt) { self._value = value }
-    init(rawValue value: UInt) { self._value = value }
-    init(nilLiteral: ()) { self._value = 0 }
-    static var allZeros: LogLevel { return self(0) }
-    static func fromMask(raw: UInt) -> LogLevel { return self(raw) }
-    var rawValue: UInt { return self._value }
+/// Debug levels
+extension LogFlag {
+    static let OffLevel: LogFlag = []
+    static let ErrorLevel: LogFlag = [.Error]
+    static let WarningLevel: LogFlag = [.Error, .Warning]
+    static let InfoLevel: LogFlag = [.Error, .Warning, .Info]
+    static let DebugLevel: LogFlag = [.Error, .Warning, .Info, .Debug]
+    static let VerboseLevel: LogFlag = [.Error, .Warning, .Info, .Debug, .Verbose]
     
-    static var Off: LogLevel { return self(0) }
-    static var Error: LogLevel { return self(LogFlag.Error.rawValue) }
-    static var Warning: LogLevel { return self(Error.rawValue | LogFlag.Warning.rawValue) }
-    static var Info: LogLevel { return self(Warning.rawValue | LogFlag.Info.rawValue) }
-    static var Debug: LogLevel { return self(Info.rawValue | LogFlag.Debug.rawValue) }
-    static var Verbose: LogLevel { return self(Debug.rawValue | LogFlag.Verbose.rawValue) }
-    static var All: LogLevel { return self(UInt.max) }
 }
 
-let defaultLogLevel = LogLevel.Debug
+let defaultLogLevel = LogFlag.DebugLevel
 
 var logLevel = defaultLogLevel
 
@@ -67,28 +52,28 @@ func resetDefaultDebugLevel() {
     logLevel = defaultLogLevel
 }
 
-func Log(isAsynchronous: Bool, level: LogLevel, flag: LogFlag, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, @autoclosure string: () -> String) {
-    if level.rawValue & flag.rawValue != 0 {
-        println(string())
+func Log(isAsynchronous: Bool, level: LogFlag, flag: LogFlag, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, @autoclosure string: () -> String) {
+    if level.contains(flag) {
+        print(string())
     }
 }
 
-func LogDebug(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
-    Log(async, level, .Debug, file: file, function: function, line: line, logText)
+func LogDebug(@autoclosure logText: () -> String, level: LogFlag = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, asynchronous async: Bool = true) {
+    Log(async, level: level, flag: .Debug, file: file, function: function, line: line, string: logText)
 }
 
-func LogInfo(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
-    Log(async, level, .Info, file: file, function: function, line: line, logText)
+func LogInfo(@autoclosure logText: () -> String, level: LogFlag = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, asynchronous async: Bool = true) {
+    Log(async, level: level, flag: .Info, file: file, function: function, line: line, string: logText)
 }
 
-func LogWarn(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
-    Log(async, level, .Warning, file: file, function: function, line: line, logText)
+func LogWarn(@autoclosure logText: () -> String, level: LogFlag = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, asynchronous async: Bool = true) {
+    Log(async, level: level, flag: .Warning, file: file, function: function, line: line, string: logText)
 }
 
-func LogVerbose(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = true) {
-    Log(async, level, .Verbose, file: file, function: function, line: line, logText)
+func LogVerbose(@autoclosure logText: () -> String, level: LogFlag = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, asynchronous async: Bool = true) {
+    Log(async, level: level, flag: .Verbose, file: file, function: function, line: line, string: logText)
 }
 
-func LogError(@autoclosure logText: () -> String, level: LogLevel = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UWord = __LINE__, asynchronous async: Bool = false) {
-    Log(async, level, .Error, file: file, function: function, line: line, logText)
+func LogError(@autoclosure logText: () -> String, level: LogFlag = logLevel, file: StaticString = __FILE__, function: StaticString = __FUNCTION__, line: UInt = __LINE__, asynchronous async: Bool = false) {
+    Log(async, level: level, flag: .Error, file: file, function: function, line: line, string: logText)
 }

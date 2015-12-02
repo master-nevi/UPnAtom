@@ -185,15 +185,14 @@ extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
 //            }())
             var httpMethodLine: String?
             var headers = [String: String]()
-            var regularExpressionError: NSError?
-            let headersRegularExpression = NSRegularExpression(pattern: "^([a-z0-9-]+): *(.+)$", options: .CaseInsensitive | .AnchorsMatchLines, error: &regularExpressionError)
+            let headersRegularExpression = try? NSRegularExpression(pattern: "^([a-z0-9-]+): *(.+)$", options: [.CaseInsensitive, .AnchorsMatchLines])
             message.enumerateLines({ (line, stop) -> () in
                 if httpMethodLine == nil {
                     httpMethodLine = line
                 }
                 else {
-                    headersRegularExpression?.enumerateMatchesInString(line, options: nil, range: NSRange(location: 0, length: count(line)), usingBlock: { (result: NSTextCheckingResult!, flags: NSMatchingFlags, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-                        if result.numberOfRanges == 3 {
+                    headersRegularExpression?.enumerateMatchesInString(line, options: [], range: NSRange(location: 0, length: line.characters.count), usingBlock: { (resultOptional: NSTextCheckingResult?, flags: NSMatchingFlags, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+                        if let result = resultOptional where result.numberOfRanges == 3 {
                             let key = (line as NSString).substringWithRange(result.rangeAtIndex(1)).lowercaseString
                             let value = (line as NSString).substringWithRange(result.rangeAtIndex(2))
                             headers[key] = value

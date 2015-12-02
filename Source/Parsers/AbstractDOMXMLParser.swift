@@ -30,9 +30,11 @@ public class AbstractDOMXMLParser {
         
         var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
-            var parseError: NSError?
-            let xmlDocument = ONOXMLDocument(data: data, error: &parseError)
-            parserResult = parseError != nil ? EmptyResult.Failure(parseError!) : self.parse(document: xmlDocument)
+            do {
+                parserResult = self.parse(document:try ONOXMLDocument(data: data))
+            } catch let parseError as NSError {
+                parserResult = EmptyResult.Failure(parseError)
+            }
         }
         
         return parserResult
