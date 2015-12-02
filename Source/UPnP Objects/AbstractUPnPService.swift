@@ -32,13 +32,13 @@ public class AbstractUPnPService: AbstractUPnP {
     }
     public private(set) var serviceID: String! // TODO: Should ideally be a constant, see Github issue #10
     public var serviceDescriptionURL: NSURL {
-        return NSURL(string: _relativeServiceDescriptionURL.absoluteString!, relativeToURL: baseURL)!
+        return NSURL(string: _relativeServiceDescriptionURL.absoluteString, relativeToURL: baseURL)!
     }
     public var controlURL: NSURL {
-        return NSURL(string: _relativeControlURL.absoluteString!, relativeToURL: baseURL)!
+        return NSURL(string: _relativeControlURL.absoluteString, relativeToURL: baseURL)!
     }
     public var eventURL: NSURL {
-        return NSURL(string: _relativeEventURL.absoluteString!, relativeToURL: baseURL)!
+        return NSURL(string: _relativeEventURL.absoluteString, relativeToURL: baseURL)!
     }
     override public var baseURL: NSURL! {
         if let baseURL = _baseURLFromXML {
@@ -160,7 +160,7 @@ public class AbstractUPnPService: AbstractUPnP {
     }
     
     /// Used for determining support of optional SOAP actions for this service.
-    public func supportsSOAPAction(#actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
+    public func supportsSOAPAction(actionParameters actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
         let soapActionName = actionParameters.soapAction
         
         // only reading SOAP actions support cache, so distpach_async is appropriate to allow for concurrent reads
@@ -245,7 +245,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     public func removeEventObserver(observer: AnyObject) {
         dispatch_barrier_async(_concurrentEventObserverQueue, { () -> Void in
             if let observer = observer as? EventObserver {
-                removeObject(&self._eventObservers, observer)
+                removeObject(&self._eventObservers, object: observer)
                 NSNotificationCenter.defaultCenter().removeObserver(observer.notificationCenterObserver)
             }
             
@@ -352,27 +352,27 @@ class UPnPServiceParser: AbstractSAXXMLParser {
             }, foundInnerText: nil))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "serviceType"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.serviceType = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "serviceId"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.serviceID = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "SCPDURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.relativeServiceDescriptionURL = NSURL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "controlURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.relativeControlURL = NSURL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "eventSubURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.relativeEventURL = NSURL(string: text)
         }))
     }

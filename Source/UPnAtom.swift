@@ -38,7 +38,7 @@ import Foundation
     init() {
         // configure discovery adapter
         let adapterClass = UPnAtom.ssdpDiscoveryAdapterClass()
-        let adapter = adapterClass()
+        let adapter = adapterClass.init()
         ssdpDiscoveryAdapter = adapter
 
         // configure UPNP registry

@@ -59,23 +59,23 @@ import Foundation
         self.init(rawValue: rawValue)
     }
     
-    class func uuid(#usn: String) -> String? {
+    class func uuid(usn usn: String) -> String? {
         let usnComponents = usn.componentsSeparatedByString("::")
         return (usnComponents.count >= 1 && usnComponents[0].rangeOfString("uuid:") != nil) ? usnComponents[0] : nil
     }
     
-    class func urn(#usn: String) -> String? {
+    class func urn(usn usn: String) -> String? {
         let usnComponents = usn.componentsSeparatedByString("::")
         return (usnComponents.count >= 2 && usnComponents[1].rangeOfString("urn:") != nil) ? usnComponents[1] : nil
     }
     
-    class func isRootDevice(#usn: String) -> Bool {
+    class func isRootDevice(usn usn: String) -> Bool {
         let usnComponents = usn.componentsSeparatedByString("::")
         return usnComponents.count >= 2 && usnComponents[1].rangeOfString("upnp:rootdevice") != nil
     }
 }
 
-extension UniqueServiceName: Printable {
+extension UniqueServiceName: CustomStringConvertible {
     public var description: String {
         return rawValue
     }

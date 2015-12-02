@@ -24,13 +24,13 @@
 import Foundation
 
 public class AbstractUPnPDevice: AbstractUPnP {
-    @objc public class IconDescription: Printable {
+    @objc public class IconDescription: CustomStringConvertible {
         public let relativeURL: NSURL
         public let size: CGSize
         public let colorDepth: Int
         public let mimeType: String
         public var description: String {
-            return "\(relativeURL.absoluteString!) (\(mimeType):\(size.width)x\(size.height))"
+            return "\(relativeURL.absoluteString) (\(mimeType):\(size.width)x\(size.height))"
         }
         
         init(relativeURL: NSURL, size: CGSize, colorDepth: Int, mimeType: String) {
@@ -200,55 +200,55 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
             }, foundInnerText: nil))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "UDN"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.udn = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "friendlyName"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.friendlyName = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "modelDescription"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.modelDescription = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "modelName"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.modelName = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "modelNumber"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.modelNumber = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "modelURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.modelURL = NSURL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serialNumber"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.serialNumber = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "manufacturer"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.manufacturer = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "manufacturerURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?.manufacturerURL = NSURL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?._currentIconDescription = ParserIconDescription()
             }, didEndParsingElement: { [unowned self] (elementName) -> Void in
-                var currentDevice = self._deviceStack.peek()
+                let currentDevice = self._deviceStack.peek()
                 if let iconDescription = currentDevice?._currentIconDescription?.iconDescription {
                     currentDevice?.iconDescriptions.append(iconDescription)
                 }
@@ -256,33 +256,33 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
             }, foundInnerText: nil))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "mimetype"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?._currentIconDescription?.mimeType = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "width"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
-                var currentDevice = self._deviceStack.peek()
+                let currentDevice = self._deviceStack.peek()
                 currentDevice?._currentIconDescription?.width = Int(textNumber.intValue)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "height"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
-                var currentDevice = self._deviceStack.peek()
+                let currentDevice = self._deviceStack.peek()
                 currentDevice?._currentIconDescription?.height = Int(textNumber.intValue)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "depth"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             if let textNumber = self._numberFormatter.numberFromString(text) {
-                var currentDevice = self._deviceStack.peek()
+                let currentDevice = self._deviceStack.peek()
                 currentDevice?._currentIconDescription?.depth = Int(textNumber.intValue)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "url"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentDevice = self._deviceStack.peek()
+            let currentDevice = self._deviceStack.peek()
             currentDevice?._currentIconDescription?.relativeURL = NSURL(string: text)
         }))
     }

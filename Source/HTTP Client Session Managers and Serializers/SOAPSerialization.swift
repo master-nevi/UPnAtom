@@ -113,7 +113,7 @@ public class SOAPResponseSerializer: AFXMLParserResponseSerializer {
 class SOAPResponseParser: AbstractDOMXMLParser {
     private var _responseParameters = [String: String]()
     
-    override func parse(#document: ONOXMLDocument) -> EmptyResult {
+    override func parse(document document: ONOXMLDocument) -> EmptyResult {
         var result: EmptyResult = .Success
         document.enumerateElementsWithXPath("/s:Envelope/s:Body/*/*", usingBlock: { (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             if let elementTag = element.tag, elementValue = element.stringValue() where
@@ -129,7 +129,7 @@ class SOAPResponseParser: AbstractDOMXMLParser {
         return result
     }
     
-    func parse(#soapResponseData: NSData) -> Result<[String: String]> {
+    func parse(soapResponseData soapResponseData: NSData) -> Result<[String: String]> {
         switch super.parse(data: soapResponseData) {
         case .Success:
             return .Success(RVW(_responseParameters))

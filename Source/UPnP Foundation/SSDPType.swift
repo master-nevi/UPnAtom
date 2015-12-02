@@ -85,7 +85,7 @@ enum SSDPType: RawRepresentable {
     }
 }
 
-extension SSDPType: Printable {
+extension SSDPType: CustomStringConvertible {
     var description: String {
         return self.rawValue
     }
