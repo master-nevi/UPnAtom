@@ -15,7 +15,7 @@ class FolderViewController: UIViewController {
     private var _mediaServer: MediaServer1Device!
     private var _contentDirectoryID: String!
     
-    func configure(#mediaServer: MediaServer1Device, title: String, contentDirectoryID: String) {
+    func configure(mediaServer mediaServer: MediaServer1Device, title: String, contentDirectoryID: String) {
         _mediaServer = mediaServer
         _contentDirectoryID = contentDirectoryID
         self.title = title

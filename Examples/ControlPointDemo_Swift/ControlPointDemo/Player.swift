@@ -67,7 +67,7 @@ class Player {
         startPlayback(position: position)
     }
     
-    func startPlayback(#position: Int) {
+    func startPlayback(position position: Int) {
         _position = position
         
         if let item = _playlist?[position] as? ContentDirectory1VideoItem,
@@ -88,44 +88,44 @@ class Player {
     }
     
     @objc private func playPauseButtonTapped(sender: AnyObject) {
-        println("play/pause button tapped")
+        print("play/pause button tapped")
         
         switch _playerState {
         case .Playing:
             pause({ () -> Void in
-                println("Pause command succeeded!")
+                print("Pause command succeeded!")
             }, failure: { (error) -> Void in
-                println("Pause command failed: \(error)")
+                print("Pause command failed: \(error)")
             })
         case .Paused, .Stopped:
             play({ () -> Void in
-                println("Play command succeeded!")
+                print("Play command succeeded!")
                 }, failure: { (error) -> Void in
-                    println("Play command failed: \(error)")
+                    print("Play command failed: \(error)")
             })
         default:
-            println("Play/pause button cannot be used in this state.")
+            print("Play/pause button cannot be used in this state.")
         }
     }
     
     @objc private func stopButtonTapped(sender: AnyObject) {
-        println("stop button tapped")
+        print("stop button tapped")
         
         switch _playerState {
         case .Playing, .Paused:
             stop({ () -> Void in
-                println("Stop command succeeded!")
+                print("Stop command succeeded!")
                 }, failure: { (error) -> Void in
-                    println("Stop command failed: \(error)")
+                    print("Stop command failed: \(error)")
             })
         case .Stopped:
-            println("Stop button cannot be used in this state.")
+            print("Stop button cannot be used in this state.")
         default:
-            println("Stop button cannot be used in this state.")
+            print("Stop button cannot be used in this state.")
         }
     }
     
-    private func didSetRenderer(#oldRenderer: MediaRenderer1Device?, newRenderer: MediaRenderer1Device?) {
+    private func didSetRenderer(oldRenderer oldRenderer: MediaRenderer1Device?, newRenderer: MediaRenderer1Device?) {
         if let avTransportEventObserver: AnyObject = _avTransportEventObserver {
             oldRenderer?.avTransportService?.removeEventObserver(avTransportEventObserver)
         }

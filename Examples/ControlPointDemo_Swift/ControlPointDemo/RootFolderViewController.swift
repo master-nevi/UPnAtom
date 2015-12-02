@@ -142,14 +142,14 @@ class RootFolderViewController: UIViewController {
         return deviceCache[deviceUSN] as! AbstractUPnPDevice
     }
     
-    private func insertDevice(#deviceUSN: UniqueServiceName, inout deviceUSNs: [UniqueServiceName], inSection section: Int) {
+    private func insertDevice(deviceUSN deviceUSN: UniqueServiceName, inout deviceUSNs: [UniqueServiceName], inSection section: Int) {
         let index = deviceUSNs.count
         deviceUSNs.insert(deviceUSN, atIndex: index)
         let indexPath = NSIndexPath(forRow: index, inSection: section)
         self._tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
     }
     
-    private func deleteDevice(#deviceUSN: UniqueServiceName, inout deviceUSNs: [UniqueServiceName], inSection section: Int) {
+    private func deleteDevice(deviceUSN deviceUSN: UniqueServiceName, inout deviceUSNs: [UniqueServiceName], inSection section: Int) {
         if let index = find(deviceUSNs, deviceUSN) {
             deviceUSNs.removeAtIndex(index)
             let indexPath = NSIndexPath(forRow: index, inSection: section)
@@ -191,7 +191,7 @@ class RootFolderViewController: UIViewController {
             NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
                 let alertController = UIAlertController(title: "Archive Complete!", message: "Load archive and reload table view? If cancelled you'll see the archived devices on the next launch.", preferredStyle: .Alert)
                 alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
-                alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction!) -> Void in
+                alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction) -> Void in
                     self.loadArchivedUPnPObjects()
                 }))
                 self.presentViewController(alertController, animated: true, completion: nil)

@@ -45,7 +45,7 @@ extension UPnPEvent {
 class AVTransport1EventParser: AbstractDOMXMLParser {
     private var _instanceState = [String: AnyObject]()
     
-    override func parse(#document: ONOXMLDocument) -> EmptyResult {
+    override func parse(document document: ONOXMLDocument) -> EmptyResult {
         let result: EmptyResult = .Success
 
         // procedural vs series of nested if let's
@@ -93,7 +93,7 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
         return result
     }
     
-    func parse(#eventXML: NSData) -> Result<[String: AnyObject]> {
+    func parse(eventXML eventXML: NSData) -> Result<[String: AnyObject]> {
         switch super.parse(data: eventXML) {
         case .Success:
             return .Success(RVW(_instanceState))

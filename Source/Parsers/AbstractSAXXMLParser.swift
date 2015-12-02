@@ -64,7 +64,7 @@ public class AbstractSAXXMLParser: NSObject {
                         
                         // make our (copy of the) curents stack the same length
                         let elementsToRemove: Int = tempElementStack.count - tempObservationElementPath.count
-                        var range = Range(start: 0, end: elementsToRemove)
+                        let range = Range(start: 0, end: elementsToRemove)
                         tempElementStack.removeRange(range)
                         if tempObservationElementPath == tempElementStack {
                             return elementObservation
@@ -89,7 +89,7 @@ public class AbstractSAXXMLParser: NSObject {
         return nil
     }
     
-    public func parse(#data: NSData) -> EmptyResult {
+    public func parse(data data: NSData) -> EmptyResult {
         var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
@@ -136,7 +136,7 @@ public class AbstractSAXXMLParser: NSObject {
 }
 
 extension AbstractSAXXMLParser: NSXMLParserDelegate {
-    public func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [NSObject : AnyObject]) {
+    public func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
         _elementStack += [elementName]
         
         if let elementObservation = elementObservationForElementStack(_elementStack),

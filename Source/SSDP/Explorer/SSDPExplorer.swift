@@ -129,7 +129,7 @@ class SSDPExplorer {
             requestBody += ["USER-AGENT: \(userAgent)\r\n\r\n\r\n"]
         }
         
-        let requestBodyString = join("\r\n", requestBody)
+        let requestBodyString = requestBody.joinWithSeparator("\r\n")
         return requestBodyString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
     }
     
@@ -151,7 +151,7 @@ class SSDPExplorer {
             locationString = headers["location"],
             locationURL = NSURL(string: locationString),
             ssdpTypeRawValue = (headers["st"] != nil ? headers["st"] : headers["nt"]),
-            ssdpType = SSDPType(rawValue: ssdpTypeRawValue) where find(_types, ssdpType) != nil {
+            ssdpType = SSDPType(rawValue: ssdpTypeRawValue) where _types.indexOf(ssdpType) != nil {
                 let discovery = SSDPDiscovery(usn: usn, descriptionURL: locationURL, type: ssdpType)
                 switch messageType {
                 case .SearchResponse, .AvailableNotification, .UpdateNotification:

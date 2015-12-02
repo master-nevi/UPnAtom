@@ -25,7 +25,7 @@ import Foundation
 
 func returnIfContainsElements<T: _CollectionType>(x: T?) -> T? {
     if let x = x {
-        if count(x) > 0 {
+        if x.count > 0 {
             return x
         }
     }
@@ -150,7 +150,7 @@ func createError(message: String) -> Error {
 }
 
 func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {
-    if let found = find(arr, object) {
+    if let found = arr.indexOf(object) {
         return arr.removeAtIndex(found)
     }
     return nil
@@ -159,7 +159,7 @@ func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {
 extension NSError {
     /// An alternative to iOS's [NSError localizedDescription] which returns an esoteric Cocoa error when [NSError userInfo][NSLocalizedDescriptionKey] is nil. In that case, this method will return nil instead.
     var localizedDescriptionOrNil: String? {
-        return self.userInfo?[NSLocalizedDescriptionKey] as? String
+        return self.userInfo[NSLocalizedDescriptionKey] as? String
     }
     
     func localizedDescription(defaultDescription: String) -> String {

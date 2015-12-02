@@ -178,7 +178,7 @@ class UPnPEventSubscriptionManager {
                 
                 let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: eventCallBackURL, timeout: self._defaultSubscriptionTimeout)
                 
-                self._subscribeSessionManager.SUBSCRIBE(eventURL.absoluteString!, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
+                self._subscribeSessionManager.SUBSCRIBE(eventURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
                     let response: UPnPEventSubscribeResponseSerializer.Response! = responseObject as? UPnPEventSubscribeResponseSerializer.Response
                     if response == nil {
                         failureClosure(createError("Failure serializing event subscribe response"))
@@ -233,7 +233,7 @@ class UPnPEventSubscriptionManager {
         })
     }
     
-    private func handleIncomingEvent(#subscriptionID: String, eventData: NSData) {
+    private func handleIncomingEvent(subscriptionID subscriptionID: String, eventData: NSData) {
         subscriptions { (subscriptions: [String: Subscription]) -> Void in
             if let subscription: Subscription = (subscriptions.values.array as NSArray).firstUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)) {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -272,7 +272,7 @@ class UPnPEventSubscriptionManager {
         }
     }
     
-    private func add(#subscription: Subscription, completion: (() -> Void)? = nil) {
+    private func add(subscription subscription: Subscription, completion: (() -> Void)? = nil) {
         dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
             self._subscriptions[subscription.eventURLString] = subscription
             self.startStopHTTPServerIfNeeded(self._subscriptions.count)
@@ -285,7 +285,7 @@ class UPnPEventSubscriptionManager {
         })
     }
     
-    private func remove(#subscription: Subscription, completion: (() -> Void)? = nil) {
+    private func remove(subscription subscription: Subscription, completion: (() -> Void)? = nil) {
         dispatch_barrier_async(self._concurrentSubscriptionQueue, { () -> Void in
             self._subscriptions.removeValueForKey(subscription.eventURLString)?.invalidate()
             self.startStopHTTPServerIfNeeded(self._subscriptions.count)
