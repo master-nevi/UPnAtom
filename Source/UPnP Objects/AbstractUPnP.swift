@@ -39,9 +39,10 @@ import Foundation
     required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
         self.usn = usn
         self.descriptionURL = descriptionURL
+        super.init()
         
         // only deal with UPnP object's with URN's for now, i.e. is either a device or service
-        if returnIfContainsElements(usn.urn) == nil {
+        guard let urn = usn.urn where !urn.isEmpty else {
             return nil
         }
     }
