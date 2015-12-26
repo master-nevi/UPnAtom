@@ -23,17 +23,6 @@
 
 import Foundation
 
-/// TODO: evaluate if this function is necessary anymore when it can now be replaced with a guard-else statements paird with 'where !x.isEmpty' pattern
-func returnIfContainsElements<T: CollectionType>(x: T?) -> T? {
-    if let x = x {
-        if x.count > 0 {
-            return x
-        }
-    }
-    
-    return nil
-}
-
 func curlRep(request: NSURLRequest) -> String {
     var curl = ""
     

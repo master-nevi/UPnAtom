@@ -35,10 +35,7 @@ import Foundation
         self.rawValue = rawValue
         
         // all forms of usn should contain a uuid, otherwise it's invalid and nil will be returned
-        if let uuid = returnIfContainsElements(UniqueServiceName.uuid(usn: rawValue)) {
-            self.uuid = uuid
-        }
-        else {
+        guard let uuid = UniqueServiceName.uuid(usn: rawValue) where !uuid.isEmpty else {
             /// TODO: Remove default initializations to simply return nil, see Github issue #11
             self.uuid = ""
             self.rootDevice = false
@@ -46,8 +43,10 @@ import Foundation
             return nil
         }
         
+        self.uuid = uuid
+        
         rootDevice = UniqueServiceName.isRootDevice(usn: rawValue)
-        urn = returnIfContainsElements(UniqueServiceName.urn(usn: rawValue))
+        urn = UniqueServiceName.urn(usn: rawValue)
     }
     
     convenience public init?(uuid: String, urn: String) {
