@@ -41,13 +41,12 @@ public class SOAPRequestSerializer: AFHTTPRequestSerializer {
         }
     }
     
-    override public func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!, error: NSErrorPointer) -> NSURLRequest! {
-        let requestParameters: Parameters! = parameters as? Parameters
-        if requestParameters == nil {
-            return nil
+    override public func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!) throws -> NSURLRequest {
+        guard let requestParameters = parameters as? Parameters else {
+            throw createError("Invalid parameters")
         }
         
-        var mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
+        let mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
         
         for (field, value) in self.HTTPRequestHeaders {
             if let field = field as? String, value = value as? String where request.valueForHTTPHeaderField(field) == nil {
@@ -56,7 +55,7 @@ public class SOAPRequestSerializer: AFHTTPRequestSerializer {
         }
         
         if mutableRequest.valueForHTTPHeaderField("Content-Type") == nil {
-            var charSet = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+            let charSet = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
             mutableRequest.setValue("text/xml; charset=\"\(charSet)\"", forHTTPHeaderField: "Content-Type")
         }
         
@@ -84,29 +83,16 @@ public class SOAPRequestSerializer: AFHTTPRequestSerializer {
 }
 
 public class SOAPResponseSerializer: AFXMLParserResponseSerializer {
-    override public func responseObjectForResponse(response: NSURLResponse!, data: NSData!, error: NSErrorPointer) -> AnyObject! {
-        if !validateResponse(response as! NSHTTPURLResponse, data: data, error: error) {
-            if error == nil {
-                return nil
-            }
-        }
-        
-        var serializationError: NSError?
-        var responseObject: AnyObject!
+    override public func responseObjectForResponse(response: NSURLResponse!, data: NSData!) throws -> AnyObject {
+        try validateResponse(response as! NSHTTPURLResponse, data: data)
         let xmlParser = SOAPResponseParser()
         
         switch xmlParser.parse(soapResponseData: data) {
         case .Success(let wrapper):
-            responseObject = wrapper.value
+            return wrapper.value
         case .Failure(let error):
-            serializationError = error
+            throw error
         }
-        
-        if serializationError != nil && error != nil {
-            error.memory = serializationError!
-        }
-        
-        return responseObject
     }
 }
 
@@ -117,7 +103,7 @@ class SOAPResponseParser: AbstractDOMXMLParser {
         var result: EmptyResult = .Success
         document.enumerateElementsWithXPath("/s:Envelope/s:Body/*/*", usingBlock: { (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             if let elementTag = element.tag, elementValue = element.stringValue() where
-                count(elementTag) > 0 && count(elementValue) > 0 && elementValue != "NOT_IMPLEMENTED" {
+                elementTag.characters.count > 0 && elementValue.characters.count > 0 && elementValue != "NOT_IMPLEMENTED" {
                     self._responseParameters[elementTag] = elementValue
             }
             
