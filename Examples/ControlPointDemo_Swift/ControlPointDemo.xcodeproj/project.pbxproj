@@ -14,7 +14,7 @@
 		630532C51AAE3F95006AD1B6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 630532C31AAE3F95006AD1B6 /* LaunchScreen.xib */; };
 		63AF18B91AB4DC9F00543821 /* FolderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AF18B81AB4DC9F00543821 /* FolderViewController.swift */; };
 		63AF18BB1AB4DE5F00543821 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AF18BA1AB4DE5F00543821 /* Player.swift */; };
-		F50AADEE20BD1E8A32321920 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BC578F97EEA4489C5D76F4C /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		F50AADEE20BD1E8A32321920 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BC578F97EEA4489C5D76F4C /* Pods.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,6 +131,8 @@
 		630532AD1AAE3F95006AD1B6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0710;
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "David Robles";
 				TargetAttributes = {

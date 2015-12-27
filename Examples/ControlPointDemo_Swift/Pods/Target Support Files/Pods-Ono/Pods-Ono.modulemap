@@ -1,6 +1,0 @@
-framework module Ono {
-  umbrella header "Pods-Ono-umbrella.h"
-
-  export *
-  module * { export * }
-}
