@@ -80,7 +80,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in                    
-                    success(result: result, numberReturned: responseObject?["NumberReturned"]?.toInt() ?? 0, totalMatches: responseObject?["TotalMatches"]?.toInt() ?? 0, updateID: responseObject?["UpdateID"])
+                    success(result: result, numberReturned: Int(String(responseObject?["NumberReturned"])) ?? 0, totalMatches: Int(String(responseObject?["TotalMatches"])) ?? 0, updateID: responseObject?["UpdateID"])
                 })
             })
             }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
@@ -113,7 +113,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                         }
                         
                         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            success(result: result, numberReturned: responseObject?["NumberReturned"]?.toInt() ?? 0, totalMatches: responseObject?["TotalMatches"]?.toInt() ?? 0, updateID: responseObject?["UpdateID"])
+                            success(result: result, numberReturned: Int(String(responseObject?["NumberReturned"])) ?? 0, totalMatches: Int(String(responseObject?["TotalMatches"])) ?? 0, updateID: responseObject?["UpdateID"])
                         })
                     })
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in

@@ -183,7 +183,7 @@ public class RenderingControl1Service: AbstractUPnPService {
     
     public func getVolume(instanceID instanceID: String, channel: String = "Master", success: (volume: Int) -> Void, failure:(error: NSError) -> Void) {
         getStateVariable(instanceID: instanceID, stateVariableName: "Volume", additionalArguments: ["Channel" : channel], success: { (stateVariableValue: String?) -> Void in
-            success(volume: Int(stateVariableValue?) ?? 0)
+            success(volume: Int(String(stateVariableValue)) ?? 0)
             }, failure: failure)
     }
     
@@ -203,7 +203,7 @@ public class RenderingControl1Service: AbstractUPnPService {
             if isSupported {
                 self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
                     let responseObject = responseObject as? [String: String]
-                    success(volumeDB: responseObject?["CurrentVolume"]?.toInt() ?? 0)
+                    success(volumeDB: Int(String(responseObject?["CurrentVolume"])) ?? 0)
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
@@ -249,7 +249,7 @@ public class RenderingControl1Service: AbstractUPnPService {
             if isSupported {
                 self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
                     let responseObject = responseObject as? [String: String]
-                    success(minimumValue: responseObject?["MinValue"]?.toInt() ?? 0, maximumValue: responseObject?["MaxValue"]?.toInt() ?? 0)
+                    success(minimumValue: Int(String(responseObject?["MinValue"])) ?? 0, maximumValue: Int(String(responseObject?["MaxValue"])) ?? 0)
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
