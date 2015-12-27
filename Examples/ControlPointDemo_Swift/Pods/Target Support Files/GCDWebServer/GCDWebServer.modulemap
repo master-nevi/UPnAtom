@@ -3,6 +3,4 @@ framework module GCDWebServer {
 
   export *
   module * { export * }
-
-  private header "GCDWebServerPrivate.h"
 }
