@@ -160,7 +160,7 @@ class UPnPEventSubscriptionManager {
         subscriptions { [unowned self] (subscriptions: [String: Subscription]) -> Void in
             if let subscription = subscriptions[eventURLString] {
                 if let completion = completion {
-                    completion(result: Result.Success(RVW(subscription)))
+                    completion(result: Result.Success(subscription))
                 }
                 return
             }
@@ -192,7 +192,7 @@ class UPnPEventSubscriptionManager {
                     
                     self.add(subscription: subscription, completion: { () -> Void in
                         if let completion = completion {
-                            completion(result: Result.Success(RVW(subscription)))
+                            completion(result: Result.Success(subscription))
                         }
                     })
                     }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
@@ -380,7 +380,7 @@ class UPnPEventSubscriptionManager {
             // read just in case it was removed
             self.add(subscription: subscription, completion: { () -> Void in
                 if let completion = completion {
-                    completion(result: Result.Success(RVW(subscription)))
+                    completion(result: Result.Success(subscription))
                 }
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
@@ -434,7 +434,7 @@ class UPnPEventSubscriptionManager {
                 
                 self.add(subscription: subscription, completion: { () -> Void in
                     if let completion = completion {
-                        completion(result: Result.Success(RVW(subscription)))
+                        completion(result: Result.Success(subscription))
                     }
                 })
                 }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in

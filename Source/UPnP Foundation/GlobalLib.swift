@@ -53,21 +53,20 @@ func curlRep(request: NSURLRequest) -> String {
 public typealias Error = NSError
 
 public enum Result<T> {
-    // TODO: Ideally the generic associated value shouldn't need to be wrapped inside an object, see Github issue #12
-    case Success(RVW<T>)
+    case Success(T)
     case Failure(Error)
     
     init(_ value: T) {
-        self = .Success(RVW(value))
+        self = .Success(value)
     }
     
     init(_ error: Error) {
         self = .Failure(error)
     }
-        
+    
     var failed: Bool {
         switch self {
-        case .Failure(let error):
+        case .Failure(_):
             return true
             
         default:
@@ -87,20 +86,12 @@ public enum Result<T> {
     
     var value: T? {
         switch self {
-        case .Success(let wrapper):
-            return wrapper.value
+        case .Success(let value):
+            return value
             
         default:
             return nil
         }
-    }
-}
-
-// Result value wrapper
-public class RVW<T> {
-    let value: T
-    public init(_ value: T) {
-        self.value = value
     }
 }
 
@@ -118,7 +109,7 @@ public enum EmptyResult {
     
     var failed: Bool {
         switch self {
-        case .Failure(let error):
+        case .Failure(_):
             return true
             
         default:
