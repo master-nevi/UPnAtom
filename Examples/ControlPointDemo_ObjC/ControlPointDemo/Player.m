@@ -115,11 +115,11 @@ typedef NS_ENUM(NSInteger, PlayerState) {
         
         NSString *uri = [item resourceURL].absoluteString;
         if (uri.length) {
-            
+            __weak typeof(self) weakSelf = self;
             [self.mediaRenderer.avTransportService setAVTransportURIWithInstanceID:_avTransportInstanceID currentURI:uri currentURIMetadata:@"" success:^{
                 NSLog(@"URI Set succeeded!");
                 
-                [self playWithSuccess:^{
+                [weakSelf playWithSuccess:^{
                     NSLog(@"Play command succeeded!");
                 } failure:^(NSError *error) {
                     NSLog(@"Play command failed: %@", error.localizedDescription);
