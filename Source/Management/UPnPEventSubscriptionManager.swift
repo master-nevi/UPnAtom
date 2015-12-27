@@ -477,8 +477,6 @@ class UPnPEventSubscriptionManager {
     }
 }
 
-extension UPnPEventSubscriptionManager.Subscription: Equatable { }
-
 internal func ==(lhs: UPnPEventSubscriptionManager.Subscription, rhs: UPnPEventSubscriptionManager.Subscription) -> Bool {
     return lhs.subscriptionID == rhs.subscriptionID
 }

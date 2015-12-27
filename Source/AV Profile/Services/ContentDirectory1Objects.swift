@@ -26,7 +26,8 @@ import Ono
 
 // MARK: ContentDirectory1Object
 
-@objc public class ContentDirectory1Object {
+/// Rooting to NSObject to expose to Objective-C: https://forums.developer.apple.com/thread/11867
+public class ContentDirectory1Object: NSObject {
     public let objectID: String
     public let parentID: String
     public let title: String
@@ -55,14 +56,17 @@ import Ono
             title = ""
             rawType = ""
             albumArtURL = nil
+            super.init()
             return nil
         }
+        
+        super.init()
     }
 }
 
 extension ContentDirectory1Object: ExtendedPrintable {
     public var className: String { return "ContentDirectory1Object" }
-    public var description: String {
+    override public var description: String {
         var properties = PropertyPrinter()
         properties.add("id", property: objectID)
         properties.add("parentID", property: parentID)

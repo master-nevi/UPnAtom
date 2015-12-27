@@ -24,7 +24,8 @@
 import Foundation
 
 public class AbstractUPnPDevice: AbstractUPnP {
-    @objc public class IconDescription: CustomStringConvertible {
+    /// Rooting to NSObject to expose to Objective-C: https://forums.developer.apple.com/thread/11867
+    public class IconDescription: CustomStringConvertible {
         public let relativeURL: NSURL
         public let size: CGSize
         public let colorDepth: Int

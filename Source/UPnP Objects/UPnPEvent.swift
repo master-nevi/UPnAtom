@@ -23,7 +23,8 @@
 
 import Foundation
 
-@objc public class UPnPEvent {
+/// Rooting to NSObject to expose to Objective-C: https://forums.developer.apple.com/thread/11867
+public class UPnPEvent: NSObject {
     public let eventXML: NSData
     public weak var service: AbstractUPnPService?
     init(eventXML: NSData, service: AbstractUPnPService) {

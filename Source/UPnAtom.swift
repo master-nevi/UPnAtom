@@ -23,7 +23,8 @@
 
 import Foundation
 
-@objc public class UPnAtom {
+/// Rooting to NSObject to expose to Objective-C: https://forums.developer.apple.com/thread/11867
+public class UPnAtom: NSObject {
     // public
     public static let sharedInstance = UPnAtom()
     public let upnpRegistry: UPnPRegistry
@@ -35,7 +36,7 @@ import Foundation
     // internal
     unowned let ssdpDiscoveryAdapter: SSDPDiscoveryAdapter
     
-    init() {
+    override init() {
         // configure discovery adapter
         let adapterClass = UPnAtom.ssdpDiscoveryAdapterClass()
         let adapter = adapterClass.init()
