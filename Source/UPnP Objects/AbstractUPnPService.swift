@@ -140,6 +140,7 @@ public class AbstractUPnPService: AbstractUPnP {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
                     guard let xmlData = responseObject as? NSData else {
                         completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
+                        return;
                     }
                     
                     do {
@@ -196,6 +197,11 @@ public class AbstractUPnPService: AbstractUPnP {
                 }
             }
         })
+    }
+    
+    /// overridable by service subclasses
+    public func createEvent(eventXML: NSData) -> UPnPEvent {
+        return UPnPEvent(eventXML: eventXML, service: self)
     }
 }
 
@@ -265,11 +271,6 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                 }
             }
         })
-    }
-    
-    /// overridable by service subclasses
-    public func createEvent(eventXML: NSData) -> UPnPEvent {
-        return UPnPEvent(eventXML: eventXML, service: self)
     }
     
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventXML: NSData) {

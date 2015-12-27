@@ -31,8 +31,8 @@ public class SOAPSessionManager: AFHTTPSessionManager {
         self.requestSerializer = SOAPRequestSerializer()
         self.responseSerializer = SOAPResponseSerializer()
     }
-
-    required public init(coder aDecoder: NSCoder) {
+    
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 }

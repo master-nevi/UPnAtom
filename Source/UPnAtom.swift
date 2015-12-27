@@ -44,7 +44,9 @@ public class UPnAtom: NSObject {
 
         // configure UPNP registry
         upnpRegistry = UPnPRegistry(ssdpDiscoveryAdapter: ssdpDiscoveryAdapter)
-        UPnAtom.upnpClasses().map({ self.upnpRegistry.register(upnpClass: $0.upnpClass, forURN: $0.forURN) })
+        for (upnpClass, urn) in UPnAtom.upnpClasses() {
+            self.upnpRegistry.register(upnpClass: upnpClass, forURN: urn)
+        }
     }
     
     deinit {
