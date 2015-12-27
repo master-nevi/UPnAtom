@@ -63,7 +63,7 @@ public class UPnPRegistry: NSObject {
     /// Safe to call from any thread
     public func upnpDevices(completionQueue completionQueue: NSOperationQueue, completion: (upnpDevices: [AbstractUPnPDevice]) -> Void) {
         upnpObjects { (upnpObjects: [UniqueServiceName: AbstractUPnP]) -> Void in
-            let upnpDevices = upnpObjects.values.array.filter({$0 is AbstractUPnPDevice})
+            let upnpDevices = Array(upnpObjects.values).filter({$0 is AbstractUPnPDevice})
             
             completionQueue.addOperationWithBlock({ () -> Void in
                 completion(upnpDevices: upnpDevices as! [AbstractUPnPDevice])
@@ -74,7 +74,7 @@ public class UPnPRegistry: NSObject {
     /// Safe to call from any thread
     public func upnpServices(completionQueue completionQueue: NSOperationQueue, completion: (upnpServices: [AbstractUPnPService]) -> Void) {
         upnpObjects { (upnpObjects: [UniqueServiceName: AbstractUPnP]) -> Void in
-            let upnpServices = upnpObjects.values.array.filter({$0 is AbstractUPnPService})
+            let upnpServices = Array(upnpObjects.values).filter({$0 is AbstractUPnPService})
             
             completionQueue.addOperationWithBlock({ () -> Void in
                 completion(upnpServices: upnpServices as! [AbstractUPnPService])
@@ -267,7 +267,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
     
     /// Must be called within dispatch_barrier_async() to the UPnP object queue since the upnpObjects dictionary is being updated
     private func process(upnpObjectsToKeep upnpObjectsToKeep: [AbstractUPnP], inout upnpObjects: [UniqueServiceName: AbstractUPnP]) {
-        let upnpObjectsSet = Set(upnpObjects.values.array)
+        let upnpObjectsSet = Set(Array(upnpObjects.values))
         let upnpObjectsToRemove = upnpObjectsSet.subtract(Set(upnpObjectsToKeep))
         
         for upnpObjectToRemove in upnpObjectsToRemove {
