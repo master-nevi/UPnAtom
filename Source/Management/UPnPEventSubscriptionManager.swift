@@ -235,7 +235,7 @@ class UPnPEventSubscriptionManager {
     
     private func handleIncomingEvent(subscriptionID subscriptionID: String, eventData: NSData) {
         subscriptions { (subscriptions: [String: Subscription]) -> Void in
-            if let subscription: Subscription = (subscriptions.values.array as NSArray).firstUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)) {
+            if let subscription: Subscription = (Array(subscriptions.values) as NSArray).firstUsingPredicate(NSPredicate(format: "subscriptionID = %@", subscriptionID)) {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     subscription.subscriber?.handleEvent(self, eventXML: eventData)
                     return
