@@ -65,37 +65,45 @@ class SSDPExplorer {
         }
         multicastSocket.setIPv6Enabled(false)
         unicastSocket.setIPv6Enabled(false)
-
-        var error: NSError?
         
         // Configure unicast socket
         // Bind to address on the specified interface to a random port to receive unicast datagrams
-        if !unicastSocket.bindToPort(0, interface: interface, error: &error) {
+        do {
+            try unicastSocket.bindToPort(0, interface: interface)
+        } catch {
             stopExploring()
-            return .Failure(error ?? createError("Could not bind socket to port"))
+            return .Failure(createError("Could not bind socket to port"))
         }
         
-        if !unicastSocket.beginReceiving(&error) {
+        do {
+            try unicastSocket.beginReceiving()
+        } catch {
             stopExploring()
-            return .Failure(error ?? createError("Could not begin receiving error"))
+            return .Failure(createError("Could not begin receiving error"))
         }
         
         // Configure multicast socket
         // Bind to port without defining the interface to bind to the address INADDR_ANY (0.0.0.0). This prevents any address filtering which allows datagrams sent to the multicast group to be receives
-        if !multicastSocket.bindToPort(SSDPExplorer._multicastUDPPort, error: &error) {
+        do {
+            try multicastSocket.bindToPort(SSDPExplorer._multicastUDPPort)
+        } catch {
             stopExploring()
-            return .Failure(error ?? createError("Could not bind socket to port"))
+            return .Failure(createError("Could not bind socket to multicast port"))
         }
         
         // Join multicast group to express interest to router of receiving multicast datagrams
-        if !multicastSocket.joinMulticastGroup(SSDPExplorer._multicastGroupAddress, error: &error) {
+        do {
+            try multicastSocket.joinMulticastGroup(SSDPExplorer._multicastGroupAddress)
+        } catch {
             stopExploring()
-            return .Failure(error ?? createError("Could not join multicast group"))
+            return .Failure(createError("Could not join multicast group"))
         }
         
-        if !multicastSocket.beginReceiving(&error) {
+        do {
+            try multicastSocket.beginReceiving()
+        } catch {
             stopExploring()
-            return .Failure(error ?? createError("Could not begin receiving error"))
+            return .Failure(createError("Could not begin receiving error"))
         }
         
         _types = types
