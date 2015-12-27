@@ -92,7 +92,8 @@ extension ContentDirectory1Object {
     }
 }
 
-extension ContentDirectory1Container: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementation
+extension ContentDirectory1Container {
     override public var className: String { return "ContentDirectory1Container" }
     override public var description: String {
         var properties = PropertyPrinter()
@@ -129,7 +130,8 @@ extension ContentDirectory1Object {
     }
 }
 
-extension ContentDirectory1Item: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementation
+extension ContentDirectory1Item {
     override public var className: String { return "ContentDirectory1Item" }
     override public var description: String {
         var properties = PropertyPrinter()
@@ -192,7 +194,8 @@ extension ContentDirectory1Object {
     }
 }
 
-extension ContentDirectory1VideoItem: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementation
+extension ContentDirectory1VideoItem {
     override public var className: String { return "ContentDirectory1VideoItem" }
     override public var description: String {
         var properties = PropertyPrinter()

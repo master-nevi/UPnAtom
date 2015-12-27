@@ -341,7 +341,8 @@ extension AbstractUPnP {
     }
 }
 
-extension ContentDirectory1Service: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementation
+extension ContentDirectory1Service {
     override public var className: String { return "ContentDirectory1Service" }
     override public var description: String {
         var properties = PropertyPrinter()

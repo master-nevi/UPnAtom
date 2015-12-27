@@ -314,7 +314,8 @@ extension AbstractUPnP {
     }
 }
 
-extension AVTransport1Service: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementation
+extension AVTransport1Service {
     override public var className: String { return "AVTransport1Service" }
     override public var description: String {
         var properties = PropertyPrinter()

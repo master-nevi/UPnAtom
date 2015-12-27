@@ -112,7 +112,8 @@ extension AbstractUPnP {
     }
 }
 
-extension ConnectionManager1Service: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementation
+extension ConnectionManager1Service {
     override public var className: String { return "ConnectionManager1Service" }
     override public var description: String {
         var properties = PropertyPrinter()
