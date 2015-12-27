@@ -70,20 +70,20 @@ class Player {
     func startPlayback(position position: Int) {
         _position = position
         
-        if let item = _playlist?[position] as? ContentDirectory1VideoItem,
-            uri = item.resourceURL.absoluteString {
-                let instanceID = _avTransportInstanceID
-                mediaRenderer?.avTransportService?.setAVTransportURI(instanceID: instanceID, currentURI: uri, currentURIMetadata: "", success: { () -> Void in
-                    println("URI set succeeded!")
-                    self.play({ () -> Void in
-                        println("Play command succeeded!")
-                        }, failure: { (error) -> Void in
-                            println("Play command failed: \(error)")
-                    })
-                    
+        if let item = _playlist?[position] as? ContentDirectory1VideoItem {
+            let uri = item.resourceURL.absoluteString
+            let instanceID = _avTransportInstanceID
+            mediaRenderer?.avTransportService?.setAVTransportURI(instanceID: instanceID, currentURI: uri, currentURIMetadata: "", success: { () -> Void in
+                print("URI set succeeded!")
+                self.play({ () -> Void in
+                    print("Play command succeeded!")
                     }, failure: { (error) -> Void in
-                        println("URI set failed: \(error)")
+                        print("Play command failed: \(error)")
                 })
+                
+                }, failure: { (error) -> Void in
+                    print("URI set failed: \(error)")
+            })
         }
     }
     
@@ -133,8 +133,8 @@ class Player {
         _avTransportEventObserver = newRenderer?.avTransportService?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
             if let avTransportEvent = event as? AVTransport1Event,
                 transportState = (avTransportEvent.instanceState["TransportState"] as? String)?.lowercaseString {
-                    println("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
-                    println("transport state: \(transportState)")
+                    print("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
+                    print("transport state: \(transportState)")
                     if transportState.rangeOfString("playing") != nil {
                         self._playerState = .Playing
                     }

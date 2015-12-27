@@ -65,7 +65,7 @@ class SSDPExplorerDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
     
     private func notifyDelegate(ofFailure error: NSError) {
         dispatch_async(delegateQueue, { () -> Void in
-            delegate?.ssdpDiscoveryAdapter(self, didFailWithError: error)
+            self.delegate?.ssdpDiscoveryAdapter(self, didFailWithError: error)
         })
     }
     

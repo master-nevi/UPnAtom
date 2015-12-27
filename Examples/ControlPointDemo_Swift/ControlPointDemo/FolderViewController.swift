@@ -34,10 +34,10 @@ class FolderViewController: UIViewController {
                 self._playlist = result
                 self._tableView.reloadData()
                 }, failure: { (error: NSError) -> Void in
-                    println("Failed to browse content directory: \(error)")
+                    print("Failed to browse content directory: \(error)")
             })
             }, failure: { (error: NSError) -> Void in
-            println("Failed to get sort capabilities: \(error)")
+            print("Failed to get sort capabilities: \(error)")
         })
         
         let viewWidth = self.navigationController!.view.frame.size.width
@@ -60,7 +60,7 @@ extension FolderViewController: UITableViewDataSource {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as! UITableViewCell
+        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as UITableViewCell!
         let item = _playlist[indexPath.row]
         cell.textLabel?.text = item.title
         cell.accessoryType = item is ContentDirectory1Container ? .DisclosureIndicator : .None

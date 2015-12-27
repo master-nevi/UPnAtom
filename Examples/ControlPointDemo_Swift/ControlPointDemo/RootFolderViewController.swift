@@ -98,7 +98,7 @@ class RootFolderViewController: UIViewController {
 
     @objc private func deviceWasAdded(notification: NSNotification) {
         if let upnpDevice = notification.userInfo?[UPnPRegistry.UPnPDeviceKey()] as? AbstractUPnPDevice {
-            println("Added device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
+            print("Added device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
             
             _discoveredUPnPObjectCache[upnpDevice.usn] = upnpDevice
             insertDevice(deviceUSN: upnpDevice.usn, deviceUSNs: &_discoveredDeviceUSNs, inSection: 1)
@@ -107,7 +107,7 @@ class RootFolderViewController: UIViewController {
     
     @objc private func deviceWasRemoved(notification: NSNotification) {
         if let upnpDevice = notification.userInfo?[UPnPRegistry.UPnPDeviceKey()] as? AbstractUPnPDevice {
-            println("Removed device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
+            print("Removed device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
             
             _discoveredUPnPObjectCache.removeValueForKey(upnpDevice.usn)
             deleteDevice(deviceUSN: upnpDevice.usn, deviceUSNs: &_discoveredDeviceUSNs, inSection: 1)
@@ -117,7 +117,7 @@ class RootFolderViewController: UIViewController {
     @objc private func serviceWasAdded(notification: NSNotification) {
         if let upnpService = notification.userInfo?[UPnPRegistry.UPnPServiceKey()] as? AbstractUPnPService {
             let friendlyName = (upnpService.device != nil) ? upnpService.device!.friendlyName : "Service's device object not created yet"
-            println("Added service: \(upnpService.className) - \(friendlyName)")
+            print("Added service: \(upnpService.className) - \(friendlyName)")
             
             _discoveredUPnPObjectCache[upnpService.usn] = upnpService
         }
@@ -126,7 +126,7 @@ class RootFolderViewController: UIViewController {
     @objc private func serviceWasRemoved(notification: NSNotification) {
         if let upnpService = notification.userInfo?[UPnPRegistry.UPnPServiceKey()] as? AbstractUPnPService {
             let friendlyName = (upnpService.device != nil) ? upnpService.device!.friendlyName : "Service's device object not created yet"
-            println("Removed service: \(upnpService.className) - \(friendlyName)")
+            print("Removed service: \(upnpService.className) - \(friendlyName)")
             
             _discoveredUPnPObjectCache[upnpService.usn] = upnpService
         }
@@ -150,7 +150,7 @@ class RootFolderViewController: UIViewController {
     }
     
     private func deleteDevice(deviceUSN deviceUSN: UniqueServiceName, inout deviceUSNs: [UniqueServiceName], inSection section: Int) {
-        if let index = find(deviceUSNs, deviceUSN) {
+        if let index = deviceUSNs.indexOf(deviceUSN) {
             deviceUSNs.removeAtIndex(index)
             let indexPath = NSIndexPath(forRow: index, inSection: section)
             self._tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
@@ -170,7 +170,7 @@ class RootFolderViewController: UIViewController {
         _archivingUnarchivingQueue.addOperationWithBlock { () -> Void in
             // archive discovered objects
             var upnpArchivables = [UPnPArchivableAnnex]()
-            for (usn, upnpObject) in self._discoveredUPnPObjectCache {
+            for (_, upnpObject) in self._discoveredUPnPObjectCache {
                 var friendlyName = "Unknown"
                 if let upnpDevice = upnpObject as? AbstractUPnPDevice {
                     friendlyName = upnpDevice.friendlyName
@@ -222,10 +222,10 @@ class RootFolderViewController: UIViewController {
                 for upnpArchivable in upnpArchivables {
                     let upnpType = upnpArchivable.customMetadata["upnpType"] as? String
                     let friendlyName = upnpArchivable.customMetadata["friendlyName"] as? String
-                    println("Unarchived upnp object from cache \(upnpType) - \(friendlyName)")
+                    print("Unarchived upnp object from cache \(upnpType) - \(friendlyName)")
                     
                     UPnAtom.sharedInstance.upnpRegistry.createUPnPObject(upnpArchivable: upnpArchivable, callbackQueue: NSOperationQueue.mainQueue(), success: { (upnpObject: AbstractUPnP) -> Void in
-                        println("Re-created upnp object \(upnpObject.className) - \(friendlyName)")
+                        print("Re-created upnp object \(upnpObject.className) - \(friendlyName)")
                         
                         self._archivedUPnPObjectCache[upnpObject.usn] = upnpObject
                         
@@ -238,7 +238,7 @@ class RootFolderViewController: UIViewController {
                             upnpService.deviceSource = self
                         }
                         }, failure: { (error: NSError) -> Void in
-                            println("Failed to create UPnP Object from archive")
+                            print("Failed to create UPnP Object from archive")
                     })
                 }
             }
@@ -265,7 +265,7 @@ extension RootFolderViewController: UITableViewDataSource {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as! UITableViewCell
+        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("DefaultCell") as UITableViewCell!
         let device = deviceForIndexPath(indexPath)
         cell.textLabel?.text = device.friendlyName
         cell.accessoryType = device is MediaServer1Device ? .DisclosureIndicator : .None
@@ -280,7 +280,7 @@ extension RootFolderViewController: UITableViewDelegate {
 
         if let mediaServer = device as? MediaServer1Device {
             if mediaServer.contentDirectoryService == nil {
-                println("\(mediaServer.friendlyName) - has no content directory service")
+                print("\(mediaServer.friendlyName) - has no content directory service")
                 return
             }
             
@@ -292,7 +292,7 @@ extension RootFolderViewController: UITableViewDelegate {
         }
         else if let mediaRenderer = device as? MediaRenderer1Device {
             if mediaRenderer.avTransportService == nil {
-                println("\(mediaRenderer.friendlyName) - has no AV transport service")
+                print("\(mediaRenderer.friendlyName) - has no AV transport service")
                 return
             }
             

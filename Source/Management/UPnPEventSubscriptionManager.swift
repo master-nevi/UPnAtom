@@ -152,9 +152,7 @@ class UPnPEventSubscriptionManager {
         
         let eventURLString: String! = eventURL.absoluteString
         if eventURLString == nil {
-            if let completion = completion {
-                failureClosure(createError("Event URL does not exist"))
-            }
+            failureClosure(createError("Event URL does not exist"))
             return
         }
         
@@ -188,7 +186,7 @@ class UPnPEventSubscriptionManager {
                     let now = NSDate()
                     let expiration = now.dateByAddingTimeInterval(NSTimeInterval(response.timeout))
                     
-                    let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: eventURL.absoluteString!, manager: self)
+                    let subscription = Subscription(subscriptionID: response.subscriptionID, expiration: expiration, subscriber: subscriber, eventURLString: eventURL.absoluteString, manager: self)
                     
                     LogInfo("Successfully subscribed with timeout: \(response.timeout/60) mins: \(subscription)")
                     
@@ -198,7 +196,7 @@ class UPnPEventSubscriptionManager {
                         }
                     })
                     }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-                        LogError("Failed to subscribe to event URL: \(eventURL.absoluteString!)\nerror: \(error)")
+                        LogError("Failed to subscribe to event URL: \(eventURL.absoluteString)\nerror: \(error)")
                         failureClosure(error)
                 })
             })
@@ -247,10 +245,10 @@ class UPnPEventSubscriptionManager {
     @objc private func applicationDidEnterBackground(notification: NSNotification) {
         // GCDWebServer handles stopping and restarting itself as appropriate during application life cycle events. Invalidating the timers is all that's necessary here :)
         
-        subscriptions { [unowned self] (subscriptions: [String: Subscription]) -> Void in
+        subscriptions { (subscriptions: [String: Subscription]) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 // invalidate all timers before being backgrounded as the will be trashed upon foregrounding anyways
-                for (eventURL, subscription) in subscriptions {
+                for (_, subscription) in subscriptions {
                     subscription.invalidate()
                 }
             })
@@ -260,7 +258,7 @@ class UPnPEventSubscriptionManager {
     @objc private func applicationWillEnterForeground(notification: NSNotification) {
         subscriptions { [unowned self] (subscriptions: [String: Subscription]) -> Void in
             // unsubscribe and re-subscribe for all event subscriptions
-            for (eventURL, subscription) in subscriptions {
+            for (_, subscription) in subscriptions {
                 self.unsubscribe(subscription, completion: { (result) -> Void in
                     self.resubscribe(subscription, completion: {
                         if let errorDescription = $0.error?.localizedDescriptionOrNil {
@@ -510,9 +508,10 @@ extension AFHTTPSessionManager {
     }
     
     private func dataTask(method: String, URLString: String, parameters: AnyObject, success: ((task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void)?, failure: ((task: NSURLSessionDataTask?, error: NSError) -> Void)?) -> NSURLSessionDataTask? {
-        var serializationError: NSError?
-        let request = self.requestSerializer.requestWithMethod(method, URLString: NSURL(string: URLString, relativeToURL: self.baseURL)?.absoluteString, parameters: parameters, error: &serializationError)
-        if let serializationError = serializationError {
+        let request: NSURLRequest!
+        do {
+             request = try self.requestSerializer.requestWithMethod(method, URLString: NSURL(string: URLString, relativeToURL: self.baseURL)?.absoluteString, parameters: parameters, error: ())
+        } catch let serializationError as NSError {
             if let failure = failure {
                 dispatch_async(self.completionQueue != nil ? self.completionQueue : dispatch_get_main_queue(), { () -> Void in
                     failure(task: nil, error: serializationError)

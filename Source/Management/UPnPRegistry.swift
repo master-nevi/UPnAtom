@@ -219,7 +219,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
             dispatch_barrier_async(self._concurrentUPnPObjectQueue, { () -> Void in
                 if let xmlData = responseObject as? NSData {
                     // if ssdp object is not in cache then discard
-                    if find(self._ssdpDiscoveryCache, ssdpDiscovery) == nil {
+                    if self._ssdpDiscoveryCache.indexOf(ssdpDiscovery) == nil {
                         return
                     }
                     
@@ -236,7 +236,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
         let usn = ssdpDiscovery.usn
         
         // ignore if already in db
-        if let foundObject = upnpObjects[usn] {
+        if let _ = upnpObjects[usn] {
             return
         }
         else {
