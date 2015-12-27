@@ -340,7 +340,8 @@ extension AbstractUPnP {
     }
 }
 
-extension RenderingControl1Service: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementations
+extension RenderingControl1Service {
     override public var className: String { return "RenderingControl1Service" }
     override public var description: String {
         var properties = PropertyPrinter()

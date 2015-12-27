@@ -44,7 +44,8 @@ extension AbstractUPnP {
     }
 }
 
-extension MediaRenderer1Device: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementation
+extension MediaRenderer1Device {
     override public var className: String { return "MediaRenderer1Device" }
     override public var description: String {
         var properties = PropertyPrinter()

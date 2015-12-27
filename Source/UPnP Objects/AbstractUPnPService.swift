@@ -294,7 +294,8 @@ extension AbstractUPnP {
     }
 }
 
-extension AbstractUPnPService: ExtendedPrintable {
+/// overrides ExtendedPrintable protocol implementation
+extension AbstractUPnPService {
     override public var className: String { return "AbstractUPnPService" }
     override public var description: String {
         var properties = PropertyPrinter()
