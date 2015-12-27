@@ -237,8 +237,8 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                 // subscribe
                 UPnPEventSubscriptionManager.sharedInstance.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
                     switch subscription {
-                    case .Success(let wrapper):
-                        self._eventSubscription = wrapper.value
+                    case .Success(let value):
+                        self._eventSubscription = value
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown subscribe error")
                         LogError("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
@@ -393,7 +393,7 @@ class UPnPServiceParser: AbstractSAXXMLParser {
                 if let deviceType = _deviceType {
                     foundParserService.deviceUSN = UniqueServiceName(uuid: _upnpService.uuid, urn: deviceType)
                 }
-                return .Success(RVW(foundParserService))
+                return .Success(foundParserService)
             }
             else {
                 return .Failure(createError("Parser error"))
