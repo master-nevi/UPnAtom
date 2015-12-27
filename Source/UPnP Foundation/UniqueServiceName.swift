@@ -23,7 +23,8 @@
 
 import Foundation
 
-@objc public class UniqueServiceName: RawRepresentable {
+/// Rooting to NSObject to expose to Objective-C: https://forums.developer.apple.com/thread/11867
+public class UniqueServiceName: NSObject, RawRepresentable {
     public let rawValue: RawValue
     public let uuid: String
     public let urn: String?
@@ -40,6 +41,7 @@ import Foundation
             self.uuid = ""
             self.rootDevice = false
             self.urn = nil
+            super.init()
             return nil
         }
         
@@ -47,6 +49,7 @@ import Foundation
         
         rootDevice = UniqueServiceName.isRootDevice(usn: rawValue)
         urn = UniqueServiceName.urn(usn: rawValue)
+        super.init()
     }
     
     convenience public init?(uuid: String, urn: String) {
@@ -74,14 +77,14 @@ import Foundation
     }
 }
 
-extension UniqueServiceName: CustomStringConvertible {
-    public var description: String {
+extension UniqueServiceName {
+    override public var description: String {
         return rawValue
     }
 }
 
-extension UniqueServiceName: Hashable {
-    public var hashValue: Int {
+extension UniqueServiceName {
+    override public var hashValue: Int {
         return rawValue.hashValue
     }
 }

@@ -23,7 +23,8 @@
 
 import Foundation
 
-@objc public class AbstractUPnP {
+/// Rooting to NSObject to expose to Objective-C: https://forums.developer.apple.com/thread/11867
+public class AbstractUPnP: NSObject {
     public var uuid: String {
         return usn.uuid
     }
@@ -48,21 +49,19 @@ import Foundation
     }
 }
 
-extension AbstractUPnP: Equatable { }
-
 public func ==(lhs: AbstractUPnP, rhs: AbstractUPnP) -> Bool {
     return lhs.usn == rhs.usn
 }
 
-extension AbstractUPnP: Hashable {
-    public var hashValue: Int {
+extension AbstractUPnP {
+    override public var hashValue: Int {
         return usn.hashValue
     }
 }
 
 extension AbstractUPnP: ExtendedPrintable {
     public var className: String { return "AbstractUPnP" }
-    public var description: String {
+    override public var description: String {
         var properties = PropertyPrinter()
         properties.add("uuid", property: uuid)
         properties.add("urn", property: urn)

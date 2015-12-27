@@ -24,7 +24,8 @@
 import Foundation
 import AFNetworking
 
-@objc public class UPnPRegistry {
+/// Rooting to NSObject to expose to Objective-C: https://forums.developer.apple.com/thread/11867
+public class UPnPRegistry: NSObject {
     private enum UPnPObjectNotificationType {
         case Device
         case Service
@@ -54,7 +55,8 @@ import AFNetworking
         _upnpObjectDescriptionSessionManager.requestSerializer = AFHTTPRequestSerializer()
         _upnpObjectDescriptionSessionManager.responseSerializer = AFHTTPResponseSerializer()
         
-        _ssdpDiscoveryAdapter = ssdpDiscoveryAdapter        
+        _ssdpDiscoveryAdapter = ssdpDiscoveryAdapter
+        super.init()
         ssdpDiscoveryAdapter.delegate = self
     }
     
