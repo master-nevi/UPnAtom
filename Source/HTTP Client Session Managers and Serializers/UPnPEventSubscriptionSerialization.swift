@@ -173,6 +173,6 @@ class UPnPEventUnsubscribeResponseSerializer: AFHTTPResponseSerializer {
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!) throws -> AnyObject {
         try validateResponse(response as! NSHTTPURLResponse, data: data)
         
-        return "Success";
+        return "Success"
     }
 }
