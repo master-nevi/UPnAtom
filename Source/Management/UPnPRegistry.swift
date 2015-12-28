@@ -95,17 +95,16 @@ public class UPnPRegistry: NSObject {
         }
         _upnpObjectDescriptionSessionManager.GET(upnpArchivable.descriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject?) -> Void in
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-                if let xmlData = responseObject as? NSData,
+                guard let xmlData = responseObject as? NSData,
                     usn = UniqueServiceName(rawValue: upnpArchivable.usn),
-                    upnpObject = self.createUPnPObject(usn: usn, descriptionURL: upnpArchivable.descriptionURL, descriptionXML: xmlData) {
-                        callbackQueue.addOperationWithBlock({ () -> Void in
-                            success(upnpObject: upnpObject)
-                        })
-                        
+                    upnpObject = self.createUPnPObject(usn: usn, descriptionURL: upnpArchivable.descriptionURL, descriptionXML: xmlData) else {
+                        failureCase(createError("Unable to create UPnP object"))
                         return
                 }
                 
-                failureCase(createError("Unable to create UPnP object"))
+                callbackQueue.addOperationWithBlock({ () -> Void in
+                    success(upnpObject: upnpObject)
+                })
             })
             }, failure: { (task: NSURLSessionDataTask?, error: NSError!) -> Void in
                 failureCase(error)
@@ -219,7 +218,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
             dispatch_barrier_async(self._concurrentUPnPObjectQueue, { () -> Void in
                 if let xmlData = responseObject as? NSData {
                     // if ssdp object is not in cache then discard
-                    if self._ssdpDiscoveryCache.indexOf(ssdpDiscovery) == nil {
+                    guard self._ssdpDiscoveryCache.indexOf(ssdpDiscovery) != nil else {
                         return
                     }
                     
@@ -236,32 +235,31 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
         let usn = ssdpDiscovery.usn
         
         // ignore if already in db
-        if let _ = upnpObjects[usn] {
+        guard upnpObjects[usn] == nil else {
             return
         }
-        else {
-            if let newObject = createUPnPObject(usn: usn, descriptionURL: ssdpDiscovery.descriptionURL, descriptionXML: descriptionXML) {
-                if !(newObject is AbstractUPnPDevice) && !(newObject is AbstractUPnPService) {
-                    return
-                }
-                
-                if newObject is AbstractUPnPDevice {
-                    (newObject as! AbstractUPnPDevice).serviceSource = self
-                }
-                else {
-                    (newObject as! AbstractUPnPService).deviceSource = self
-                }
-                
-                upnpObjects[usn] = newObject
-                
-                let upnpObjectsCopy = upnpObjects // create a copy for safe use on the main thread
-                let notificationType: UPnPObjectNotificationType = newObject is AbstractUPnPDevice ? .Device : .Service
-                let notificationComponents = notificationType.notificationComponents()
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self._upnpObjectsMainThreadCopy = upnpObjectsCopy
-                    NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectAddedNotificationName, object: self, userInfo: [notificationComponents.objectKey: newObject])
-                })
+
+        if let newObject = createUPnPObject(usn: usn, descriptionURL: ssdpDiscovery.descriptionURL, descriptionXML: descriptionXML) {
+            guard newObject is AbstractUPnPDevice || newObject is AbstractUPnPService else {
+                return
             }
+            
+            if newObject is AbstractUPnPDevice {
+                (newObject as! AbstractUPnPDevice).serviceSource = self
+            }
+            else {
+                (newObject as! AbstractUPnPService).deviceSource = self
+            }
+            
+            upnpObjects[usn] = newObject
+            
+            let upnpObjectsCopy = upnpObjects // create a copy for safe use on the main thread
+            let notificationType: UPnPObjectNotificationType = newObject is AbstractUPnPDevice ? .Device : .Service
+            let notificationComponents = notificationType.notificationComponents()
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self._upnpObjectsMainThreadCopy = upnpObjectsCopy
+                NSNotificationCenter.defaultCenter().postNotificationName(notificationComponents.objectAddedNotificationName, object: self, userInfo: [notificationComponents.objectKey: newObject])
+            })
         }
     }
     

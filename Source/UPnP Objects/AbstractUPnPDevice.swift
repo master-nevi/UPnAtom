@@ -79,24 +79,17 @@ public class AbstractUPnPDevice: AbstractUPnP {
             _baseURLFromXML = baseURL
         }
         
-        if let friendlyName = parsedDevice?.friendlyName {
-            self.friendlyName = friendlyName
+        guard let friendlyName = parsedDevice?.friendlyName,
+            let manufacturer = parsedDevice?.manufacturer,
+            let modelName = parsedDevice?.modelName else {
+                return nil
         }
-        else { return nil }
         
-        if let manufacturer = parsedDevice?.manufacturer {
-            self.manufacturer = manufacturer
-        }
-        else { return nil }
-        
+        self.friendlyName = friendlyName
+        self.manufacturer = manufacturer
+        self.modelName = modelName
         self.manufacturerURL = parsedDevice?.manufacturerURL
         self.modelDescription = parsedDevice?.modelDescription
-        
-        if let modelName = parsedDevice?.modelName {
-            self.modelName = modelName
-        }
-        else { return nil }
-        
         self.modelNumber = parsedDevice?.modelNumber
         self.modelURL = parsedDevice?.modelURL
         self.serialNumber = parsedDevice?.serialNumber
@@ -164,12 +157,12 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         var mimeType: String?
         init() { } // allow intializing with empty temp device
         var iconDescription: AbstractUPnPDevice.IconDescription? {
-            if relativeURL != nil && width != nil && height != nil && depth != nil && mimeType != nil {
-                let size = CGSize(width: width!, height: height!)
-                return AbstractUPnPDevice.IconDescription(relativeURL: relativeURL!, size: size, colorDepth: depth!, mimeType: mimeType!)
+            guard relativeURL != nil && width != nil && height != nil && depth != nil && mimeType != nil else {
+                return nil
             }
             
-            return nil
+            let size = CGSize(width: width!, height: height!)
+            return AbstractUPnPDevice.IconDescription(relativeURL: relativeURL!, size: size, colorDepth: depth!, mimeType: mimeType!)
         }
     }
     
@@ -185,6 +178,7 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         self._descriptionXML = descriptionXML
         super.init(supportNamespaces: supportNamespaces)
         
+        /// NOTE: URLBase is deprecated in UPnP v2.0, baseURL should be derived from the SSDP discovery description URL
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             self._baseURL = NSURL(string: text)
         }))

@@ -129,15 +129,14 @@ class UPnPEventRenewSubscriptionResponseSerializer: AFHTTPResponseSerializer {
     override func responseObjectForResponse(response: NSURLResponse!, data: NSData!) throws -> AnyObject {
         try validateResponse(response as! NSHTTPURLResponse, data: data)
         
-        if let subscriptionID = (response as! NSHTTPURLResponse).allHeaderFields["SID"] as? String,
+        guard let subscriptionID = (response as! NSHTTPURLResponse).allHeaderFields["SID"] as? String,
             timeoutString = (response as! NSHTTPURLResponse).allHeaderFields["TIMEOUT"] as? String,
             secondKeywordRange = timeoutString.rangeOfString("Second-"),
-            timeout = Int(timeoutString.substringWithRange(Range(start: secondKeywordRange.endIndex, end: timeoutString.endIndex))) {
-                return Response(subscriptionID: subscriptionID, timeout: timeout)
+            timeout = Int(timeoutString.substringWithRange(Range(start: secondKeywordRange.endIndex, end: timeoutString.endIndex))) else {
+                throw createError("Did not receive a valid subscription response")
         }
-        else {
-            throw createError("Did not receive a valid subscription response")
-        }
+        
+        return Response(subscriptionID: subscriptionID, timeout: timeout)
     }
 }
 

@@ -85,35 +85,24 @@ public class AbstractUPnPService: AbstractUPnP {
             _baseURLFromXML = baseURL
         }
         
-        if let serviceID = parsedService?.serviceID {
-            self.serviceID = serviceID
+        guard let serviceID = parsedService?.serviceID,
+            let relativeServiceDescriptionURL = parsedService?.relativeServiceDescriptionURL,
+            let relativeControlURL = parsedService?.relativeControlURL,
+            let relativeEventURL = parsedService?.relativeEventURL,
+            let deviceUSN = parsedService?.deviceUSN else {
+                return nil
         }
-        else { return nil }
         
-        if let relativeServiceDescriptionURL = parsedService?.relativeServiceDescriptionURL {
-            self._relativeServiceDescriptionURL = relativeServiceDescriptionURL
-        }
-        else { return nil }
-        
-        if let relativeControlURL = parsedService?.relativeControlURL {
-            self._relativeControlURL = relativeControlURL
-        }
-        else { return nil }
-        
-        if let relativeEventURL = parsedService?.relativeEventURL {
-            self._relativeEventURL = relativeEventURL
-        }
-        else { return nil }
-        
-        if let deviceUSN = parsedService?.deviceUSN {
-            self._deviceUSN = deviceUSN
-        }
-        else { return nil }
+        self.serviceID = serviceID
+        self._relativeServiceDescriptionURL = relativeServiceDescriptionURL
+        self._relativeControlURL = relativeControlURL
+        self._relativeEventURL = relativeEventURL
+        self._deviceUSN = deviceUSN
     }
     
     deinit {
         // deinit may be called during init if init returns nil, queue var may not be set
-        if _concurrentEventObserverQueue == nil {
+        guard _concurrentEventObserverQueue != nil else {
             return
         }
         
@@ -339,6 +328,7 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         self._descriptionXML = descriptionXML
         super.init(supportNamespaces: supportNamespaces)
         
+        /// NOTE: URLBase is deprecated in UPnP v2.0, baseURL should be derived from the SSDP discovery description URL
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             self._baseURL = NSURL(string: text)
         }))

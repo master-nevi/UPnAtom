@@ -48,41 +48,40 @@ public class AbstractSAXXMLParser: NSObject {
     func elementObservationForElementStack(elementStack: [String]) -> SAXXMLParserElementObservation? {
         for elementObservation in _elementObservations {
             // Full compares go first
-            if elementObservation.elementPath == elementStack {
+            guard elementObservation.elementPath != elementStack else {
                 return elementObservation
             }
-            else {
-                // * -> leafX -> leafY
-                // Maybe we have a wildchar, that means that the path after the wildchar must match
-                if elementObservation.elementPath.first == "*" &&
-                    elementStack.count >= elementObservation.elementPath.count {
-                        var tempElementStack = elementStack
-                        var tempObservationElementPath = elementObservation.elementPath
-                        
-                        // cut the * from our asset path
-                        tempObservationElementPath.removeAtIndex(0)
-                        
-                        // make our (copy of the) curents stack the same length
-                        let elementsToRemove: Int = tempElementStack.count - tempObservationElementPath.count
-                        let range = Range(start: 0, end: elementsToRemove)
-                        tempElementStack.removeRange(range)
-                        if tempObservationElementPath == tempElementStack {
-                            return elementObservation
-                        }
-                }
-                
-                // leafX -> leafY -> *
-                if elementObservation.elementPath.last == "*" &&
-                    elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
-                        var tempElementStack = elementStack
-                        var tempObservationElementPath = elementObservation.elementPath
-                        // Cut the last entry (which is * in one array and <element> in the other
-                        tempElementStack.removeLast()
-                        tempObservationElementPath.removeLast()
-                        if tempElementStack == tempObservationElementPath {
-                            return elementObservation
-                        }
-                }
+            
+            // * -> leafX -> leafY
+            // Maybe we have a wildchar, that means that the path after the wildchar must match
+            if elementObservation.elementPath.first == "*" &&
+                elementStack.count >= elementObservation.elementPath.count {
+                    var tempElementStack = elementStack
+                    var tempObservationElementPath = elementObservation.elementPath
+                    
+                    // cut the * from our asset path
+                    tempObservationElementPath.removeAtIndex(0)
+                    
+                    // make our (copy of the) curents stack the same length
+                    let elementsToRemove: Int = tempElementStack.count - tempObservationElementPath.count
+                    let range = Range(start: 0, end: elementsToRemove)
+                    tempElementStack.removeRange(range)
+                    if tempObservationElementPath == tempElementStack {
+                        return elementObservation
+                    }
+            }
+            
+            // leafX -> leafY -> *
+            if elementObservation.elementPath.last == "*" &&
+                elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
+                    var tempElementStack = elementStack
+                    var tempObservationElementPath = elementObservation.elementPath
+                    // Cut the last entry (which is * in one array and <element> in the other
+                    tempElementStack.removeLast()
+                    tempObservationElementPath.removeLast()
+                    if tempElementStack == tempObservationElementPath {
+                        return elementObservation
+                    }
             }
         }
         
