@@ -130,14 +130,11 @@ public class UPnPRegistry: NSObject {
         
         if let registeredClass = _upnpClasses[urn] {
             upnpClass = registeredClass
-        }
-        else if urn.rangeOfString("urn:schemas-upnp-org:device") != nil {
+        } else if urn.rangeOfString("urn:schemas-upnp-org:device") != nil {
             upnpClass = AbstractUPnPDevice.self
-        }
-        else if urn.rangeOfString("urn:schemas-upnp-org:service") != nil {
+        } else if urn.rangeOfString("urn:schemas-upnp-org:service") != nil {
             upnpClass = AbstractUPnPService.self
-        }
-        else {
+        } else {
             upnpClass = AbstractUPnP.self
         }
         
@@ -192,8 +189,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
                     case .Device, .Service:
                         if let foundObject = self._upnpObjects[ssdpDiscovery.usn] {
                             upnpObjectsToKeep.append(foundObject)
-                        }
-                        else {
+                        } else {
                             self.getUPnPDescription(forSSDPDiscovery: ssdpDiscovery)
                         }
                     default:
@@ -246,8 +242,7 @@ extension UPnPRegistry: SSDPDiscoveryAdapterDelegate {
             
             if newObject is AbstractUPnPDevice {
                 (newObject as! AbstractUPnPDevice).serviceSource = self
-            }
-            else {
+            } else {
                 (newObject as! AbstractUPnPService).deviceSource = self
             }
             

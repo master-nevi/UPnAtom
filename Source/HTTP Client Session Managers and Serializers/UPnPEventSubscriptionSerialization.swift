@@ -77,8 +77,7 @@ class UPnPEventSubscribeResponseSerializer: AFHTTPResponseSerializer {
             secondKeywordRange = timeoutString.rangeOfString("Second-"),
             timeout = Int(timeoutString.substringWithRange(Range(start: secondKeywordRange.endIndex, end: timeoutString.endIndex))) {
             return Response(subscriptionID: subscriptionID, timeout: timeout)
-        }
-        else {
+        } else {
             throw createError("Did not receive a valid subscription response")
         }
     }

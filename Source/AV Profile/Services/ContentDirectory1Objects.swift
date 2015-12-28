@@ -46,10 +46,8 @@ public class ContentDirectory1Object: NSObject {
                 
                 if let albumArtURLString = xmlElement.firstChildWithTag("albumArtURI")?.stringValue() {
                     self.albumArtURL = NSURL(string: albumArtURLString)
-                }
-                else { albumArtURL = nil }
-        }
-        else {
+                } else { albumArtURL = nil }
+        } else {
             /// TODO: Remove default initializations to simply return nil, see Github issue #11
             objectID = ""
             parentID = ""
@@ -116,8 +114,7 @@ public class ContentDirectory1Item: ContentDirectory1Object {
         /// TODO: Return nil immediately instead of waiting, see Github issue #11
         if let resourceURLString = xmlElement.firstChildWithTag("res").stringValue() {
             resourceURL = NSURL(string: resourceURLString)
-        }
-        else { resourceURL = nil }
+        } else { resourceURL = nil }
         
         super.init(xmlElement: xmlElement)
         
@@ -169,8 +166,7 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
             }
             
             self.duration = NSTimeInterval(duration)
-        }
-        else { self.duration = nil }
+        } else { self.duration = nil }
         
         audioChannelCount = Int(String(xmlElement.firstChildWithTag("res").valueForAttribute("nrAudioChannels")))
         
@@ -180,8 +176,7 @@ public class ContentDirectory1VideoItem: ContentDirectory1Item {
             width = Int(String(resolutionComponents.first)),
             height = Int(String(resolutionComponents.last)) {
                 resolution = CGSize(width: width, height: height)
-        }
-        else { resolution = nil }
+        } else { resolution = nil }
         
         sampleFrequency = Int(String(xmlElement.firstChildWithTag("res").valueForAttribute("sampleFrequency")))
         

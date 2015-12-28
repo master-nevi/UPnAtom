@@ -109,8 +109,7 @@ public class AbstractSAXXMLParser: NSObject {
         var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         if parser.parse() {
             parserResult = .Success
-        }
-        else {
+        } else {
             if let parserError = parser.parserError {
                 parserResult = .Failure(parserError)
             }
@@ -157,8 +156,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         
         if elementName == _elementStack.last {
             _elementStack.removeLast()
-        }
-        else {
+        } else {
             LogError("XML badly formatted!")
             parser.abortParsing()
         }

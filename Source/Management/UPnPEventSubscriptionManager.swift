@@ -308,8 +308,7 @@ class UPnPEventSubscriptionManager {
                     
                     // Stop http server if it's not needed further
                     self.startStopHTTPServerIfNeeded(self._subscriptions.count)
-                }
-                else {
+                } else {
                     LogError("Error starting HTTP server")
                 }
             }
@@ -339,8 +338,7 @@ class UPnPEventSubscriptionManager {
             if !stopHTTPServer() {
                 LogError("Error stopping HTTP server")
             }
-        }
-        else if subscriptionCount > 0 && !httpServer.running {
+        } else if subscriptionCount > 0 && !httpServer.running {
             if !startHTTPServer() {
                 LogError("Error starting HTTP server")
             }
@@ -520,8 +518,7 @@ extension AFHTTPSessionManager {
                 if let failure = failure {
                     failure(task: dataTask, error: error)
                 }
-            }
-            else {
+            } else {
                 if let success = success {
                     success(task: dataTask, responseObject: responseObject)
                 }
