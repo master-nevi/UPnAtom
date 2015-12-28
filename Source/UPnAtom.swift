@@ -23,7 +23,7 @@
 
 import Foundation
 
-/// Rooting to NSObject to expose to Objective-C: https://forums.developer.apple.com/thread/11867
+/// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
 public class UPnAtom: NSObject {
     // public
     public static let sharedInstance = UPnAtom()
