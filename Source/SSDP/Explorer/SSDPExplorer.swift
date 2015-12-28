@@ -155,6 +155,8 @@ class SSDPExplorer {
             usn = UniqueServiceName(rawValue: usnRawValue),
             locationString = headers["location"],
             locationURL = NSURL(string: locationString),
+            /// NT = Notification Type - SSDP discovered from device advertisements
+            /// ST = Search Target - SSDP discovered as a result of using M-SEARCH requests
             ssdpTypeRawValue = (headers["st"] != nil ? headers["st"] : headers["nt"]),
             ssdpType = SSDPType(rawValue: ssdpTypeRawValue) where _types.indexOf(ssdpType) != nil {
                 LogVerbose("SSDP response headers: \(headers)")
