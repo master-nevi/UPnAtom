@@ -153,14 +153,10 @@ class Player {
     
     private func playerStateDidChange() {
         switch _playerState {
-        case .Stopped:
+        case .Stopped, .Paused, .Unknown:
             playPauseButton.image = UIImage(named: "play_button")
         case .Playing:
             playPauseButton.image = UIImage(named: "pause_button")
-        case .Paused:
-            playPauseButton.image = UIImage(named: "play_button")
-        case .Unknown:
-            playPauseButton.image = UIImage(named: "play_button")
         }
     }
     
