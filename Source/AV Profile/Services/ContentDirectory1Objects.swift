@@ -121,7 +121,7 @@ public class ContentDirectory1Item: ContentDirectory1Object {
         
         super.init(xmlElement: xmlElement)
         
-        if resourceURL == nil {
+        guard resourceURL != nil else {
             return nil
         }
     }

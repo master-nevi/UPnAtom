@@ -54,15 +54,12 @@ class SSDPExplorer {
         assert(_multicastSocket == nil, "Socket is already open, stop it first!")
         
         // create sockets
-        let multicastSocket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
-        let unicastSocket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
-        if multicastSocket == nil || unicastSocket == nil {
-            return .Failure(createError("Socket could not be created"))
+        guard let multicastSocket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue()),
+            unicastSocket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue()) else {
+                return .Failure(createError("Socket could not be created"))
         }
-        else {
-            _multicastSocket = multicastSocket
-            _unicastSocket = unicastSocket
-        }
+        _multicastSocket = multicastSocket
+        _unicastSocket = unicastSocket
         multicastSocket.setIPv6Enabled(false)
         unicastSocket.setIPv6Enabled(false)
         
@@ -160,6 +157,7 @@ class SSDPExplorer {
             locationURL = NSURL(string: locationString),
             ssdpTypeRawValue = (headers["st"] != nil ? headers["st"] : headers["nt"]),
             ssdpType = SSDPType(rawValue: ssdpTypeRawValue) where _types.indexOf(ssdpType) != nil {
+                LogVerbose("SSDP response headers: \(headers)")
                 let discovery = SSDPDiscovery(usn: usn, descriptionURL: locationURL, type: ssdpType)
                 switch messageType {
                 case .SearchResponse, .AvailableNotification, .UpdateNotification:

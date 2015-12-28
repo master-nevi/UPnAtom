@@ -150,8 +150,7 @@ class UPnPEventSubscriptionManager {
             }
         }
         
-        let eventURLString: String! = eventURL.absoluteString
-        if eventURLString == nil {
+        guard let eventURLString: String! = eventURL.absoluteString else {
             failureClosure(createError("Event URL does not exist"))
             return
         }
@@ -166,8 +165,7 @@ class UPnPEventSubscriptionManager {
             }
             
             self.eventCallBackURL({ [unowned self] (eventCallBackURL: NSURL?) -> Void in
-                let eventCallBackURL: NSURL! = eventCallBackURL
-                if eventCallBackURL == nil {
+                guard let eventCallBackURL: NSURL = eventCallBackURL else {
                     failureClosure(createError("Event call back URL could not be created"))
                     return
                 }
@@ -177,8 +175,7 @@ class UPnPEventSubscriptionManager {
                 let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: eventCallBackURL, timeout: self._defaultSubscriptionTimeout)
                 
                 self._subscribeSessionManager.SUBSCRIBE(eventURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-                    let response: UPnPEventSubscribeResponseSerializer.Response! = responseObject as? UPnPEventSubscribeResponseSerializer.Response
-                    if response == nil {
+                    guard let response: UPnPEventSubscribeResponseSerializer.Response = responseObject as? UPnPEventSubscribeResponseSerializer.Response else {
                         failureClosure(createError("Failure serializing event subscribe response"))
                         return
                     }
@@ -204,8 +201,7 @@ class UPnPEventSubscriptionManager {
     }
     
     func unsubscribe(subscription: AnyObject, completion: ((result: EmptyResult) -> Void)? = nil) {
-        let subscription: Subscription! = subscription as? Subscription
-        if subscription == nil {
+        guard let subscription: Subscription = subscription as? Subscription else {
             if let completion = completion {
                 completion(result: .Failure(createError("Failure using subscription object passed in")))
             }
@@ -352,7 +348,7 @@ class UPnPEventSubscriptionManager {
     }
     
     private func renewSubscription(subscription: Subscription, completion: ((result: Result<AnyObject>) -> Void)? = nil) {
-        if subscription.subscriber == nil {
+        guard subscription.subscriber != nil else {
             if let completion = completion {
                 completion(result: .Failure(createError("Subscriber doesn't exist anymore")))
             }
@@ -362,8 +358,7 @@ class UPnPEventSubscriptionManager {
         let parameters = UPnPEventRenewSubscriptionRequestSerializer.Parameters(subscriptionID: subscription.subscriptionID, timeout: _defaultSubscriptionTimeout)
         
         _renewSubscriptionSessionManager.SUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-            let response: UPnPEventRenewSubscriptionResponseSerializer.Response! = responseObject as? UPnPEventRenewSubscriptionResponseSerializer.Response
-            if response == nil {
+            guard let response: UPnPEventRenewSubscriptionResponseSerializer.Response = responseObject as? UPnPEventRenewSubscriptionResponseSerializer.Response else {
                 if let completion = completion {
                     completion(result: .Failure(createError("Failure serializing event subscribe response")))
                 }
@@ -404,14 +399,13 @@ class UPnPEventSubscriptionManager {
         }
         
         // re-subscribe only if subscriber still exists
-        if subscription.subscriber == nil {
+        guard subscription.subscriber != nil else {
             failureClosure(createError("Subscriber doesn't exist anymore"))
             return
         }
         
         self.eventCallBackURL({ [unowned self] (eventCallBackURL: NSURL?) -> Void in
-            let eventCallBackURL: NSURL! = eventCallBackURL
-            if eventCallBackURL == nil {
+            guard let eventCallBackURL: NSURL = eventCallBackURL else {
                 failureClosure(createError("Event call back URL could not be created"))
                 return
             }
@@ -419,8 +413,7 @@ class UPnPEventSubscriptionManager {
             let parameters = UPnPEventSubscribeRequestSerializer.Parameters(callBack: eventCallBackURL, timeout: self._defaultSubscriptionTimeout)
             
             self._subscribeSessionManager.SUBSCRIBE(subscription.eventURLString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-                let response: UPnPEventSubscribeResponseSerializer.Response! = responseObject as? UPnPEventSubscribeResponseSerializer.Response
-                if response == nil {
+                guard let response: UPnPEventSubscribeResponseSerializer.Response = responseObject as? UPnPEventSubscribeResponseSerializer.Response else {
                     failureClosure(createError("Failure serializing event subscribe response"))
                     return
                 }
