@@ -197,8 +197,7 @@ extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
             message.enumerateLines({ (line, stop) -> () in
                 if httpMethodLine == nil {
                     httpMethodLine = line
-                }
-                else {
+                } else {
                     headersRegularExpression?.enumerateMatchesInString(line, options: [], range: NSRange(location: 0, length: line.characters.count), usingBlock: { (resultOptional: NSTextCheckingResult?, flags: NSMatchingFlags, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
                         if let result = resultOptional where result.numberOfRanges == 3 {
                             let key = (line as NSString).substringWithRange(result.rangeAtIndex(1)).lowercaseString

@@ -79,8 +79,7 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
                     })
                     
                     self._instanceState[element.tag] = metaData
-                }
-                else {
+                } else {
                     self._instanceState[element.tag] = stateValue
                 }
             }

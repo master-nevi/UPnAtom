@@ -207,8 +207,7 @@ public class RenderingControl1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -230,8 +229,7 @@ public class RenderingControl1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -253,8 +251,7 @@ public class RenderingControl1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -289,13 +286,11 @@ public class RenderingControl1Service: AbstractUPnPService {
             supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
                 if isSupported {
                     performAction()
-                }
-                else {
+                } else {
                     failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
                 }
             }
-        }
-        else {
+        } else {
             performAction()
         }
     }
@@ -321,13 +316,11 @@ public class RenderingControl1Service: AbstractUPnPService {
             supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
                 if isSupported {
                     performAction()
-                }
-                else {
+                } else {
                     failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
                 }
             }
-        }
-        else {
+        } else {
             performAction()
         }
     }

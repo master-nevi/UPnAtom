@@ -120,8 +120,7 @@ public class AbstractUPnPService: AbstractUPnP {
     public func serviceDescriptionDocument(completion: (serviceDescriptionDocument: ONOXMLDocument?, defaultPrefix: String) -> Void) {
         if let serviceDescriptionDocument = _serviceDescriptionDocument {
             completion(serviceDescriptionDocument: serviceDescriptionDocument, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
-        }
-        else {
+        } else {
             let httpSessionManager = AFHTTPSessionManager()
             httpSessionManager.requestSerializer = AFHTTPRequestSerializer()
             httpSessionManager.responseSerializer = AFHTTPResponseSerializer()
@@ -161,8 +160,7 @@ public class AbstractUPnPService: AbstractUPnP {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
                 if let isSupported = soapActionsSupportCache[soapActionName] {
                     completion(isSupported: isSupported)
-                }
-                else {
+                } else {
                     self.serviceDescriptionDocument { (serviceDescriptionDocument: ONOXMLDocument?, defaultPrefix: String) -> Void in
                         if let serviceDescriptionDocument = serviceDescriptionDocument {
                             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
@@ -177,8 +175,7 @@ public class AbstractUPnPService: AbstractUPnP {
                                 
                                 completion(isSupported: isSupported)
                             }
-                        }
-                        else {
+                        } else {
                             // Failed to retrieve service description. This result does not warrant recording false in the cache as the service description may still show the action as supported when retreived in a subsequent attempt.
                             completion(isSupported: false)
                         }
@@ -384,8 +381,7 @@ class UPnPServiceParser: AbstractSAXXMLParser {
                     foundParserService.deviceUSN = UniqueServiceName(uuid: _upnpService.uuid, urn: deviceType)
                 }
                 return .Success(foundParserService)
-            }
-            else {
+            } else {
                 return .Failure(createError("Parser error"))
             }
         case .Failure(let error):

@@ -119,8 +119,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -153,8 +152,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -173,8 +171,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -196,8 +193,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -219,8 +215,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -242,8 +237,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -262,8 +256,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -283,8 +276,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -303,8 +295,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }
@@ -326,8 +317,7 @@ public class ContentDirectory1Service: AbstractUPnPService {
                     }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
                         failure(error: error)
                 })
-            }
-            else {
+            } else {
                 failure(error: createError("SOAP action '\(parameters.soapAction)' unsupported by service \(self.urn) on device \(self.device?.friendlyName)"))
             }
         }

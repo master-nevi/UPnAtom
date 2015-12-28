@@ -293,8 +293,7 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
             if let foundDevice = _foundDevice {
                 foundDevice.baseURL = _baseURL
                 return .Success(foundDevice)
-            }
-            else {
+            } else {
                 return .Failure(createError("Parser error"))
             }
         case .Failure(let error):
