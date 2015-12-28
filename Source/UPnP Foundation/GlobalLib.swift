@@ -65,33 +65,24 @@ public enum Result<T> {
     }
     
     var failed: Bool {
-        switch self {
-        case .Failure(_):
+        if case .Failure(_) = self {
             return true
-            
-        default:
-            return false
         }
+        return false
     }
     
     var error: Error? {
-        switch self {
-        case .Failure(let error):
+        if case .Failure(let error) = self {
             return error
-            
-        default:
-            return nil
         }
+        return nil
     }
     
     var value: T? {
-        switch self {
-        case .Success(let value):
+        if case .Success(let value) = self {
             return value
-            
-        default:
-            return nil
         }
+        return nil
     }
 }
 
@@ -108,23 +99,17 @@ public enum EmptyResult {
     }
     
     var failed: Bool {
-        switch self {
-        case .Failure(_):
+        if case .Failure(_) = self {
             return true
-            
-        default:
-            return false
         }
+        return false
     }
     
     var error: Error? {
-        switch self {
-        case .Failure(let error):
+        if case .Failure(let error) = self {
             return error
-            
-        default:
-            return nil
         }
+        return nil
     }
 }
 
