@@ -73,7 +73,7 @@ extension AbstractUPnP {
 }
 
 extension AbstractUPnP: ExtendedPrintable {
-    public var className: String { return "AbstractUPnP" }
+    public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add("uuid", property: uuid)

@@ -310,7 +310,7 @@ extension AbstractUPnP {
 
 /// overrides ExtendedPrintable protocol implementation
 extension AVTransport1Service {
-    override public var className: String { return "AVTransport1Service" }
+    override public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)

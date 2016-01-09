@@ -333,7 +333,7 @@ extension AbstractUPnP {
 
 /// overrides ExtendedPrintable protocol implementation
 extension ContentDirectory1Service {
-    override public var className: String { return "ContentDirectory1Service" }
+    override public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
