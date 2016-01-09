@@ -63,7 +63,7 @@ public class ContentDirectory1Object: NSObject {
 }
 
 extension ContentDirectory1Object: ExtendedPrintable {
-    public var className: String { return "ContentDirectory1Object" }
+    public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add("id", property: objectID)
@@ -96,7 +96,7 @@ extension ContentDirectory1Object {
 
 /// overrides ExtendedPrintable protocol implementation
 extension ContentDirectory1Container {
-    override public var className: String { return "ContentDirectory1Container" }
+    override public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
@@ -133,7 +133,7 @@ extension ContentDirectory1Object {
 
 /// overrides ExtendedPrintable protocol implementation
 extension ContentDirectory1Item {
-    override public var className: String { return "ContentDirectory1Item" }
+    override public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
@@ -195,7 +195,7 @@ extension ContentDirectory1Object {
 
 /// overrides ExtendedPrintable protocol implementation
 extension ContentDirectory1VideoItem {
-    override public var className: String { return "ContentDirectory1VideoItem" }
+    override public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)

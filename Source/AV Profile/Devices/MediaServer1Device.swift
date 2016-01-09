@@ -46,7 +46,7 @@ extension AbstractUPnP {
 
 /// overrides ExtendedPrintable protocol implementation
 extension MediaServer1Device {
-    override public var className: String { return "MediaServer1Device" }
+    override public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
