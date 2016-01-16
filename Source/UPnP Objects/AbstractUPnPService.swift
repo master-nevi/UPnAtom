@@ -239,7 +239,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     public func removeEventObserver(observer: AnyObject) {
         dispatch_barrier_async(_concurrentEventObserverQueue, { () -> Void in
             if let observer = observer as? EventObserver {
-                removeObject(&self._eventObservers, object: observer)
+                self._eventObservers.removeObject(observer)
                 NSNotificationCenter.defaultCenter().removeObserver(observer.notificationCenterObserver)
             }
             
