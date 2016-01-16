@@ -117,12 +117,13 @@ func createError(message: String) -> Error {
     return NSError(domain: "UPnAtom", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
 }
 
-/// TODO: replace with CollectionType protocol extension
-func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {
-    if let found = arr.indexOf(object) {
-        return arr.removeAtIndex(found)
+extension RangeReplaceableCollectionType where Generator.Element : Equatable {
+    mutating func removeObject(object: Generator.Element) -> Generator.Element? {
+        if let found = self.indexOf(object) {
+            return removeAtIndex(found)
+        }
+        return nil
     }
-    return nil
 }
 
 extension NSError {
