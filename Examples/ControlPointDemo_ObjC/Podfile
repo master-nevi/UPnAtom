@@ -2,6 +2,8 @@ inhibit_all_warnings!
 use_frameworks!
 source 'https://github.com/CocoaPods/Specs.git'
 
-xcodeproj 'ControlPointDemo'
+project 'ControlPointDemo'
 
-pod 'UPnAtom', :path => '../..'
+target 'ControlPointDemo' do
+	pod 'UPnAtom', :path => '../..'
+end
