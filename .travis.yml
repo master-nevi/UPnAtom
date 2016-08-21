@@ -22,26 +22,26 @@ env:
     - DESTINATION="OS=9.1,name=iPhone 6 Plus"      SCHEME="$IOS_FRAMEWORK_SCHEME"     SDK="$IOS_SDK"     RUN_TESTS="YES" BUILD_EXAMPLE="YES" POD_LINT="NO"
     - DESTINATION="OS=9.2,name=iPhone 6S"          SCHEME="$IOS_FRAMEWORK_SCHEME"     SDK="$IOS_SDK"     RUN_TESTS="YES" BUILD_EXAMPLE="YES" POD_LINT="NO"
     - DESTINATION="OS=9.3,name=iPhone 6S Plus"     SCHEME="$IOS_FRAMEWORK_SCHEME"     SDK="$IOS_SDK"     RUN_TESTS="YES" BUILD_EXAMPLE="YES" POD_LINT="NO"
-    - DESTINATION="arch=x86_64"                    SCHEME="$OSX_FRAMEWORK_SCHEME"     SDK="$OSX_SDK"     RUN_TESTS="YES" BUILD_EXAMPLE="NO"  POD_LINT="NO"
+    - DESTINATION="arch=x86_64"                    SCHEME="$OSX_FRAMEWORK_SCHEME"     SDK="$OSX_SDK"     RUN_TESTS="YES" BUILD_EXAMPLE="YES" POD_LINT="NO"
 script:
   - set -o pipefail
   - xcodebuild -version
   - xcodebuild -showsdks
 
   # Build Example in Debug if specified
-  - if [ $BUILD_EXAMPLE == "YES" ]; then
+  - if [ $BUILD_EXAMPLE == "YES" ] && [ $SDK == $IOS_SDK ]; then
       pod install --project-directory="$OBJC_IOS_EXAMPLE_DIR";
       xcodebuild -workspace "$OBJC_IOS_EXAMPLE_DIR/$WORKSPACE" -scheme "$EXAMPLE_SCHEME" -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
     fi
 
   # Build Example in Debug if specified
-  - if [ $BUILD_EXAMPLE == "YES" ]; then
+  - if [ $BUILD_EXAMPLE == "YES" ] && [ $SDK == $IOS_SDK ]; then
       pod install --project-directory="$SWIFT_IOS_EXAMPLE_DIR";
       xcodebuild -workspace "$SWIFT_IOS_EXAMPLE_DIR/$WORKSPACE" -scheme "$EXAMPLE_SCHEME" -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
     fi
 
   # Build Example in Debug if specified
-  - if [ $BUILD_EXAMPLE == "YES" ]; then
+  - if [ $BUILD_EXAMPLE == "YES" ] && [ $SDK == $OSX_SDK ]; then
       pod install --project-directory="$SWIFT_MACOS_EXAMPLE_DIR";
       xcodebuild -workspace "$SWIFT_MACOS_EXAMPLE_DIR/$WORKSPACE" -scheme "$EXAMPLE_SCHEME" -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
     fi
