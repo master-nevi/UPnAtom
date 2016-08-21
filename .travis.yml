@@ -29,13 +29,13 @@ script:
 
   # Build Example in Debug if specified
   - if [ $BUILD_EXAMPLE == "YES" ]; then
-      pod install --project-directory="$OBJC_EXAMPLE_DIR"
+      pod install --project-directory="$OBJC_EXAMPLE_DIR";
       xcodebuild -workspace "$OBJC_EXAMPLE_DIR/$WORKSPACE" -scheme "$EXAMPLE_SCHEME" -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
     fi
 
   # Build Example in Debug if specified
   - if [ $BUILD_EXAMPLE == "YES" ]; then
-      pod install --project-directory="$SWIFT_EXAMPLE_DIR"
+      pod install --project-directory="$SWIFT_EXAMPLE_DIR";
       xcodebuild -workspace "$SWIFT_EXAMPLE_DIR/$WORKSPACE" -scheme "$EXAMPLE_SCHEME" -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
     fi
 
