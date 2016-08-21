@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'UPnAtom'
-  s.version      = '0.6.0'
+  s.version      = '0.7.0'
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
   s.summary      = 'An open source Universal Plug and Play library with a focus on media streaming coordination using the UPnP A/V profile.'
   s.homepage     = 'https://github.com/master-nevi/UPnAtom'
