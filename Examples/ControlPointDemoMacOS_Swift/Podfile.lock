@@ -17,9 +17,6 @@ PODS:
   - AFNetworking/Reachability (2.5.4)
   - AFNetworking/Security (2.5.4)
   - AFNetworking/Serialization (2.5.4)
-  - AFNetworking/UIKit (2.5.4):
-    - AFNetworking/NSURLConnection
-    - AFNetworking/NSURLSession
   - CocoaAsyncSocket (7.4.2)
   - GCDWebServer (3.2.7):
     - GCDWebServer/Core (= 3.2.7)

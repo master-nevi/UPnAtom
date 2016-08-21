@@ -25,7 +25,7 @@ PODS:
     - GCDWebServer/Core (= 3.2.7)
   - GCDWebServer/Core (3.2.7)
   - Ono (1.2.2)
-  - UPnAtom (0.6.0):
+  - UPnAtom (0.7.0):
     - AFNetworking (~> 2.5.2)
     - CocoaAsyncSocket (~> 7.4.1)
     - GCDWebServer (~> 3.2.2)
@@ -43,8 +43,8 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: f5783bdedd232d91b89769bc4b5a1580aed518ad
   GCDWebServer: 76a9540371d5f12f850b32ec7f555dd2d266e543
   Ono: 80b1c686777d3f6d5d5ce6fcac8a74afef4ca197
-  UPnAtom: 603c0cc3ec19002679a865b528294e99af6abac0
+  UPnAtom: beed0614246c73b7ad71dc665cfdd110cc8e0b97
 
-PODFILE CHECKSUM: cc9606b35b9306c82ba8df66574730f94e668527
+PODFILE CHECKSUM: 0c01f4122f5037d4cf76b9400cce28aeada874ce
 
-COCOAPODS: 0.39.0
+COCOAPODS: 1.0.1

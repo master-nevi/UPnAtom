@@ -57,8 +57,8 @@ class Player {
     }
     
     init() {
-        playPauseButton = UIBarButtonItem(image: UIImage(named: "play_button"), style: .Plain, target: self, action: "playPauseButtonTapped:")
-        stopButton = UIBarButtonItem(image: UIImage(named: "stop_button"), style: .Plain, target: self, action: "stopButtonTapped:")
+        playPauseButton = UIBarButtonItem(image: UIImage(named: "play_button"), style: .Plain, target: self, action: #selector(Player.playPauseButtonTapped(_:)))
+        stopButton = UIBarButtonItem(image: UIImage(named: "stop_button"), style: .Plain, target: self, action: #selector(Player.stopButtonTapped(_:)))
     }
     
     func startPlayback(playlist: [ContentDirectory1Object], position: Int) {

@@ -73,10 +73,10 @@ class RootFolderViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceWasAdded:", name: UPnPRegistry.UPnPDeviceAddedNotification(), object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceWasRemoved:", name: UPnPRegistry.UPnPDeviceRemovedNotification(), object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "serviceWasAdded:", name: UPnPRegistry.UPnPServiceAddedNotification(), object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "serviceWasRemoved:", name: UPnPRegistry.UPnPServiceRemovedNotification(), object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(RootFolderViewController.deviceWasAdded(_:)), name: UPnPRegistry.UPnPDeviceAddedNotification(), object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(RootFolderViewController.deviceWasRemoved(_:)), name: UPnPRegistry.UPnPDeviceRemovedNotification(), object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(RootFolderViewController.serviceWasAdded(_:)), name: UPnPRegistry.UPnPServiceAddedNotification(), object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(RootFolderViewController.serviceWasRemoved(_:)), name: UPnPRegistry.UPnPServiceRemovedNotification(), object: nil)
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -203,7 +203,7 @@ class RootFolderViewController: UIViewController {
         // clear previously loaded archive devices
         if _archivedDeviceUSNs.count > 0 {
             var currentArchivedDeviceIndexes = [NSIndexPath]()
-            for var i: Int = 0; i < _archivedDeviceUSNs.count; i++ {
+            for i: Int in 0 ..< _archivedDeviceUSNs.count {
                 currentArchivedDeviceIndexes.append(NSIndexPath(forRow: i, inSection: 0))
             }
             
