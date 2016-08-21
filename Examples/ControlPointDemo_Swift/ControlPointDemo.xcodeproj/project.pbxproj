@@ -14,7 +14,7 @@
 		630532C51AAE3F95006AD1B6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 630532C31AAE3F95006AD1B6 /* LaunchScreen.xib */; };
 		63AF18B91AB4DC9F00543821 /* FolderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AF18B81AB4DC9F00543821 /* FolderViewController.swift */; };
 		63AF18BB1AB4DE5F00543821 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AF18BA1AB4DE5F00543821 /* Player.swift */; };
-		F50AADEE20BD1E8A32321920 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BC578F97EEA4489C5D76F4C /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		F50AADEE20BD1E8A32321920 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BC578F97EEA4489C5D76F4C /* Pods.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,7 +131,9 @@
 		630532AD1AAE3F95006AD1B6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastSwiftMigration = 0710;
+				LastSwiftUpdateCheck = 0710;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "David Robles";
 				TargetAttributes = {
 					630532B41AAE3F95006AD1B6 = {
@@ -272,6 +274,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -336,6 +339,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = ControlPointDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -347,6 +351,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = ControlPointDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

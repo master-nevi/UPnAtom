@@ -23,7 +23,8 @@
 
 import Foundation
 
-@objc public class UPnAtom {
+/// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
+public class UPnAtom: NSObject {
     // public
     public static let sharedInstance = UPnAtom()
     public let upnpRegistry: UPnPRegistry
@@ -35,15 +36,17 @@ import Foundation
     // internal
     unowned let ssdpDiscoveryAdapter: SSDPDiscoveryAdapter
     
-    init() {
+    override init() {
         // configure discovery adapter
         let adapterClass = UPnAtom.ssdpDiscoveryAdapterClass()
-        let adapter = adapterClass()
+        let adapter = adapterClass.init()
         ssdpDiscoveryAdapter = adapter
 
         // configure UPNP registry
         upnpRegistry = UPnPRegistry(ssdpDiscoveryAdapter: ssdpDiscoveryAdapter)
-        UPnAtom.upnpClasses().map({ self.upnpRegistry.register(upnpClass: $0.upnpClass, forURN: $0.forURN) })
+        for (upnpClass, urn) in UPnAtom.upnpClasses() {
+            self.upnpRegistry.register(upnpClass: upnpClass, forURN: urn)
+        }
     }
     
     deinit {

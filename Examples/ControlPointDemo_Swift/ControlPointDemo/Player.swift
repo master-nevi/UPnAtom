@@ -67,65 +67,65 @@ class Player {
         startPlayback(position: position)
     }
     
-    func startPlayback(#position: Int) {
+    func startPlayback(position position: Int) {
         _position = position
         
-        if let item = _playlist?[position] as? ContentDirectory1VideoItem,
-            uri = item.resourceURL.absoluteString {
-                let instanceID = _avTransportInstanceID
-                mediaRenderer?.avTransportService?.setAVTransportURI(instanceID: instanceID, currentURI: uri, currentURIMetadata: "", success: { () -> Void in
-                    println("URI set succeeded!")
-                    self.play({ () -> Void in
-                        println("Play command succeeded!")
-                        }, failure: { (error) -> Void in
-                            println("Play command failed: \(error)")
-                    })
-                    
+        if let item = _playlist?[position] as? ContentDirectory1VideoItem {
+            let uri = item.resourceURL.absoluteString
+            let instanceID = _avTransportInstanceID
+            mediaRenderer?.avTransportService?.setAVTransportURI(instanceID: instanceID, currentURI: uri, currentURIMetadata: "", success: { () -> Void in
+                print("URI set succeeded!")
+                self.play({ () -> Void in
+                    print("Play command succeeded!")
                     }, failure: { (error) -> Void in
-                        println("URI set failed: \(error)")
+                        print("Play command failed: \(error)")
                 })
+                
+                }, failure: { (error) -> Void in
+                    print("URI set failed: \(error)")
+            })
         }
     }
     
     @objc private func playPauseButtonTapped(sender: AnyObject) {
-        println("play/pause button tapped")
+        print("play/pause button tapped")
         
         switch _playerState {
         case .Playing:
             pause({ () -> Void in
-                println("Pause command succeeded!")
+                print("Pause command succeeded!")
             }, failure: { (error) -> Void in
-                println("Pause command failed: \(error)")
+                print("Pause command failed: \(error)")
             })
         case .Paused, .Stopped:
             play({ () -> Void in
-                println("Play command succeeded!")
+                print("Play command succeeded!")
                 }, failure: { (error) -> Void in
-                    println("Play command failed: \(error)")
+                    print("Play command failed: \(error)")
             })
         default:
-            println("Play/pause button cannot be used in this state.")
+            print("Play/pause button cannot be used in this state.")
         }
     }
     
     @objc private func stopButtonTapped(sender: AnyObject) {
-        println("stop button tapped")
+        print("stop button tapped")
         
         switch _playerState {
         case .Playing, .Paused:
             stop({ () -> Void in
-                println("Stop command succeeded!")
+                print("Stop command succeeded!")
                 }, failure: { (error) -> Void in
-                    println("Stop command failed: \(error)")
+                    print("Stop command failed: \(error)")
             })
         case .Stopped:
-            println("Stop button cannot be used in this state.")
+            print("Stop button cannot be used in this state.")
         default:
-            println("Stop button cannot be used in this state.")
+            print("Stop button cannot be used in this state.")
         }
     }
     
-    private func didSetRenderer(#oldRenderer: MediaRenderer1Device?, newRenderer: MediaRenderer1Device?) {
+    private func didSetRenderer(oldRenderer oldRenderer: MediaRenderer1Device?, newRenderer: MediaRenderer1Device?) {
         if let avTransportEventObserver: AnyObject = _avTransportEventObserver {
             oldRenderer?.avTransportService?.removeEventObserver(avTransportEventObserver)
         }
@@ -133,8 +133,8 @@ class Player {
         _avTransportEventObserver = newRenderer?.avTransportService?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
             if let avTransportEvent = event as? AVTransport1Event,
                 transportState = (avTransportEvent.instanceState["TransportState"] as? String)?.lowercaseString {
-                    println("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
-                    println("transport state: \(transportState)")
+                    print("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
+                    print("transport state: \(transportState)")
                     if transportState.rangeOfString("playing") != nil {
                         self._playerState = .Playing
                     }
@@ -153,14 +153,10 @@ class Player {
     
     private func playerStateDidChange() {
         switch _playerState {
-        case .Stopped:
+        case .Stopped, .Paused, .Unknown:
             playPauseButton.image = UIImage(named: "play_button")
         case .Playing:
             playPauseButton.image = UIImage(named: "pause_button")
-        case .Paused:
-            playPauseButton.image = UIImage(named: "play_button")
-        case .Unknown:
-            playPauseButton.image = UIImage(named: "play_button")
         }
     }
     

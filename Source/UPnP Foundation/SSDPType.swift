@@ -47,20 +47,15 @@ enum SSDPType: RawRepresentable {
     init?(rawValue: RawValue) {
         if rawValue == "ssdp:all" {
             self = .All
-        }
-        else if rawValue == "upnp:rootdevice" {
+        } else if rawValue == "upnp:rootdevice" {
             self = .RootDevice
-        }
-        else if rawValue.rangeOfString("uuid:") != nil {
+        } else if rawValue.rangeOfString("uuid:") != nil {
             self = .UUID(rawValue)
-        }
-        else if rawValue.rangeOfString(":device:") != nil {
+        } else if rawValue.rangeOfString(":device:") != nil {
             self = .Device(rawValue)
-        }
-        else if rawValue.rangeOfString(":service:") != nil {
+        } else if rawValue.rangeOfString(":service:") != nil {
             self = .Service(rawValue)
-        }
-        else {
+        } else {
             return nil
         }
     }
@@ -85,7 +80,7 @@ enum SSDPType: RawRepresentable {
     }
 }
 
-extension SSDPType: Printable {
+extension SSDPType: CustomStringConvertible {
     var description: String {
         return self.rawValue
     }

@@ -57,7 +57,7 @@ class SSDPExplorerDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
         dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
             self._ssdpDiscoveries.removeAll(keepCapacity: false)
             
-            self.notifyDelegate(ofDiscoveries: self._ssdpDiscoveries.values.array)
+            self.notifyDelegate(ofDiscoveries: Array(self._ssdpDiscoveries.values))
         })
         
         super.stop()
@@ -65,7 +65,7 @@ class SSDPExplorerDiscoveryAdapter: AbstractSSDPDiscoveryAdapter {
     
     private func notifyDelegate(ofFailure error: NSError) {
         dispatch_async(delegateQueue, { () -> Void in
-            delegate?.ssdpDiscoveryAdapter(self, didFailWithError: error)
+            self.delegate?.ssdpDiscoveryAdapter(self, didFailWithError: error)
         })
     }
     
@@ -81,7 +81,7 @@ extension SSDPExplorerDiscoveryAdapter: SSDPExplorerDelegate {
         dispatch_async(_serialSSDPDiscoveryQueue, { () -> Void in
             self._ssdpDiscoveries[discovery.usn] = discovery
             
-            self.notifyDelegate(ofDiscoveries: self._ssdpDiscoveries.values.array)
+            self.notifyDelegate(ofDiscoveries: Array(self._ssdpDiscoveries.values))
         })
     }
     
@@ -90,7 +90,7 @@ extension SSDPExplorerDiscoveryAdapter: SSDPExplorerDelegate {
             if let discovery = self._ssdpDiscoveries[discovery.usn] {
                 self._ssdpDiscoveries.removeValueForKey(discovery.usn)
                 
-                self.notifyDelegate(ofDiscoveries: self._ssdpDiscoveries.values.array)
+                self.notifyDelegate(ofDiscoveries: Array(self._ssdpDiscoveries.values))
             }
         })
     }

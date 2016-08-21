@@ -15,7 +15,7 @@
 		633C99521A13BD650059444C /* RootFolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99511A13BD650059444C /* RootFolderViewController.m */; };
 		633C99551A13BD8E0059444C /* FolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99541A13BD8E0059444C /* FolderViewController.m */; };
 		633C99581A13C8760059444C /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 633C99571A13C8760059444C /* Player.m */; };
-		96E66206756F4E4AB570745D /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3742B3919983E4B6B048AD92 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		96E66206756F4E4AB570745D /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3742B3919983E4B6B048AD92 /* Pods.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -144,7 +144,7 @@
 		633C991F1A13B9770059444C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "David Robles";
 				TargetAttributes = {
 					633C99261A13B9770059444C = {
@@ -286,6 +286,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -351,6 +352,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = ControlPointDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ControlPointDemo/ControlPointDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -366,6 +368,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = ControlPointDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ControlPointDemo/ControlPointDemo-Bridging-Header.h";
 			};

@@ -1,0 +1,6 @@
+framework module UPnAtom {
+  umbrella header "UPnAtom-umbrella.h"
+
+  export *
+  module * { export * }
+}

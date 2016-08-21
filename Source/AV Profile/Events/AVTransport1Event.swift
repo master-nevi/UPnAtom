@@ -45,29 +45,25 @@ extension UPnPEvent {
 class AVTransport1EventParser: AbstractDOMXMLParser {
     private var _instanceState = [String: AnyObject]()
     
-    override func parse(#document: ONOXMLDocument) -> EmptyResult {
+    override func parse(document document: ONOXMLDocument) -> EmptyResult {
         let result: EmptyResult = .Success
 
         // procedural vs series of nested if let's
-        let lastChangeXMLString = document.firstChildWithXPath("/e:propertyset/e:property/LastChange")?.stringValue()
-        if lastChangeXMLString == nil {
+        guard let lastChangeXMLString = document.firstChildWithXPath("/e:propertyset/e:property/LastChange")?.stringValue() else {
             return .Failure(createError("No LastChange element in UPnP service event XML"))
         }
         
         LogVerbose("Parsing LastChange XML:\nSTART\n\(lastChangeXMLString)\nEND")
         
-        var parseError: NSError?
-        let lastChangeEventDocument = ONOXMLDocument(string: lastChangeXMLString!, encoding: NSUTF8StringEncoding, error: &parseError)
-        if parseError != nil {
-            return .Failure(parseError!)
+        guard let lastChangeEventDocument = try? ONOXMLDocument(string: lastChangeXMLString, encoding: NSUTF8StringEncoding) else {
+            return .Failure(createError("Unable to parse LastChange XML"))
         }
         
         lastChangeEventDocument.definePrefix("avt", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/AVT/")
         lastChangeEventDocument.enumerateElementsWithXPath("/avt:Event/avt:InstanceID/*", usingBlock: { [unowned self] (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-            if let stateValue = returnIfContainsElements(element.valueForAttribute("val") as? String) {
+            if let stateValue = element.valueForAttribute("val") as? String where !stateValue.isEmpty {
                 if element.tag.rangeOfString("MetaData") != nil {
-                    let metadataDocument = ONOXMLDocument(string: stateValue, encoding: NSUTF8StringEncoding, error: &parseError)
-                    if parseError != nil {
+                    guard let metadataDocument = try? ONOXMLDocument(string: stateValue, encoding: NSUTF8StringEncoding) else {
                         return
                     }
                     
@@ -76,15 +72,14 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
                     var metaData = [String: String]()
                     
                     metadataDocument.definePrefix("didllite", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/")
-                    metadataDocument.enumerateElementsWithXPath("/didllite:DIDL-Lite/didllite:item/*", usingBlock: { [unowned self] (metadataElement: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-                        if let elementStringValue = returnIfContainsElements(metadataElement.stringValue()) {
+                    metadataDocument.enumerateElementsWithXPath("/didllite:DIDL-Lite/didllite:item/*", usingBlock: { (metadataElement: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+                        if let elementStringValue = metadataElement.stringValue() where !elementStringValue.isEmpty {
                             metaData[metadataElement.tag] = elementStringValue
                         }
                     })
                     
                     self._instanceState[element.tag] = metaData
-                }
-                else {
+                } else {
                     self._instanceState[element.tag] = stateValue
                 }
             }
@@ -93,10 +88,10 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
         return result
     }
     
-    func parse(#eventXML: NSData) -> Result<[String: AnyObject]> {
+    func parse(eventXML eventXML: NSData) -> Result<[String: AnyObject]> {
         switch super.parse(data: eventXML) {
         case .Success:
-            return .Success(RVW(_instanceState))
+            return .Success(_instanceState)
         case .Failure(let error):
             return .Failure(error)
         }

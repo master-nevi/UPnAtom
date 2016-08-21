@@ -23,16 +23,6 @@
 
 import Foundation
 
-func returnIfContainsElements<T: _CollectionType>(x: T?) -> T? {
-    if let x = x {
-        if count(x) > 0 {
-            return x
-        }
-    }
-    
-    return nil
-}
-
 func curlRep(request: NSURLRequest) -> String {
     var curl = ""
     
@@ -49,8 +39,10 @@ func curlRep(request: NSURLRequest) -> String {
             curl += "'"
     }
     
-    for (key, value) in request.allHTTPHeaderFields as! [String: AnyObject] {
-        curl += " -H '\(key): \(value)'"
+    if let allHTTPHeaderFields = request.allHTTPHeaderFields {
+        for (key, value) in allHTTPHeaderFields {
+            curl += " -H '\(key): \(value)'"
+        }
     }
     
     curl += " \"\(request.URL)\""
@@ -61,54 +53,36 @@ func curlRep(request: NSURLRequest) -> String {
 public typealias Error = NSError
 
 public enum Result<T> {
-    // TODO: Ideally the generic associated value shouldn't need to be wrapped inside an object, see Github issue #12
-    case Success(RVW<T>)
+    case Success(T)
     case Failure(Error)
     
     init(_ value: T) {
-        self = .Success(RVW(value))
+        self = .Success(value)
     }
     
     init(_ error: Error) {
         self = .Failure(error)
     }
-        
+    
     var failed: Bool {
-        switch self {
-        case .Failure(let error):
+        if case .Failure(_) = self {
             return true
-            
-        default:
-            return false
         }
+        return false
     }
     
     var error: Error? {
-        switch self {
-        case .Failure(let error):
+        if case .Failure(let error) = self {
             return error
-            
-        default:
-            return nil
         }
+        return nil
     }
     
     var value: T? {
-        switch self {
-        case .Success(let wrapper):
-            return wrapper.value
-            
-        default:
-            return nil
+        if case .Success(let value) = self {
+            return value
         }
-    }
-}
-
-// Result value wrapper
-public class RVW<T> {
-    let value: T
-    public init(_ value: T) {
-        self.value = value
+        return nil
     }
 }
 
@@ -125,23 +99,17 @@ public enum EmptyResult {
     }
     
     var failed: Bool {
-        switch self {
-        case .Failure(let error):
+        if case .Failure(_) = self {
             return true
-            
-        default:
-            return false
         }
+        return false
     }
     
     var error: Error? {
-        switch self {
-        case .Failure(let error):
+        if case .Failure(let error) = self {
             return error
-            
-        default:
-            return nil
         }
+        return nil
     }
 }
 
@@ -149,17 +117,19 @@ func createError(message: String) -> Error {
     return NSError(domain: "UPnAtom", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
 }
 
-func removeObject<T: Equatable>(inout arr:Array<T>, object:T) -> T? {
-    if let found = find(arr, object) {
-        return arr.removeAtIndex(found)
+extension RangeReplaceableCollectionType where Generator.Element : Equatable {
+    mutating func removeObject(object: Generator.Element) -> Generator.Element? {
+        if let found = self.indexOf(object) {
+            return removeAtIndex(found)
+        }
+        return nil
     }
-    return nil
 }
 
 extension NSError {
     /// An alternative to iOS's [NSError localizedDescription] which returns an esoteric Cocoa error when [NSError userInfo][NSLocalizedDescriptionKey] is nil. In that case, this method will return nil instead.
     var localizedDescriptionOrNil: String? {
-        return self.userInfo?[NSLocalizedDescriptionKey] as? String
+        return self.userInfo[NSLocalizedDescriptionKey] as? String
     }
     
     func localizedDescription(defaultDescription: String) -> String {

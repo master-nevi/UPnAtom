@@ -23,7 +23,8 @@
 
 import Foundation
 
-@objc public class AbstractUPnP {
+/// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
+public class AbstractUPnP: NSObject {
     public var uuid: String {
         return usn.uuid
     }
@@ -39,29 +40,41 @@ import Foundation
     required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
         self.usn = usn
         self.descriptionURL = descriptionURL
+        super.init()
         
         // only deal with UPnP object's with URN's for now, i.e. is either a device or service
-        if returnIfContainsElements(usn.urn) == nil {
+        guard let urn = usn.urn where !urn.isEmpty else {
             return nil
         }
     }
 }
 
-extension AbstractUPnP: Equatable { }
-
 public func ==(lhs: AbstractUPnP, rhs: AbstractUPnP) -> Bool {
     return lhs.usn == rhs.usn
 }
 
-extension AbstractUPnP: Hashable {
-    public var hashValue: Int {
+extension AbstractUPnP {
+    override public var hashValue: Int {
         return usn.hashValue
+    }
+    
+    /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
+    override public var hash: Int {
+        return hashValue
+    }
+    
+    /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
+    override public func isEqual(object: AnyObject?) -> Bool {
+        if let other = object as? AbstractUPnP {
+            return self == other
+        }
+        return false
     }
 }
 
 extension AbstractUPnP: ExtendedPrintable {
-    public var className: String { return "AbstractUPnP" }
-    public var description: String {
+    public var className: String { return "\(self.dynamicType)" }
+    override public var description: String {
         var properties = PropertyPrinter()
         properties.add("uuid", property: uuid)
         properties.add("urn", property: urn)

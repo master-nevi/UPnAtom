@@ -48,48 +48,47 @@ public class AbstractSAXXMLParser: NSObject {
     func elementObservationForElementStack(elementStack: [String]) -> SAXXMLParserElementObservation? {
         for elementObservation in _elementObservations {
             // Full compares go first
-            if elementObservation.elementPath == elementStack {
+            guard elementObservation.elementPath != elementStack else {
                 return elementObservation
             }
-            else {
-                // * -> leafX -> leafY
-                // Maybe we have a wildchar, that means that the path after the wildchar must match
-                if elementObservation.elementPath.first == "*" &&
-                    elementStack.count >= elementObservation.elementPath.count {
-                        var tempElementStack = elementStack
-                        var tempObservationElementPath = elementObservation.elementPath
-                        
-                        // cut the * from our asset path
-                        tempObservationElementPath.removeAtIndex(0)
-                        
-                        // make our (copy of the) curents stack the same length
-                        let elementsToRemove: Int = tempElementStack.count - tempObservationElementPath.count
-                        var range = Range(start: 0, end: elementsToRemove)
-                        tempElementStack.removeRange(range)
-                        if tempObservationElementPath == tempElementStack {
-                            return elementObservation
-                        }
-                }
-                
-                // leafX -> leafY -> *
-                if elementObservation.elementPath.last == "*" &&
-                    elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
-                        var tempElementStack = elementStack
-                        var tempObservationElementPath = elementObservation.elementPath
-                        // Cut the last entry (which is * in one array and <element> in the other
-                        tempElementStack.removeLast()
-                        tempObservationElementPath.removeLast()
-                        if tempElementStack == tempObservationElementPath {
-                            return elementObservation
-                        }
-                }
+            
+            // * -> leafX -> leafY
+            // Maybe we have a wildchar, that means that the path after the wildchar must match
+            if elementObservation.elementPath.first == "*" &&
+                elementStack.count >= elementObservation.elementPath.count {
+                    var tempElementStack = elementStack
+                    var tempObservationElementPath = elementObservation.elementPath
+                    
+                    // cut the * from our asset path
+                    tempObservationElementPath.removeAtIndex(0)
+                    
+                    // make our (copy of the) curents stack the same length
+                    let elementsToRemove: Int = tempElementStack.count - tempObservationElementPath.count
+                    let range = Range(start: 0, end: elementsToRemove)
+                    tempElementStack.removeRange(range)
+                    if tempObservationElementPath == tempElementStack {
+                        return elementObservation
+                    }
+            }
+            
+            // leafX -> leafY -> *
+            if elementObservation.elementPath.last == "*" &&
+                elementStack.count == elementObservation.elementPath.count && elementStack.count > 1 {
+                    var tempElementStack = elementStack
+                    var tempObservationElementPath = elementObservation.elementPath
+                    // Cut the last entry (which is * in one array and <element> in the other
+                    tempElementStack.removeLast()
+                    tempObservationElementPath.removeLast()
+                    if tempElementStack == tempObservationElementPath {
+                        return elementObservation
+                    }
             }
         }
         
         return nil
     }
     
-    public func parse(#data: NSData) -> EmptyResult {
+    public func parse(data data: NSData) -> EmptyResult {
         var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
@@ -110,8 +109,7 @@ public class AbstractSAXXMLParser: NSObject {
         var parserResult: EmptyResult = .Failure(createError("Parser failure"))
         if parser.parse() {
             parserResult = .Success
-        }
-        else {
+        } else {
             if let parserError = parser.parserError {
                 parserResult = .Failure(parserError)
             }
@@ -123,20 +121,18 @@ public class AbstractSAXXMLParser: NSObject {
     }
     
     private func validateForParsing(data: NSData) -> NSData? {
-        let xmlStringOptional = NSString(data: data, encoding: NSUTF8StringEncoding)
-        var error: NSError?
-        let regexOptional = NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .AnchorsMatchLines, error: &error)
-        if xmlStringOptional != nil && regexOptional != nil {
-            let validXMLString = regexOptional!.stringByReplacingMatchesInString(xmlStringOptional! as String, options: NSMatchingOptions(0), range: NSMakeRange(0, xmlStringOptional!.length), withTemplate: "")
-            return validXMLString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+        guard let xmlStringOptional = NSString(data: data, encoding: NSUTF8StringEncoding),
+            let regexOptional = try? NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .AnchorsMatchLines) else {
+                return nil
         }
-        
-        return nil
+
+        let validXMLString = regexOptional.stringByReplacingMatchesInString(xmlStringOptional as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, xmlStringOptional.length), withTemplate: "")
+        return validXMLString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
     }
 }
 
 extension AbstractSAXXMLParser: NSXMLParserDelegate {
-    public func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [NSObject : AnyObject]) {
+    public func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
         _elementStack += [elementName]
         
         if let elementObservation = elementObservationForElementStack(_elementStack),
@@ -160,14 +156,13 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         
         if elementName == _elementStack.last {
             _elementStack.removeLast()
-        }
-        else {
+        } else {
             LogError("XML badly formatted!")
             parser.abortParsing()
         }
     }
     
-    public func parser(parser: NSXMLParser, foundCharacters string: String?) {
+    public func parser(parser: NSXMLParser, foundCharacters string: String) {
         // The parser object may send the delegate several parser:foundCharacters: messages to report the characters of an element. Because string may be only part of the total character content for the current element, you should append it to the current accumulation of characters until the element changes.
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {

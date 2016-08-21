@@ -32,13 +32,13 @@ public class AbstractUPnPService: AbstractUPnP {
     }
     public private(set) var serviceID: String! // TODO: Should ideally be a constant, see Github issue #10
     public var serviceDescriptionURL: NSURL {
-        return NSURL(string: _relativeServiceDescriptionURL.absoluteString!, relativeToURL: baseURL)!
+        return NSURL(string: _relativeServiceDescriptionURL.absoluteString, relativeToURL: baseURL)!
     }
     public var controlURL: NSURL {
-        return NSURL(string: _relativeControlURL.absoluteString!, relativeToURL: baseURL)!
+        return NSURL(string: _relativeControlURL.absoluteString, relativeToURL: baseURL)!
     }
     public var eventURL: NSURL {
-        return NSURL(string: _relativeEventURL.absoluteString!, relativeToURL: baseURL)!
+        return NSURL(string: _relativeEventURL.absoluteString, relativeToURL: baseURL)!
     }
     override public var baseURL: NSURL! {
         if let baseURL = _baseURLFromXML {
@@ -85,35 +85,24 @@ public class AbstractUPnPService: AbstractUPnP {
             _baseURLFromXML = baseURL
         }
         
-        if let serviceID = parsedService?.serviceID {
-            self.serviceID = serviceID
+        guard let serviceID = parsedService?.serviceID,
+            let relativeServiceDescriptionURL = parsedService?.relativeServiceDescriptionURL,
+            let relativeControlURL = parsedService?.relativeControlURL,
+            let relativeEventURL = parsedService?.relativeEventURL,
+            let deviceUSN = parsedService?.deviceUSN else {
+                return nil
         }
-        else { return nil }
         
-        if let relativeServiceDescriptionURL = parsedService?.relativeServiceDescriptionURL {
-            self._relativeServiceDescriptionURL = relativeServiceDescriptionURL
-        }
-        else { return nil }
-        
-        if let relativeControlURL = parsedService?.relativeControlURL {
-            self._relativeControlURL = relativeControlURL
-        }
-        else { return nil }
-        
-        if let relativeEventURL = parsedService?.relativeEventURL {
-            self._relativeEventURL = relativeEventURL
-        }
-        else { return nil }
-        
-        if let deviceUSN = parsedService?.deviceUSN {
-            self._deviceUSN = deviceUSN
-        }
-        else { return nil }
+        self.serviceID = serviceID
+        self._relativeServiceDescriptionURL = relativeServiceDescriptionURL
+        self._relativeControlURL = relativeControlURL
+        self._relativeEventURL = relativeEventURL
+        self._deviceUSN = deviceUSN
     }
     
     deinit {
         // deinit may be called during init if init returns nil, queue var may not be set
-        if _concurrentEventObserverQueue == nil {
+        guard _concurrentEventObserverQueue != nil else {
             return
         }
         
@@ -131,25 +120,27 @@ public class AbstractUPnPService: AbstractUPnP {
     public func serviceDescriptionDocument(completion: (serviceDescriptionDocument: ONOXMLDocument?, defaultPrefix: String) -> Void) {
         if let serviceDescriptionDocument = _serviceDescriptionDocument {
             completion(serviceDescriptionDocument: serviceDescriptionDocument, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
-        }
-        else {
+        } else {
             let httpSessionManager = AFHTTPSessionManager()
             httpSessionManager.requestSerializer = AFHTTPRequestSerializer()
             httpSessionManager.responseSerializer = AFHTTPResponseSerializer()
             httpSessionManager.GET(serviceDescriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-                    var parseError: NSError?
-                    if let xmlData = responseObject as? NSData,
-                        serviceDescriptionDocument = ONOXMLDocument(data: xmlData, error: &parseError) {
-                            LogVerbose("Parsing service description XML:\nSTART\n\(NSString(data: xmlData, encoding: NSUTF8StringEncoding))\nEND")
-                            
-                            serviceDescriptionDocument.definePrefix(AbstractUPnPService._serviceDescriptionDefaultPrefix, forDefaultNamespace: "urn:schemas-upnp-org:service-1-0")
-                            self._serviceDescriptionDocument = serviceDescriptionDocument
-                            completion(serviceDescriptionDocument: serviceDescriptionDocument, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
+                    guard let xmlData = responseObject as? NSData else {
+                        completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
+                        return
                     }
-                    else {
+                    
+                    do {
+                        let serviceDescriptionDocument = try ONOXMLDocument(data: xmlData)
+                        LogVerbose("Parsing service description XML:\nSTART\n\(NSString(data: xmlData, encoding: NSUTF8StringEncoding))\nEND")
+                        
+                        serviceDescriptionDocument.definePrefix(AbstractUPnPService._serviceDescriptionDefaultPrefix, forDefaultNamespace: "urn:schemas-upnp-org:service-1-0")
+                        self._serviceDescriptionDocument = serviceDescriptionDocument
+                        completion(serviceDescriptionDocument: serviceDescriptionDocument, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
+                    } catch let parseError as NSError {
                         LogError("Failed to parse service description for SOAP action support check: \(parseError)")
-                    completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
+                        completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
                     }
                 })
                 }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
@@ -160,7 +151,7 @@ public class AbstractUPnPService: AbstractUPnP {
     }
     
     /// Used for determining support of optional SOAP actions for this service.
-    public func supportsSOAPAction(#actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
+    public func supportsSOAPAction(actionParameters actionParameters: SOAPRequestSerializer.Parameters, completion: (isSupported: Bool) -> Void) {
         let soapActionName = actionParameters.soapAction
         
         // only reading SOAP actions support cache, so distpach_async is appropriate to allow for concurrent reads
@@ -169,8 +160,7 @@ public class AbstractUPnPService: AbstractUPnP {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
                 if let isSupported = soapActionsSupportCache[soapActionName] {
                     completion(isSupported: isSupported)
-                }
-                else {
+                } else {
                     self.serviceDescriptionDocument { (serviceDescriptionDocument: ONOXMLDocument?, defaultPrefix: String) -> Void in
                         if let serviceDescriptionDocument = serviceDescriptionDocument {
                             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
@@ -185,8 +175,7 @@ public class AbstractUPnPService: AbstractUPnP {
                                 
                                 completion(isSupported: isSupported)
                             }
-                        }
-                        else {
+                        } else {
                             // Failed to retrieve service description. This result does not warrant recording false in the cache as the service description may still show the action as supported when retreived in a subsequent attempt.
                             completion(isSupported: false)
                         }
@@ -194,6 +183,11 @@ public class AbstractUPnPService: AbstractUPnP {
                 }
             }
         })
+    }
+    
+    /// overridable by service subclasses
+    public func createEvent(eventXML: NSData) -> UPnPEvent {
+        return UPnPEvent(eventXML: eventXML, service: self)
     }
 }
 
@@ -216,7 +210,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     /// Returns an opaque object to act as the observer. Use it when the event observer needs to be removed.
     public func addEventObserver(queue: NSOperationQueue?, callBackBlock: (event: UPnPEvent) -> Void) -> AnyObject {
         /// Use callBackBlock for event notifications. While the notifications are backed by NSNotifications for broadcasting, they should only be used internally in order to keep track of how many subscribers there are.
-        let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { [unowned self] (notification: NSNotification!) -> Void in
+        let observer = EventObserver(notificationCenterObserver: NSNotificationCenter.defaultCenter().addObserverForName(UPnPEventReceivedNotification(), object: nil, queue: queue) { (notification: NSNotification!) -> Void in
             if let event = notification.userInfo?[AbstractUPnPService._upnpEventKey] as? UPnPEvent {
                 callBackBlock(event: event)
             }
@@ -229,8 +223,8 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                 // subscribe
                 UPnPEventSubscriptionManager.sharedInstance.subscribe(self, eventURL: self.eventURL, completion: { (subscription: Result<AnyObject>) -> Void in
                     switch subscription {
-                    case .Success(let wrapper):
-                        self._eventSubscription = wrapper.value
+                    case .Success(let value):
+                        self._eventSubscription = value
                     case .Failure(let error):
                         let errorDescription = error.localizedDescription("Unknown subscribe error")
                         LogError("Unable to subscribe to UPnP events from \(self.eventURL): \(errorDescription)")
@@ -245,7 +239,7 @@ extension AbstractUPnPService: UPnPEventSubscriber {
     public func removeEventObserver(observer: AnyObject) {
         dispatch_barrier_async(_concurrentEventObserverQueue, { () -> Void in
             if let observer = observer as? EventObserver {
-                removeObject(&self._eventObservers, observer)
+                self._eventObservers.removeObject(observer)
                 NSNotificationCenter.defaultCenter().removeObserver(observer.notificationCenterObserver)
             }
             
@@ -263,11 +257,6 @@ extension AbstractUPnPService: UPnPEventSubscriber {
                 }
             }
         })
-    }
-    
-    /// overridable by service subclasses
-    public func createEvent(eventXML: NSData) -> UPnPEvent {
-        return UPnPEvent(eventXML: eventXML, service: self)
     }
     
     func handleEvent(eventSubscriptionManager: UPnPEventSubscriptionManager, eventXML: NSData) {
@@ -292,8 +281,9 @@ extension AbstractUPnP {
     }
 }
 
-extension AbstractUPnPService: ExtendedPrintable {
-    override public var className: String { return "AbstractUPnPService" }
+/// overrides ExtendedPrintable protocol implementation
+extension AbstractUPnPService {
+    override public var className: String { return "\(self.dynamicType)" }
     override public var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
@@ -335,6 +325,7 @@ class UPnPServiceParser: AbstractSAXXMLParser {
         self._descriptionXML = descriptionXML
         super.init(supportNamespaces: supportNamespaces)
         
+        /// NOTE: URLBase is deprecated in UPnP v2.0, baseURL should be derived from the SSDP discovery description URL
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             self._baseURL = NSURL(string: text)
         }))
@@ -352,27 +343,27 @@ class UPnPServiceParser: AbstractSAXXMLParser {
             }, foundInnerText: nil))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "serviceType"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.serviceType = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "serviceId"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.serviceID = text
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "SCPDURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.relativeServiceDescriptionURL = NSURL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "controlURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.relativeControlURL = NSURL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serviceList", "service", "eventSubURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            var currentService = self._currentParserService
+            let currentService = self._currentParserService
             currentService?.relativeEventURL = NSURL(string: text)
         }))
     }
@@ -389,9 +380,8 @@ class UPnPServiceParser: AbstractSAXXMLParser {
                 if let deviceType = _deviceType {
                     foundParserService.deviceUSN = UniqueServiceName(uuid: _upnpService.uuid, urn: deviceType)
                 }
-                return .Success(RVW(foundParserService))
-            }
-            else {
+                return .Success(foundParserService)
+            } else {
                 return .Failure(createError("Parser error"))
             }
         case .Failure(let error):

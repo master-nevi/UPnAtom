@@ -23,7 +23,7 @@
 
 import Foundation
 
-public protocol ExtendedPrintable: Printable {
+public protocol ExtendedPrintable: CustomStringConvertible {
     var className: String { get }
 }
 
@@ -36,7 +36,7 @@ public struct PropertyPrinter {
         _properties[propertyName] = prettyPrint(property)
     }
     
-    public mutating func add<T: Printable>(propertyName: String, property: T?) {
+    public mutating func add<T: CustomStringConvertible>(propertyName: String, property: T?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
@@ -44,7 +44,7 @@ public struct PropertyPrinter {
         _properties[propertyName] = prettyPrint(property)
     }
     
-    public mutating func add<T: Printable>(propertyName: String, property: [T]?) {
+    public mutating func add<T: CustomStringConvertible>(propertyName: String, property: [T]?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
@@ -52,7 +52,7 @@ public struct PropertyPrinter {
         _properties[propertyName] = prettyPrint(property)
     }
     
-    public mutating func add<K, V: Printable>(propertyName: String, property: [K: V]?) {
+    public mutating func add<K, V: CustomStringConvertible>(propertyName: String, property: [K: V]?) {
         _properties[propertyName] = prettyPrint(property)
     }
     
@@ -66,30 +66,30 @@ public struct PropertyPrinter {
     //    }
 }
 
-extension PropertyPrinter: Printable {
+extension PropertyPrinter: CustomStringConvertible {
     public var description: String {
-        return dictionaryDescription(_properties, "=")
+        return dictionaryDescription(_properties, pointsToSymbol: "=")
     }
 }
 
 /// helpPrint(), dictionaryDescription(), and arrayDescription() have so many variants due to the limitation in the Swift for detecting swift-protocol conformance at runtime. This restriction will be removed in a future release of swift: http://stackoverflow.com/questions/26909974/protocols-why-is-objc-required-for-conformance-checking-and-optional-requireme
 func prettyPrint<K, V>(someDictionary: [K: V]?) -> String {
     if let someDictionary = someDictionary {
-        return prettyPrint(dictionaryDescription(someDictionary, ":"))
+        return prettyPrint(dictionaryDescription(someDictionary, pointsToSymbol: ":"))
     }
     
     return "nil"
 }
 
-func prettyPrint<K, V: Printable>(someDictionary: [K: V]?) -> String {
+func prettyPrint<K, V: CustomStringConvertible>(someDictionary: [K: V]?) -> String {
     if let someDictionary = someDictionary {
-        return prettyPrint(dictionaryDescription(someDictionary, ":"))
+        return prettyPrint(dictionaryDescription(someDictionary, pointsToSymbol: ":"))
     }
     
     return "nil"
 }
 
-func prettyPrint<T: Printable>(someArray: [T]?) -> String {
+func prettyPrint<T: CustomStringConvertible>(someArray: [T]?) -> String {
     if let someArray = someArray {
         return prettyPrint(arrayDescription(someArray))
     }
@@ -105,7 +105,7 @@ func prettyPrint<T>(someArray: [T]?) -> String {
     return "nil"
 }
 
-func prettyPrint<T: Printable>(something: T?) -> String {
+func prettyPrint<T: CustomStringConvertible>(something: T?) -> String {
     if let something = something {
         return something.description.stringByReplacingOccurrencesOfString("\n", withString: "\n\t", options: .LiteralSearch)
     }
@@ -121,7 +121,7 @@ func prettyPrint<T>(something: T?) -> String {
     return "nil"
 }
 
-func dictionaryDescription<K, V: Printable>(properties: [K: V], pointsToSymbol: String) -> String {
+func dictionaryDescription<K, V: CustomStringConvertible>(properties: [K: V], pointsToSymbol: String) -> String {
     var description = "{ \n"
     for (key, value) in properties {
         let valueDescription = value.description.stringByReplacingOccurrencesOfString("\n", withString: "\n\t", options: .LiteralSearch)
@@ -140,7 +140,7 @@ func dictionaryDescription<K, V>(properties: [K: V], pointsToSymbol: String) -> 
     return description
 }
 
-func arrayDescription<T: Printable>(array: [T]) -> String {
+func arrayDescription<T: CustomStringConvertible>(array: [T]) -> String {
     var description = "{ \n"
     for item in array {
         let itemDescription = item.description.stringByReplacingOccurrencesOfString("\n", withString: "\n\t", options: .LiteralSearch)
