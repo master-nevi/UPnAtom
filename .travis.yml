@@ -27,6 +27,7 @@ script:
   - set -o pipefail
   - xcodebuild -version
   - xcodebuild -showsdks
+  - pod repo update
 
   # Build Example in Debug if specified
   - if [ $BUILD_EXAMPLE == "YES" ] && [ $SDK == $IOS_SDK ]; then
