@@ -32,9 +32,9 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "SetAVTransportURI", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             success()
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -50,9 +50,9 @@ public class AVTransport1Service: AbstractUPnPService {
         // Check if the optional SOAP action "SetNextAVTransportURI" is supported
         supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
             if isSupported {
-                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
                     success()
-                    }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                    }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                         failure(error: error)
                 })
             } else {
@@ -66,7 +66,7 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetMediaInfo", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             let responseObject = responseObject as? [String: String]
             var numberOfTracks: Int?
             if let numberOfTracksString = responseObject?["NrTracks"] {
@@ -74,7 +74,7 @@ public class AVTransport1Service: AbstractUPnPService {
             }
             
             success(numberOfTracks: numberOfTracks ?? 0, mediaDuration: responseObject?["MediaDuration"], currentURI: responseObject?["CurrentURI"], currentURIMetaData: responseObject?["CurrentURIMetaData"], nextURI: responseObject?["NextURI"], nextURIMetaData: responseObject?["NextURIMetaData"], playMedium: responseObject?["PlayMedium"], recordMedium: responseObject?["RecordMedium"], writeStatus: responseObject?["WriteStatus"])
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -84,10 +84,10 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetTransportInfo", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             let responseObject = responseObject as? [String: String]
             success(currentTransportState: responseObject?["CurrentTransportState"], currentTransportStatus: responseObject?["CurrentTransportStatus"], currentSpeed: responseObject?["CurrentSpeed"])
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -97,10 +97,10 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetPositionInfo", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             let responseObject = responseObject as? [String: String]
             success(track: responseObject?["Track"], trackDuration: responseObject?["TrackDuration"], trackMetaData: responseObject?["TrackMetaData"], trackURI: responseObject?["TrackURI"], relativeTime: responseObject?["RelTime"], absoluteTime: responseObject?["AbsTime"], relativeCount: responseObject?["RelCount"], absoluteCount: responseObject?["AbsCount"])
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -110,10 +110,10 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetDeviceCapabilities", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             let responseObject = responseObject as? [String: String]
             success(playMedia: responseObject?["PlayMedia"], recordMedia: responseObject?["RecMedia"], recordQualityModes: responseObject?["RecQualityModes"])
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -123,10 +123,10 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "GetTransportSettings", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             let responseObject = responseObject as? [String: String]
             success(playMode: responseObject?["PlayMode"], recordQualityMode: responseObject?["RecQualityMode"])
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -136,9 +136,9 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Stop", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             success()
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -150,9 +150,9 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Play", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in            
+        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in            
             success()
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -165,9 +165,9 @@ public class AVTransport1Service: AbstractUPnPService {
         // Check if the optional SOAP action "Pause" is supported
         supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
             if isSupported {
-                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
                     success()
-                    }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                    }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                         failure(error: error)
                 })
             } else {
@@ -184,9 +184,9 @@ public class AVTransport1Service: AbstractUPnPService {
         // Check if the optional SOAP action "Record" is supported
         supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
             if isSupported {
-                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
                     success()
-                    }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                    }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                         failure(error: error)
                 })
             } else {
@@ -203,9 +203,9 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Seek", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             success()
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -215,9 +215,9 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Next", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             success()
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -227,9 +227,9 @@ public class AVTransport1Service: AbstractUPnPService {
         
         let parameters = SOAPRequestSerializer.Parameters(soapAction: "Previous", serviceURN: urn, arguments: arguments)
         
-        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+        soapSessionManager.POST(controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
             success()
-            }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 failure(error: error)
         })
     }
@@ -244,9 +244,9 @@ public class AVTransport1Service: AbstractUPnPService {
         // Check if the optional SOAP action "SetPlayMode" is supported
         supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
             if isSupported {
-                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
                     success()
-                    }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                    }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                         failure(error: error)
                 })
             } else {
@@ -265,9 +265,9 @@ public class AVTransport1Service: AbstractUPnPService {
         // Check if the optional SOAP action "SetRecordQualityMode" is supported
         supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
             if isSupported {
-                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
                     success()
-                    }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                    }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                         failure(error: error)
                 })
             } else {
@@ -284,10 +284,10 @@ public class AVTransport1Service: AbstractUPnPService {
         // Check if the optional SOAP action "GetCurrentTransportActions" is supported
         supportsSOAPAction(actionParameters: parameters) { (isSupported) -> Void in
             if isSupported {
-                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+                self.soapSessionManager.POST(self.controlURL.absoluteString, parameters: parameters, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
                     let responseObject = responseObject as? [String: String]
                     success(actions: responseObject?["Actions"])
-                    }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                    }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                         failure(error: error)
                 })
             } else {
