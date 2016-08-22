@@ -30,6 +30,7 @@ script:
 
   # Build Example in Debug if specified
   - if [ $BUILD_EXAMPLE == "YES" ] && [ $SDK == $IOS_SDK ]; then
+      pod search GCDWebServer --no-pager;
       pod install --project-directory="$OBJC_IOS_EXAMPLE_DIR";
       xcodebuild -workspace "$OBJC_IOS_EXAMPLE_DIR/$WORKSPACE" -scheme "$EXAMPLE_SCHEME" -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
     fi
