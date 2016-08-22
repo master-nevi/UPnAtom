@@ -1,0 +1,58 @@
+PODS:
+  - AFNetworking (3.1.0):
+    - AFNetworking/NSURLSession (= 3.1.0)
+    - AFNetworking/Reachability (= 3.1.0)
+    - AFNetworking/Security (= 3.1.0)
+    - AFNetworking/Serialization (= 3.1.0)
+    - AFNetworking/UIKit (= 3.1.0)
+  - AFNetworking/NSURLSession (3.1.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.1.0)
+  - AFNetworking/Security (3.1.0)
+  - AFNetworking/Serialization (3.1.0)
+  - AFNetworking/UIKit (3.1.0):
+    - AFNetworking/NSURLSession
+  - CocoaAsyncSocket (7.4.3):
+    - CocoaAsyncSocket/All (= 7.4.3)
+  - CocoaAsyncSocket/All (7.4.3):
+    - CocoaAsyncSocket/GCD
+    - CocoaAsyncSocket/RunLoop
+  - CocoaAsyncSocket/GCD (7.4.3)
+  - CocoaAsyncSocket/RunLoop (7.4.3)
+  - GCDWebServer (3.3.3):
+    - GCDWebServer/Core (= 3.3.3)
+  - GCDWebServer/Core (3.3.3)
+  - Ono (1.2.2)
+  - UPnAtom (0.7.0):
+    - AFNetworking (~> 3.1)
+    - CocoaAsyncSocket (~> 7.4.1)
+    - GCDWebServer (~> 3.3)
+    - Ono (~> 1.2.0)
+
+DEPENDENCIES:
+  - Ono (from `https://github.com/master-nevi/Ono.git`)
+  - UPnAtom (from `../..`)
+
+EXTERNAL SOURCES:
+  Ono:
+    :git: https://github.com/master-nevi/Ono.git
+  UPnAtom:
+    :path: "../.."
+
+CHECKOUT OPTIONS:
+  Ono:
+    :commit: 2bb145fce50ebabca69b5d9409889a0983f728b6
+    :git: https://github.com/master-nevi/Ono.git
+
+SPEC CHECKSUMS:
+  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  CocoaAsyncSocket: a18c75dca4b08723628a0bacca6e94803d90be91
+  GCDWebServer: 1c39a1f0763e4eb492bee021e4270fce097d3555
+  Ono: f360c6e6a38c4bb502fc16c266fd844091c0a5f9
+  UPnAtom: 3c96820e2f784fb45116c9cd0e2feebb4f960c87
+
+PODFILE CHECKSUM: dd7961aff63f1e2724b6bca456e015967be43b12
+
+COCOAPODS: 1.0.1

@@ -73,7 +73,7 @@ extension AbstractUPnP {
 }
 
 extension AbstractUPnP: ExtendedPrintable {
-    #if os(iOS)
+    #if os(iOS) || os(tvOS)
     public var className: String { return "\(self.dynamicType)" }
     #elseif os(OSX) // NSObject.className actually exists on OSX! Who knew.
     override public var className: String { return "\(self.dynamicType)" }

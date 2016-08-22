@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "6AABD44644BFEAC8E9C134F63605C863BA435A11",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "9A76F17C6068412484158A754CBD274391008322" : 0,
+    "6AABD44644BFEAC8E9C134F63605C863BA435A11" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "F6F58820-9E60-4493-AA6D-64E0AD8803AF",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "9A76F17C6068412484158A754CBD274391008322" : "..\/Ono",
+    "6AABD44644BFEAC8E9C134F63605C863BA435A11" : "UPnAtom\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ControlPointDemo",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Examples\/ControlPointDemoTVOS_Swift\/ControlPointDemo.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:master-nevi\/UPnAtom.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6AABD44644BFEAC8E9C134F63605C863BA435A11"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/mattt\/Ono.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9A76F17C6068412484158A754CBD274391008322"
+    }
+  ]
+}
