@@ -124,7 +124,7 @@ public class AbstractUPnPService: AbstractUPnP {
             let httpSessionManager = AFHTTPSessionManager()
             httpSessionManager.requestSerializer = AFHTTPRequestSerializer()
             httpSessionManager.responseSerializer = AFHTTPResponseSerializer()
-            httpSessionManager.GET(serviceDescriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask!, responseObject: AnyObject!) -> Void in
+            httpSessionManager.GET(serviceDescriptionURL.absoluteString, parameters: nil, success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) in
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
                     guard let xmlData = responseObject as? NSData else {
                         completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
@@ -143,7 +143,7 @@ public class AbstractUPnPService: AbstractUPnP {
                         completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
                     }
                 })
-                }, failure: { (task: NSURLSessionDataTask!, error: NSError!) -> Void in
+                }, failure: { (task: NSURLSessionDataTask?, error: NSError) in
                     LogError("Failed to retrieve service description for SOAP action support check: \(error)")
                     completion(serviceDescriptionDocument: nil, defaultPrefix: AbstractUPnPService._serviceDescriptionDefaultPrefix)
             })

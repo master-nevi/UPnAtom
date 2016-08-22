@@ -500,9 +500,10 @@ extension AFHTTPSessionManager {
     
     private func dataTask(method: String, URLString: String, parameters: AnyObject, success: ((task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void)?, failure: ((task: NSURLSessionDataTask?, error: NSError) -> Void)?) -> NSURLSessionDataTask? {
         let request: NSURLRequest!
-        do {
-             request = try self.requestSerializer.requestWithMethod(method, URLString: NSURL(string: URLString, relativeToURL: self.baseURL)?.absoluteString, parameters: parameters, error: ())
-        } catch let serializationError as NSError {
+        var serializationError: NSError?
+        request = try self.requestSerializer.requestWithMethod(method, URLString: NSURL(string: URLString, relativeToURL: self.baseURL)!.absoluteString, parameters: parameters, error: &serializationError)
+        
+        if let serializationError = serializationError {
             if let failure = failure {
                 dispatch_async(self.completionQueue != nil ? self.completionQueue : dispatch_get_main_queue(), { () -> Void in
                     failure(task: nil, error: serializationError)
@@ -513,7 +514,7 @@ extension AFHTTPSessionManager {
         }
         
         var dataTask: NSURLSessionDataTask!
-        dataTask = self.dataTaskWithRequest(request, completionHandler: { (response: NSURLResponse!, responseObject: AnyObject!, error: NSError!) -> Void in
+        dataTask = self.dataTaskWithRequest(request, completionHandler: { (response: NSURLResponse, responseObject: AnyObject?, error: NSError?) -> Void in
             if let error = error {
                 if let failure = failure {
                     failure(task: dataTask, error: error)

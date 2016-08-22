@@ -13,9 +13,9 @@ Pod::Spec.new do |s|
   s.source_files = 'Source/**/*.swift'
   s.exclude_files = 'Source/CocoaSSDP Support/*.swift'
   s.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
-  s.dependency 'AFNetworking', '~> 2.5.2' # HTTP Client
+  s.dependency 'AFNetworking', '~> 3.1' # HTTP Client
   s.dependency 'Ono', '~> 1.2.0' # XML parsing
-  s.dependency 'GCDWebServer', '~> 3.2.2' # UPnP event notification handling
+  s.dependency 'GCDWebServer', '~> 3.3' # UPnP event notification handling
 
   
   # NOTE: I really did try to be a good pod architect and modularize the library into subspecs, however there are still bugs in the Swift compiler which cause it to crash when building release/archive versions of UPnAtom. Because the problem areas may consistantly or inconsistanly cause the compiler crash, the fewer subspecs or no subspecs the better when it comes to tracking them down (i.e. less hair being pulled out). I look forward to doing it in the future however. Here's a sneak peek:

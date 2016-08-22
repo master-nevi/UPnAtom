@@ -41,9 +41,9 @@ public class SOAPRequestSerializer: AFHTTPRequestSerializer {
         }
     }
     
-    override public func requestBySerializingRequest(request: NSURLRequest!, withParameters parameters: AnyObject!) throws -> NSURLRequest {
+    override public func requestBySerializingRequest(request: NSURLRequest, withParameters parameters: AnyObject?, error: NSErrorPointer) -> NSURLRequest? {
         guard let requestParameters = parameters as? Parameters else {
-            throw createError("Invalid parameters")
+            return nil
         }
         
         let mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
@@ -83,15 +83,23 @@ public class SOAPRequestSerializer: AFHTTPRequestSerializer {
 }
 
 public class SOAPResponseSerializer: AFXMLParserResponseSerializer {
-    override public func responseObjectForResponse(response: NSURLResponse!, data: NSData!) throws -> AnyObject {
-        try validateResponse(response as! NSHTTPURLResponse, data: data)
+    override public func responseObjectForResponse(response: NSURLResponse?, data: NSData?, error: NSErrorPointer) -> AnyObject? {
+        do {
+            try validateResponse(response as! NSHTTPURLResponse, data: data)
+        } catch {
+            return nil
+        }
         let xmlParser = SOAPResponseParser()
+        
+        guard let data = data else {
+            return nil
+        }
         
         switch xmlParser.parse(soapResponseData: data) {
         case .Success(let value):
             return value
         case .Failure(let error):
-            throw error
+            return nil
         }
     }
 }
