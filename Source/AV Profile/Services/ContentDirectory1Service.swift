@@ -357,6 +357,10 @@ class ContentDirectoryBrowseResultParser: AbstractDOMXMLParser {
                 if let contentDirectoryObject = ContentDirectory1VideoItem(xmlElement: element) {
                     self._contentDirectoryObjects.append(contentDirectoryObject)
                 }
+            case .Some(let rawType) where rawType == "object.item.audioItem":
+                if let contentDirectoryObject = ContentDirectory1AudioItem(xmlElement: element) {
+                    self._contentDirectoryObjects.append(contentDirectoryObject)
+                }
             default:
                 if let contentDirectoryObject = ContentDirectory1Object(xmlElement: element) {
                     self._contentDirectoryObjects.append(contentDirectoryObject)
