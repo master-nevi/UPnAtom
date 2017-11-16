@@ -23,7 +23,7 @@
 
 struct SSDPDiscovery {
     let usn: UniqueServiceName
-    let descriptionURL: NSURL
+    let descriptionURL: URL
     let type: SSDPType
 }
 

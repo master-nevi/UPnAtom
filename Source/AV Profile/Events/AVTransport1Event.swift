@@ -23,10 +23,10 @@
 
 import Ono
 
-public class AVTransport1Event: UPnPEvent {
-    public var instanceState = [String: AnyObject]()
+open class AVTransport1Event: UPnPEvent {
+    open var instanceState = [String: AnyObject]()
     
-    override public init(eventXML: NSData, service: AbstractUPnPService) {
+    override public init(eventXML: Data, service: AbstractUPnPService) {
         super.init(eventXML: eventXML, service: service)
         
         if let parsedInstanceState = AVTransport1EventParser().parse(eventXML: eventXML).value {
@@ -43,27 +43,27 @@ extension UPnPEvent {
 }
 
 class AVTransport1EventParser: AbstractDOMXMLParser {
-    private var _instanceState = [String: AnyObject]()
+    fileprivate var _instanceState = [String: AnyObject]()
     
-    override func parse(document document: ONOXMLDocument) -> EmptyResult {
-        let result: EmptyResult = .Success
+    override func parse(document: ONOXMLDocument) -> EmptyResult {
+        let result: EmptyResult = .success
 
         // procedural vs series of nested if let's
-        guard let lastChangeXMLString = document.firstChildWithXPath("/e:propertyset/e:property/LastChange")?.stringValue() else {
-            return .Failure(createError("No LastChange element in UPnP service event XML"))
+        guard let lastChangeXMLString = document.firstChild(withXPath: "/e:propertyset/e:property/LastChange")?.stringValue() else {
+            return .failure(createError("No LastChange element in UPnP service event XML"))
         }
         
         LogVerbose("Parsing LastChange XML:\nSTART\n\(lastChangeXMLString)\nEND")
         
-        guard let lastChangeEventDocument = try? ONOXMLDocument(string: lastChangeXMLString, encoding: NSUTF8StringEncoding) else {
-            return .Failure(createError("Unable to parse LastChange XML"))
+        guard let lastChangeEventDocument = try? ONOXMLDocument(string: lastChangeXMLString, encoding: String.Encoding.utf8.rawValue) else {
+            return .failure(createError("Unable to parse LastChange XML"))
         }
         
         lastChangeEventDocument.definePrefix("avt", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/AVT/")
-        lastChangeEventDocument.enumerateElementsWithXPath("/avt:Event/avt:InstanceID/*", usingBlock: { [unowned self] (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-            if let stateValue = element.valueForAttribute("val") as? String where !stateValue.isEmpty {
-                if element.tag.rangeOfString("MetaData") != nil {
-                    guard let metadataDocument = try? ONOXMLDocument(string: stateValue, encoding: NSUTF8StringEncoding) else {
+        lastChangeEventDocument.enumerateElements(withXPath: "/avt:Event/avt:InstanceID/*", using: { [unowned self] (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+            if let stateValue = element.value(forAttribute: "val") as? String, !stateValue.isEmpty {
+                if element.tag.range(of: "MetaData") != nil {
+                    guard let metadataDocument = try? ONOXMLDocument(string: stateValue, encoding: String.Encoding.utf8.rawValue) else {
                         return
                     }
                     
@@ -72,28 +72,28 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
                     var metaData = [String: String]()
                     
                     metadataDocument.definePrefix("didllite", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/")
-                    metadataDocument.enumerateElementsWithXPath("/didllite:DIDL-Lite/didllite:item/*", usingBlock: { (metadataElement: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-                        if let elementStringValue = metadataElement.stringValue() where !elementStringValue.isEmpty {
+                    metadataDocument.enumerateElements(withXPath: "/didllite:DIDL-Lite/didllite:item/*", using: { (metadataElement: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+                        if let elementStringValue = metadataElement.stringValue(), !elementStringValue.isEmpty {
                             metaData[metadataElement.tag] = elementStringValue
                         }
-                    })
+                    } as! (ONOXMLElement?, UInt, UnsafeMutablePointer<ObjCBool>?) -> Void)
                     
-                    self._instanceState[element.tag] = metaData
+                    self._instanceState[element.tag] = metaData as AnyObject
                 } else {
-                    self._instanceState[element.tag] = stateValue
+                    self._instanceState[element.tag] = stateValue as AnyObject
                 }
             }
-        })
+        } as! (ONOXMLElement?, UInt, UnsafeMutablePointer<ObjCBool>?) -> Void)
         
         return result
     }
     
-    func parse(eventXML eventXML: NSData) -> Result<[String: AnyObject]> {
+    func parse(eventXML: Data) -> Result<[String: AnyObject]> {
         switch super.parse(data: eventXML) {
-        case .Success:
-            return .Success(_instanceState)
-        case .Failure(let error):
-            return .Failure(error)
+        case .success:
+            return .success(_instanceState)
+        case .failure(let error):
+            return .failure(error)
         }
     }
 }

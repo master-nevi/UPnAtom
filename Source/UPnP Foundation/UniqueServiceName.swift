@@ -24,11 +24,11 @@
 import Foundation
 
 /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
-public class UniqueServiceName: NSObject, RawRepresentable {
-    public let rawValue: RawValue
-    public let uuid: String
-    public let urn: String?
-    public let rootDevice: Bool
+open class UniqueServiceName: NSObject, RawRepresentable {
+    open let rawValue: RawValue
+    open let uuid: String
+    open let urn: String?
+    open let rootDevice: Bool
     
     public typealias RawValue = String
     
@@ -36,7 +36,7 @@ public class UniqueServiceName: NSObject, RawRepresentable {
         self.rawValue = rawValue
         
         // all forms of usn should contain a uuid, otherwise it's invalid and nil will be returned
-        guard let uuid = UniqueServiceName.uuid(usn: rawValue) where !uuid.isEmpty else {
+        guard let uuid = UniqueServiceName.uuid(usn: rawValue), !uuid.isEmpty else {
             /// TODO: Remove default initializations to simply return nil, see Github issue #11
             self.uuid = ""
             self.rootDevice = false
@@ -61,40 +61,40 @@ public class UniqueServiceName: NSObject, RawRepresentable {
         self.init(rawValue: rawValue)
     }
     
-    class func uuid(usn usn: String) -> String? {
-        let usnComponents = usn.componentsSeparatedByString("::")
-        return (usnComponents.count >= 1 && usnComponents[0].rangeOfString("uuid:") != nil) ? usnComponents[0] : nil
+    class func uuid(usn: String) -> String? {
+        let usnComponents = usn.components(separatedBy: "::")
+        return (usnComponents.count >= 1 && usnComponents[0].range(of: "uuid:") != nil) ? usnComponents[0] : nil
     }
     
-    class func urn(usn usn: String) -> String? {
-        let usnComponents = usn.componentsSeparatedByString("::")
-        return (usnComponents.count >= 2 && usnComponents[1].rangeOfString("urn:") != nil) ? usnComponents[1] : nil
+    class func urn(usn: String) -> String? {
+        let usnComponents = usn.components(separatedBy: "::")
+        return (usnComponents.count >= 2 && usnComponents[1].range(of: "urn:") != nil) ? usnComponents[1] : nil
     }
     
-    class func isRootDevice(usn usn: String) -> Bool {
-        let usnComponents = usn.componentsSeparatedByString("::")
-        return usnComponents.count >= 2 && usnComponents[1].rangeOfString("upnp:rootdevice") != nil
+    class func isRootDevice(usn: String) -> Bool {
+        let usnComponents = usn.components(separatedBy: "::")
+        return usnComponents.count >= 2 && usnComponents[1].range(of: "upnp:rootdevice") != nil
     }
 }
 
 extension UniqueServiceName {
-    override public var description: String {
+    override open var description: String {
         return rawValue
     }
 }
 
 extension UniqueServiceName {
-    override public var hashValue: Int {
+    override open var hashValue: Int {
         return rawValue.hashValue
     }
     
     /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
-    override public var hash: Int {
+    override open var hash: Int {
         return hashValue
     }
     
     /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
-    override public func isEqual(object: AnyObject?) -> Bool {
+    override open func isEqual(_ object: Any?) -> Bool {
         if let other = object as? UniqueServiceName {
             return self == other
         }

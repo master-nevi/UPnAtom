@@ -36,25 +36,25 @@ public enum SSDPTypeConstant: String {
 }
 
 enum SSDPType: RawRepresentable {
-    case All
-    case RootDevice
-    case UUID(String)
-    case Device(String)
-    case Service(String)
+    case all
+    case rootDevice
+    case uuid(String)
+    case device(String)
+    case service(String)
     
     typealias RawValue = String
     
     init?(rawValue: RawValue) {
         if rawValue == "ssdp:all" {
-            self = .All
+            self = .all
         } else if rawValue == "upnp:rootdevice" {
-            self = .RootDevice
-        } else if rawValue.rangeOfString("uuid:") != nil {
-            self = .UUID(rawValue)
-        } else if rawValue.rangeOfString(":device:") != nil {
-            self = .Device(rawValue)
-        } else if rawValue.rangeOfString(":service:") != nil {
-            self = .Service(rawValue)
+            self = .rootDevice
+        } else if rawValue.range(of: "uuid:") != nil {
+            self = .uuid(rawValue)
+        } else if rawValue.range(of: ":device:") != nil {
+            self = .device(rawValue)
+        } else if rawValue.range(of: ":service:") != nil {
+            self = .service(rawValue)
         } else {
             return nil
         }
@@ -66,15 +66,15 @@ enum SSDPType: RawRepresentable {
     
     var rawValue: RawValue {
         switch self {
-        case .All:
+        case .all:
             return "ssdp:all"
-        case .RootDevice:
+        case .rootDevice:
             return "upnp:rootdevice"
-        case .UUID(let rawValue):
+        case .uuid(let rawValue):
             return rawValue
-        case .Device(let rawValue):
+        case .device(let rawValue):
             return rawValue
-        case .Service(let rawValue):
+        case .service(let rawValue):
             return rawValue
         }
     }
@@ -94,15 +94,15 @@ extension SSDPType: Hashable {
 
 func ==(lhs: SSDPType, rhs: SSDPType) -> Bool {
     switch (lhs, rhs) {
-    case (.All, .All):
+    case (.all, .all):
         return true
-    case (.RootDevice, .RootDevice):
+    case (.rootDevice, .rootDevice):
         return true
-    case (.UUID(let lhsRawValue), .UUID(let rhsRawValue)):
+    case (.uuid(let lhsRawValue), .uuid(let rhsRawValue)):
         return lhsRawValue == rhsRawValue
-    case (.Device(let lhsRawValue), .Device(let rhsRawValue)):
+    case (.device(let lhsRawValue), .device(let rhsRawValue)):
         return lhsRawValue == rhsRawValue
-    case (.Service(let lhsRawValue), .Service(let rhsRawValue)):
+    case (.service(let lhsRawValue), .service(let rhsRawValue)):
         return lhsRawValue == rhsRawValue
     default:
         return false

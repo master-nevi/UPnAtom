@@ -36,38 +36,38 @@ class Player {
             didSetRenderer(oldRenderer: oldValue, newRenderer: mediaRenderer)
         }
     }
-    private(set) var playPauseButton: UIBarButtonItem! // TODO: Should ideally be a constant, see Github issue #10
-    private(set) var stopButton: UIBarButtonItem! // TODO: Should ideally be a constant, see Github issue #10
+    fileprivate(set) var playPauseButton: UIBarButtonItem! // TODO: Should ideally be a constant, see Github issue #10
+    fileprivate(set) var stopButton: UIBarButtonItem! // TODO: Should ideally be a constant, see Github issue #10
     
-    private var _position: Int = 0
-    private var _playlist: [ContentDirectory1Object]?
-    private var _avTransportEventObserver: AnyObject?
-    private var _playerState: PlayerState = PlayerState.Stopped {
+    fileprivate var _position: Int = 0
+    fileprivate var _playlist: [ContentDirectory1Object]?
+    fileprivate var _avTransportEventObserver: AnyObject?
+    fileprivate var _playerState: PlayerState = PlayerState.stopped {
         didSet {
             playerStateDidChange()
         }
     }
-    private var _avTransportInstanceID = "0"
+    fileprivate var _avTransportInstanceID = "0"
     
     enum PlayerState {
-        case Unknown
-        case Stopped
-        case Playing
-        case Paused
+        case unknown
+        case stopped
+        case playing
+        case paused
     }
     
     init() {
-        playPauseButton = UIBarButtonItem(image: UIImage(named: "play_button"), style: .Plain, target: self, action: #selector(Player.playPauseButtonTapped(_:)))
-        stopButton = UIBarButtonItem(image: UIImage(named: "stop_button"), style: .Plain, target: self, action: #selector(Player.stopButtonTapped(_:)))
+        playPauseButton = UIBarButtonItem(image: UIImage(named: "play_button"), style: .plain, target: self, action: #selector(Player.playPauseButtonTapped(_:)))
+        stopButton = UIBarButtonItem(image: UIImage(named: "stop_button"), style: .plain, target: self, action: #selector(Player.stopButtonTapped(_:)))
     }
     
-    func startPlayback(playlist: [ContentDirectory1Object], position: Int) {
+    func startPlayback(_ playlist: [ContentDirectory1Object], position: Int) {
         _playlist = playlist
         
         startPlayback(position: position)
     }
     
-    func startPlayback(position position: Int) {
+    func startPlayback(position: Int) {
         _position = position
         
         if let item = _playlist?[position] as? ContentDirectory1VideoItem {
@@ -87,17 +87,17 @@ class Player {
         }
     }
     
-    @objc private func playPauseButtonTapped(sender: AnyObject) {
+    @objc fileprivate func playPauseButtonTapped(_ sender: AnyObject) {
         print("play/pause button tapped")
         
         switch _playerState {
-        case .Playing:
+        case .playing:
             pause({ () -> Void in
                 print("Pause command succeeded!")
             }, failure: { (error) -> Void in
                 print("Pause command failed: \(error)")
             })
-        case .Paused, .Stopped:
+        case .paused, .stopped:
             play({ () -> Void in
                 print("Play command succeeded!")
                 }, failure: { (error) -> Void in
@@ -108,67 +108,67 @@ class Player {
         }
     }
     
-    @objc private func stopButtonTapped(sender: AnyObject) {
+    @objc fileprivate func stopButtonTapped(_ sender: AnyObject) {
         print("stop button tapped")
         
         switch _playerState {
-        case .Playing, .Paused:
+        case .playing, .paused:
             stop({ () -> Void in
                 print("Stop command succeeded!")
                 }, failure: { (error) -> Void in
                     print("Stop command failed: \(error)")
             })
-        case .Stopped:
+        case .stopped:
             print("Stop button cannot be used in this state.")
         default:
             print("Stop button cannot be used in this state.")
         }
     }
     
-    private func didSetRenderer(oldRenderer oldRenderer: MediaRenderer1Device?, newRenderer: MediaRenderer1Device?) {
+    fileprivate func didSetRenderer(oldRenderer: MediaRenderer1Device?, newRenderer: MediaRenderer1Device?) {
         if let avTransportEventObserver: AnyObject = _avTransportEventObserver {
             oldRenderer?.avTransportService?.removeEventObserver(avTransportEventObserver)
         }
         
-        _avTransportEventObserver = newRenderer?.avTransportService?.addEventObserver(NSOperationQueue.currentQueue(), callBackBlock: { (event: UPnPEvent) -> Void in
+        _avTransportEventObserver = newRenderer?.avTransportService?.addEventObserver(OperationQueue.current, callBackBlock: { (event: UPnPEvent) -> Void in
             if let avTransportEvent = event as? AVTransport1Event,
-                transportState = (avTransportEvent.instanceState["TransportState"] as? String)?.lowercaseString {
-                    print("\(event.service?.className) Event: \(avTransportEvent.instanceState)")
+                let transportState = (avTransportEvent.instanceState["TransportState"] as? String)?.lowercased() {
+                    print("\(String(describing: event.service?.className)) Event: \(avTransportEvent.instanceState)")
                     print("transport state: \(transportState)")
-                    if transportState.rangeOfString("playing") != nil {
-                        self._playerState = .Playing
+                    if transportState.range(of: "playing") != nil {
+                        self._playerState = .playing
                     }
-                    else if transportState.rangeOfString("paused") != nil {
-                        self._playerState = .Paused
+                    else if transportState.range(of:"paused") != nil {
+                        self._playerState = .paused
                     }
-                    else if transportState.rangeOfString("stopped") != nil {
-                        self._playerState = .Stopped
+                    else if transportState.range(of:"stopped") != nil {
+                        self._playerState = .stopped
                     }
                     else {
-                        self._playerState = .Unknown
+                        self._playerState = .unknown
                     }
             }
         })
     }
     
-    private func playerStateDidChange() {
+    fileprivate func playerStateDidChange() {
         switch _playerState {
-        case .Stopped, .Paused, .Unknown:
+        case .stopped, .paused, .unknown:
             playPauseButton.image = UIImage(named: "play_button")
-        case .Playing:
+        case .playing:
             playPauseButton.image = UIImage(named: "pause_button")
         }
     }
     
-    private func play(success: () -> Void, failure:(error: NSError) -> Void) {
+    fileprivate func play(_ success: @escaping () -> Void, failure:@escaping (_ error: NSError) -> Void) {
         self.mediaRenderer?.avTransportService?.play(instanceID: _avTransportInstanceID, speed: "1", success: success, failure: failure)
     }
     
-    private func pause(success: () -> Void, failure:(error: NSError) -> Void) {
+    fileprivate func pause(_ success: @escaping () -> Void, failure:@escaping (_ error: NSError) -> Void) {
         self.mediaRenderer?.avTransportService?.pause(instanceID: _avTransportInstanceID, success: success, failure: failure)
     }
     
-    private func stop(success: () -> Void, failure:(error: NSError) -> Void) {
+    fileprivate func stop(_ success: @escaping () -> Void, failure:@escaping (_ error: NSError) -> Void) {
         self.mediaRenderer?.avTransportService?.stop(instanceID: _avTransportInstanceID, success: success, failure: failure)
     }
 }
