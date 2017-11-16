@@ -109,14 +109,14 @@ class SOAPResponseParser: AbstractDOMXMLParser {
     
     override func parse(document: ONOXMLDocument) -> EmptyResult {
         var result: EmptyResult = .success
-        document.enumerateElements(withXPath: "/s:Envelope/s:Body/*/*", using: { (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-            if let elementTag = element.tag, let elementValue = element.stringValue(),
+        document.enumerateElements(withXPath: "/s:Envelope/s:Body/*/*", using: { (element, index, stop) -> Void in
+            if let element = element, let elementTag = element.tag, let elementValue = element.stringValue(),
                 elementTag.characters.count > 0 && elementValue.characters.count > 0 && elementValue != "NOT_IMPLEMENTED" {
-                    self._responseParameters[elementTag] = elementValue
+                self._responseParameters[elementTag] = elementValue
             }
             
             result = .success
-        } as! (ONOXMLElement?, UInt, UnsafeMutablePointer<ObjCBool>?) -> Void)
+        })
         
         LogVerbose("SOAP response values: \(prettyPrint(_responseParameters))")
         

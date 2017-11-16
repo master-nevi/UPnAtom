@@ -361,7 +361,8 @@ class ContentDirectoryBrowseResultParser: AbstractDOMXMLParser {
     override func parse(document: ONOXMLDocument) -> EmptyResult {
         let result: EmptyResult = .success
         document.definePrefix("didllite", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/")
-        document.enumerateElements(withXPath: "/didllite:DIDL-Lite/*", using: { [unowned self] (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+        document.enumerateElements(withXPath: "/didllite:DIDL-Lite/*", using: { [unowned self] (element, index, stop) -> Void in
+            guard let element = element else { return }
             switch element.firstChild(withTag: "class").stringValue() {
             case .some(let rawType) where rawType.range(of: "object.container") != nil: // some servers use object.container and some use object.container.storageFolder
                 if let contentDirectoryObject = ContentDirectory1Container(xmlElement: element) {
@@ -376,7 +377,7 @@ class ContentDirectoryBrowseResultParser: AbstractDOMXMLParser {
                     self._contentDirectoryObjects.append(contentDirectoryObject)
                 }
             }
-            } as! (ONOXMLElement?, UInt, UnsafeMutablePointer<ObjCBool>?) -> Void)
+        })
         
         return result
     }

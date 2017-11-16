@@ -60,8 +60,8 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
         }
         
         lastChangeEventDocument.definePrefix("avt", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/AVT/")
-        lastChangeEventDocument.enumerateElements(withXPath: "/avt:Event/avt:InstanceID/*", using: { [unowned self] (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-            if let stateValue = element.value(forAttribute: "val") as? String, !stateValue.isEmpty {
+        lastChangeEventDocument.enumerateElements(withXPath: "/avt:Event/avt:InstanceID/*", using: { [unowned self] (element, index, stop) -> Void in
+            if let element = element, let stateValue = element.value(forAttribute: "val") as? String, !stateValue.isEmpty {
                 if element.tag.range(of: "MetaData") != nil {
                     guard let metadataDocument = try? ONOXMLDocument(string: stateValue, encoding: String.Encoding.utf8.rawValue) else {
                         return
@@ -72,18 +72,18 @@ class AVTransport1EventParser: AbstractDOMXMLParser {
                     var metaData = [String: String]()
                     
                     metadataDocument.definePrefix("didllite", forDefaultNamespace: "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/")
-                    metadataDocument.enumerateElements(withXPath: "/didllite:DIDL-Lite/didllite:item/*", using: { (metadataElement: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-                        if let elementStringValue = metadataElement.stringValue(), !elementStringValue.isEmpty {
+                    metadataDocument.enumerateElements(withXPath: "/didllite:DIDL-Lite/didllite:item/*", using: { (metadataElement, index, stop) -> Void in
+                        if let metadataElement = metadataElement, let elementStringValue = metadataElement.stringValue(), !elementStringValue.isEmpty {
                             metaData[metadataElement.tag] = elementStringValue
                         }
-                    } as! (ONOXMLElement?, UInt, UnsafeMutablePointer<ObjCBool>?) -> Void)
+                    })
                     
                     self._instanceState[element.tag] = metaData as AnyObject
                 } else {
                     self._instanceState[element.tag] = stateValue as AnyObject
                 }
             }
-        } as! (ONOXMLElement?, UInt, UnsafeMutablePointer<ObjCBool>?) -> Void)
+        })
         
         return result
     }
