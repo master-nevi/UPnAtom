@@ -187,7 +187,7 @@ extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
         }
     }
     
-    @objc func udpSocket(_ sock: GCDAsyncUdpSocket!, didReceive data: Data!, fromAddress address: Data!, withFilterContext filterContext: AnyObject!) {
+    @objc func udpSocket(_ sock: GCDAsyncUdpSocket!, didReceive data: Data!, fromAddress address: Data!, withFilterContext filterContext: Any!) {
         if let message = NSString(data: data, encoding: String.Encoding.utf8.rawValue) as? String {
 //            println({ () -> String in
 //                let socketType = (sock === self._unicastSocket) ? "UNICAST" : "MULTICAST"
