@@ -23,17 +23,17 @@
 
 import Foundation
 
-func curlRep(request: NSURLRequest) -> String {
+func curlRep(_ request: URLRequest) -> String {
     var curl = ""
     
     curl += "curl -i"
     
-    if let httpMethod = request.HTTPMethod {
+    if let httpMethod = request.httpMethod {
         curl += " -X \(httpMethod)"
     }
     
-    if let httpBody = request.HTTPBody,
-        body = NSString(data: httpBody, encoding: NSUTF8StringEncoding) {
+    if let httpBody = request.httpBody,
+        let body = NSString(data: httpBody, encoding: String.Encoding.utf8.rawValue) {
             curl += " -d '"
             curl += "\(body)"
             curl += "'"
@@ -45,7 +45,7 @@ func curlRep(request: NSURLRequest) -> String {
         }
     }
     
-    curl += " \"\(request.URL)\""
+    curl += " \"\(request.url)\""
     
     return curl
 }
@@ -53,33 +53,33 @@ func curlRep(request: NSURLRequest) -> String {
 public typealias Error = NSError
 
 public enum Result<T> {
-    case Success(T)
-    case Failure(Error)
+    case success(T)
+    case failure(Error)
     
     init(_ value: T) {
-        self = .Success(value)
+        self = .success(value)
     }
     
     init(_ error: Error) {
-        self = .Failure(error)
+        self = .failure(error)
     }
     
     var failed: Bool {
-        if case .Failure(_) = self {
+        if case .failure(_) = self {
             return true
         }
         return false
     }
     
     var error: Error? {
-        if case .Failure(let error) = self {
+        if case .failure(let error) = self {
             return error
         }
         return nil
     }
     
     var value: T? {
-        if case .Success(let value) = self {
+        if case .success(let value) = self {
             return value
         }
         return nil
@@ -87,40 +87,40 @@ public enum Result<T> {
 }
 
 public enum EmptyResult {
-    case Success
-    case Failure(Error)
+    case success
+    case failure(Error)
     
     init() {
-        self = .Success
+        self = .success
     }
     
     init(_ error: Error) {
-        self = .Failure(error)
+        self = .failure(error)
     }
     
     var failed: Bool {
-        if case .Failure(_) = self {
+        if case .failure(_) = self {
             return true
         }
         return false
     }
     
     var error: Error? {
-        if case .Failure(let error) = self {
+        if case .failure(let error) = self {
             return error
         }
         return nil
     }
 }
 
-func createError(message: String) -> Error {
+func createError(_ message: String) -> Error {
     return NSError(domain: "UPnAtom", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
 }
 
-extension RangeReplaceableCollectionType where Generator.Element : Equatable {
-    mutating func removeObject(object: Generator.Element) -> Generator.Element? {
-        if let found = self.indexOf(object) {
-            return removeAtIndex(found)
+extension RangeReplaceableCollection where Iterator.Element : Equatable {
+    mutating func removeObject(_ object: Iterator.Element) -> Iterator.Element? {
+        if let found = self.index(of: object) {
+            return remove(at: found)
         }
         return nil
     }
@@ -132,7 +132,7 @@ extension NSError {
         return self.userInfo[NSLocalizedDescriptionKey] as? String
     }
     
-    func localizedDescription(defaultDescription: String) -> String {
+    func localizedDescription(_ defaultDescription: String) -> String {
         return self.localizedDescriptionOrNil != nil ? self.localizedDescriptionOrNil! : defaultDescription
     }
 }
@@ -173,11 +173,11 @@ extension NSError {
 //    return addresses
 //}
 
-extension NSTimer {
-    private class NSTimerClosureHandler {
+extension Timer {
+    fileprivate class NSTimerClosureHandler {
         var closure: () -> Void
         
-        init(closure: () -> Void) {
+        init(closure: @escaping () -> Void) {
             self.closure = closure
         }
         
@@ -186,33 +186,33 @@ extension NSTimer {
         }
     }
     
-    convenience init(timeInterval: NSTimeInterval, repeats: Bool, closure: (() -> Void)) {
+    convenience init(timeInterval: TimeInterval, repeats: Bool, closure: @escaping (() -> Void)) {
         let closureHandler = NSTimerClosureHandler(closure: closure)
-        self.init(timeInterval: timeInterval, target: closureHandler, selector: "fire", userInfo: nil, repeats: repeats)
+        self.init(timeInterval: timeInterval, target: closureHandler, selector: #selector(NSTimerClosureHandler.fire), userInfo: nil, repeats: repeats)
     }
     
-    class func scheduledTimerWithTimeInterval(timeInterval: NSTimeInterval, repeats: Bool, closure: (() -> Void)) -> NSTimer {
+    class func scheduledTimerWithTimeInterval(_ timeInterval: TimeInterval, repeats: Bool, closure: @escaping (() -> Void)) -> Timer {
         let closureHandler = NSTimerClosureHandler(closure: closure)
-        return self.scheduledTimerWithTimeInterval(timeInterval, target: closureHandler, selector: "fire", userInfo: nil, repeats: repeats)
+        return self.scheduledTimer(timeInterval: timeInterval, target: closureHandler, selector: #selector(NSTimerClosureHandler.fire), userInfo: nil, repeats: repeats)
     }
 }
 
 extension NSArray {
-    func firstUsingPredicate<T>(predicate: NSPredicate) -> T? {
-        return self.filteredArrayUsingPredicate(predicate).first as? T
+    func firstUsingPredicate<T>(_ predicate: NSPredicate) -> T? {
+        return self.filtered(using: predicate).first as? T
     }
 }
 
-extension NSUUID {
+extension UUID {
     var dashlessUUIDString: String {
-        return self.UUIDString.stringByReplacingOccurrencesOfString("-", withString: "", options: .LiteralSearch)
+        return self.uuidString.replacingOccurrences(of: "-", with: "", options: .literal)
     }
 }
 
 struct Stack<T> {
     var elements = [T]()
     
-    mutating func push(element: T) {
+    mutating func push(_ element: T) {
         elements.append(element)
     }
     
@@ -243,7 +243,7 @@ func +<K,V> (left: Dictionary<K,V>, right: Dictionary<K,V>) -> Dictionary<K,V> {
     return result
 }
 
-func +=<K,V> (inout left: Dictionary<K,V>, right: Dictionary<K,V>) {
+func +=<K,V> (left: inout Dictionary<K,V>, right: Dictionary<K,V>) {
     for (k, v) in right {
         left[k] = v
     }

@@ -23,54 +23,54 @@
 
 import Foundation
 
-public class UPnPArchivable: NSObject, NSCoding {
-    public let usn: String
-    public let descriptionURL: NSURL
+open class UPnPArchivable: NSObject, NSCoding {
+    open let usn: String
+    open let descriptionURL: URL
     
-    init(usn: String, descriptionURL: NSURL) {
+    init(usn: String, descriptionURL: URL) {
         self.usn = usn
         self.descriptionURL = descriptionURL
     }
     
     required public init?(coder decoder: NSCoder) {
-        self.usn = decoder.decodeObjectForKey("usn") as! String
-        self.descriptionURL = decoder.decodeObjectForKey("descriptionURL") as! NSURL
+        self.usn = decoder.decodeObject(forKey: "usn") as! String
+        self.descriptionURL = decoder.decodeObject(forKey: "descriptionURL") as! URL
     }
     
-    public func encodeWithCoder(coder: NSCoder) {
-        coder.encodeObject(usn, forKey: "usn")
-        coder.encodeObject(descriptionURL, forKey: "descriptionURL")
+    open func encode(with coder: NSCoder) {
+        coder.encode(usn, forKey: "usn")
+        coder.encode(descriptionURL, forKey: "descriptionURL")
     }
 }
 
 extension AbstractUPnP {
     public func archivable() -> UPnPArchivable {
-        return UPnPArchivable(usn: usn.rawValue, descriptionURL: descriptionURL)
+        return UPnPArchivable(usn: usn.rawValue, descriptionURL: descriptionURL as URL)
     }
 }
 
-public class UPnPArchivableAnnex: UPnPArchivable {
+open class UPnPArchivableAnnex: UPnPArchivable {
     /// Use the custom metadata dictionary to re-populate any missing data fields from a custom device or service subclass. While it's not enforced by the compiler, the contents of the meta data must conform to the NSCoding protocol in order to be archivable. Avoided using Swift generics in order to allow compatability with Obj-C.
-    public let customMetadata: [String: AnyObject]
+    open let customMetadata: [String: AnyObject]
     
-    init(usn: String, descriptionURL: NSURL, customMetadata: [String: AnyObject]) {
+    init(usn: String, descriptionURL: URL, customMetadata: [String: AnyObject]) {
         self.customMetadata = customMetadata
         super.init(usn: usn, descriptionURL: descriptionURL)
     }
     
     required public init?(coder decoder: NSCoder) {
-        self.customMetadata = decoder.decodeObjectForKey("customMetadata") as! [String: AnyObject]
+        self.customMetadata = decoder.decodeObject(forKey: "customMetadata") as! [String: AnyObject]
         super.init(coder: decoder)
     }
     
-    public override func encodeWithCoder(coder: NSCoder) {
-        super.encodeWithCoder(coder)
-        coder.encodeObject(customMetadata, forKey: "customMetadata")
+    open override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        coder.encode(customMetadata, forKey: "customMetadata")
     }
 }
 
 extension AbstractUPnP {
-    public func archivable(customMetadata customMetadata: [String: AnyObject]) -> UPnPArchivableAnnex {
-        return UPnPArchivableAnnex(usn: usn.rawValue, descriptionURL: descriptionURL, customMetadata: customMetadata)
+    public func archivable(customMetadata: [String: AnyObject]) -> UPnPArchivableAnnex {
+        return UPnPArchivableAnnex(usn: usn.rawValue, descriptionURL: descriptionURL as URL, customMetadata: customMetadata)
     }
 }

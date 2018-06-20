@@ -28,34 +28,34 @@ import Foundation
 import AFNetworking
 import Ono
 
-public class SOAPRequestSerializer: AFHTTPRequestSerializer {
-    public class Parameters {
+open class SOAPRequestSerializer: AFHTTPRequestSerializer {
+    open class Parameters {
         let soapAction: String
         let serviceURN: String
-        let arguments: NSDictionary?
+        let arguments: [String: Any]?
         
-        public init(soapAction: String, serviceURN: String, arguments: NSDictionary?) {
+        public init(soapAction: String, serviceURN: String, arguments: [String: Any]?) {
             self.soapAction = soapAction
             self.serviceURN = serviceURN
             self.arguments = arguments
         }
     }
     
-    override public func requestBySerializingRequest(request: NSURLRequest, withParameters parameters: AnyObject?, error: NSErrorPointer) -> NSURLRequest? {
+    override open func request(bySerializingRequest request: URLRequest, withParameters parameters: Any?, error: NSErrorPointer) -> URLRequest? {
         guard let requestParameters = parameters as? Parameters else {
             return nil
         }
         
-        let mutableRequest: NSMutableURLRequest = request.mutableCopy() as! NSMutableURLRequest
+        let mutableRequest: NSMutableURLRequest = (request as NSURLRequest).mutableCopy() as! NSMutableURLRequest
         
-        for (field, value) in self.HTTPRequestHeaders {
-            if let field = field as? String, value = value as? String where request.valueForHTTPHeaderField(field) == nil {
+        for (field, value) in self.httpRequestHeaders {
+            if let field = field as? String, let value = value as? String, request.value(forHTTPHeaderField: field) == nil {
                 mutableRequest.setValue(value, forHTTPHeaderField: field)
             }
         }
         
-        if mutableRequest.valueForHTTPHeaderField("Content-Type") == nil {
-            let charSet = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding))
+        if mutableRequest.value(forHTTPHeaderField: "Content-Type") == nil {
+            let charSet = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(String.Encoding.utf8.rawValue))
             mutableRequest.setValue("text/xml; charset=\"\(charSet)\"", forHTTPHeaderField: "Content-Type")
         }
         
@@ -76,16 +76,16 @@ public class SOAPRequestSerializer: AFHTTPRequestSerializer {
         
         mutableRequest.setValue("\(body.utf8.count)", forHTTPHeaderField: "Content-Length")
         
-        mutableRequest.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+        mutableRequest.httpBody = body.data(using: String.Encoding.utf8, allowLossyConversion: false)
         
-        return mutableRequest
+        return mutableRequest as URLRequest
     }
 }
 
-public class SOAPResponseSerializer: AFXMLParserResponseSerializer {
-    override public func responseObjectForResponse(response: NSURLResponse?, data: NSData?, error: NSErrorPointer) -> AnyObject? {
+open class SOAPResponseSerializer: AFXMLParserResponseSerializer {
+    override open func responseObject(for response: URLResponse?, data: Data?, error: NSErrorPointer) -> Any? {
         do {
-            try validateResponse(response as! NSHTTPURLResponse, data: data)
+            try validate(response as! HTTPURLResponse, data: data)
         } catch {
             return nil
         }
@@ -96,26 +96,26 @@ public class SOAPResponseSerializer: AFXMLParserResponseSerializer {
         }
         
         switch xmlParser.parse(soapResponseData: data) {
-        case .Success(let value):
+        case .success(let value):
             return value
-        case .Failure(let error):
+        case .failure(let error):
             return nil
         }
     }
 }
 
 class SOAPResponseParser: AbstractDOMXMLParser {
-    private var _responseParameters = [String: String]()
+    fileprivate var _responseParameters = [String: String]()
     
-    override func parse(document document: ONOXMLDocument) -> EmptyResult {
-        var result: EmptyResult = .Success
-        document.enumerateElementsWithXPath("/s:Envelope/s:Body/*/*", usingBlock: { (element: ONOXMLElement!, index: UInt, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-            if let elementTag = element.tag, elementValue = element.stringValue() where
+    override func parse(document: ONOXMLDocument) -> EmptyResult {
+        var result: EmptyResult = .success
+        document.enumerateElements(withXPath: "/s:Envelope/s:Body/*/*", using: { (element, index, stop) -> Void in
+            if let element = element, let elementTag = element.tag, let elementValue = element.stringValue(),
                 elementTag.characters.count > 0 && elementValue.characters.count > 0 && elementValue != "NOT_IMPLEMENTED" {
-                    self._responseParameters[elementTag] = elementValue
+                self._responseParameters[elementTag] = elementValue
             }
             
-            result = .Success
+            result = .success
         })
         
         LogVerbose("SOAP response values: \(prettyPrint(_responseParameters))")
@@ -123,12 +123,12 @@ class SOAPResponseParser: AbstractDOMXMLParser {
         return result
     }
     
-    func parse(soapResponseData soapResponseData: NSData) -> Result<[String: String]> {
+    func parse(soapResponseData: Data) -> Result<[String: String]> {
         switch super.parse(data: soapResponseData) {
-        case .Success:
-            return .Success(_responseParameters)
-        case .Failure(let error):
-            return .Failure(error)
+        case .success:
+            return .success(_responseParameters)
+        case .failure(let error):
+            return .failure(error)
         }
     }
 }

@@ -23,31 +23,31 @@
 
 import Foundation
 
-public class SAXXMLParserElementObservation {
+open class SAXXMLParserElementObservation {
     // internal
-    private(set) var didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)? // TODO: Should ideally be a constant, see Github issue #10
-    let didEndParsingElement: ((elementName: String) -> Void)?
-    let foundInnerText: ((elementName: String, text: String) -> Void)?
+    fileprivate(set) var didStartParsingElement: ((_ elementName: String, _ attributeDict: [AnyHashable: Any]?) -> Void)? // TODO: Should ideally be a constant, see Github issue #10
+    let didEndParsingElement: ((_ elementName: String) -> Void)?
+    let foundInnerText: ((_ elementName: String, _ text: String) -> Void)?
     let elementPath: [String]
-    private(set) var innerText: String?
+    fileprivate(set) var innerText: String?
     
-    public init(elementPath: [String], didStartParsingElement: ((elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void)?, didEndParsingElement: ((elementName: String) -> Void)?, foundInnerText: ((elementName: String, text: String) -> Void)?) {
+    public init(elementPath: [String], didStartParsingElement: ((_ elementName: String, _ attributeDict: [AnyHashable: Any]?) -> Void)?, didEndParsingElement: ((_ elementName: String) -> Void)?, foundInnerText: ((_ elementName: String, _ text: String) -> Void)?) {
         self.elementPath = elementPath
         
         self.didEndParsingElement = didEndParsingElement
         self.foundInnerText = foundInnerText
         
-        self.didStartParsingElement = {[unowned self] (elementName: String, attributeDict: [NSObject : AnyObject]!) -> Void in
+        self.didStartParsingElement = {[unowned self] (elementName: String, attributeDict: [AnyHashable: Any]!) -> Void in
             // reset _innerText at the start of the element parse
             self.innerText = nil
             
             if let didStartParsingElement = didStartParsingElement {
-                didStartParsingElement(elementName: elementName, attributeDict: attributeDict)
+                didStartParsingElement(elementName, attributeDict)
             }
         }
     }
     
-    func appendInnerText(innerText: String?) {
+    func appendInnerText(_ innerText: String?) {
         if self.innerText == nil {
             self.innerText = ""
         }

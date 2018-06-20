@@ -24,10 +24,10 @@
 import Foundation
 
 // Subclassing NSObject in order to be a NSXMLParserDelegate
-public class AbstractSAXXMLParser: NSObject {
-    private let _supportNamespaces: Bool
-    lazy private var _elementStack = [String]()
-    lazy private var _elementObservations = [SAXXMLParserElementObservation]()
+open class AbstractSAXXMLParser: NSObject {
+    fileprivate let _supportNamespaces: Bool
+    lazy fileprivate var _elementStack = [String]()
+    lazy fileprivate var _elementObservations = [SAXXMLParserElementObservation]()
     
     public init(supportNamespaces: Bool) {
         _supportNamespaces = supportNamespaces
@@ -37,15 +37,15 @@ public class AbstractSAXXMLParser: NSObject {
         self.init(supportNamespaces: false)
     }
     
-    public func addElementObservation(elementObservation: SAXXMLParserElementObservation) {
+    open func addElementObservation(_ elementObservation: SAXXMLParserElementObservation) {
         _elementObservations.append(elementObservation)
     }
     
-    public func clearAllElementObservations() {
-        _elementObservations.removeAll(keepCapacity: false)
+    open func clearAllElementObservations() {
+        _elementObservations.removeAll(keepingCapacity: false)
     }
     
-    func elementObservationForElementStack(elementStack: [String]) -> SAXXMLParserElementObservation? {
+    func elementObservationForElementStack(_ elementStack: [String]) -> SAXXMLParserElementObservation? {
         for elementObservation in _elementObservations {
             // Full compares go first
             guard elementObservation.elementPath != elementStack else {
@@ -60,12 +60,12 @@ public class AbstractSAXXMLParser: NSObject {
                     var tempObservationElementPath = elementObservation.elementPath
                     
                     // cut the * from our asset path
-                    tempObservationElementPath.removeAtIndex(0)
+                    tempObservationElementPath.remove(at: 0)
                     
                     // make our (copy of the) curents stack the same length
                     let elementsToRemove: Int = tempElementStack.count - tempObservationElementPath.count
-                    let range = Range(start: 0, end: elementsToRemove)
-                    tempElementStack.removeRange(range)
+                    let range = (0 ..< elementsToRemove)
+                    tempElementStack.removeSubrange(range)
                     if tempObservationElementPath == tempElementStack {
                         return elementObservation
                     }
@@ -88,11 +88,11 @@ public class AbstractSAXXMLParser: NSObject {
         return nil
     }
     
-    public func parse(data data: NSData) -> EmptyResult {
-        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
+    open func parse(data: Data) -> EmptyResult {
+        var parserResult: EmptyResult = .failure(createError("Parser failure"))
         autoreleasepool { () -> () in
             if let validData = self.validateForParsing(data) {
-                let parser = NSXMLParser(data: validData)
+                let parser = XMLParser(data: validData)
                 parserResult = self.startParser(parser)
             }
         }
@@ -102,16 +102,16 @@ public class AbstractSAXXMLParser: NSObject {
     
     // MARK: - Internal lib
     
-    private func startParser(parser: NSXMLParser) -> EmptyResult {
+    fileprivate func startParser(_ parser: XMLParser) -> EmptyResult {
         parser.shouldProcessNamespaces = _supportNamespaces
         parser.delegate = self
         
-        var parserResult: EmptyResult = .Failure(createError("Parser failure"))
+        var parserResult: EmptyResult = .failure(createError("Parser failure"))
         if parser.parse() {
-            parserResult = .Success
+            parserResult = .success
         } else {
             if let parserError = parser.parserError {
-                parserResult = .Failure(parserError)
+                parserResult = .failure(parserError as Error)
             }
         }
         
@@ -120,37 +120,37 @@ public class AbstractSAXXMLParser: NSObject {
         return parserResult
     }
     
-    private func validateForParsing(data: NSData) -> NSData? {
-        guard let xmlStringOptional = NSString(data: data, encoding: NSUTF8StringEncoding),
-            let regexOptional = try? NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .AnchorsMatchLines) else {
+    fileprivate func validateForParsing(_ data: Data) -> Data? {
+        guard let xmlStringOptional = NSString(data: data, encoding: String.Encoding.utf8.rawValue),
+            let regexOptional = try? NSRegularExpression(pattern: "^\\s*$\\r?\\n", options: .anchorsMatchLines) else {
                 return nil
         }
 
-        let validXMLString = regexOptional.stringByReplacingMatchesInString(xmlStringOptional as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, xmlStringOptional.length), withTemplate: "")
-        return validXMLString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+        let validXMLString = regexOptional.stringByReplacingMatches(in: xmlStringOptional as String, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, xmlStringOptional.length), withTemplate: "")
+        return validXMLString.data(using: String.Encoding.utf8, allowLossyConversion: true)
     }
 }
 
-extension AbstractSAXXMLParser: NSXMLParserDelegate {
-    public func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
+extension AbstractSAXXMLParser: XMLParserDelegate {
+    public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
         _elementStack += [elementName]
         
         if let elementObservation = elementObservationForElementStack(_elementStack),
-            didStartParsingElement = elementObservation.didStartParsingElement {
-                didStartParsingElement(elementName: elementName, attributeDict: attributeDict)
+            let didStartParsingElement = elementObservation.didStartParsingElement {
+                didStartParsingElement(elementName, attributeDict as [NSObject : AnyObject])
         }
     }
     
-    public func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+    public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if let elementObservation = elementObservationForElementStack(_elementStack) {
             let foundInnerText = elementObservation.foundInnerText
             let innerText = elementObservation.innerText
             if foundInnerText != nil && innerText != nil {
-                foundInnerText!(elementName: elementName, text: elementObservation.innerText!)
+                foundInnerText!(elementName, elementObservation.innerText!)
             }
             
             if let didEndParsingElement = elementObservation.didEndParsingElement {
-                didEndParsingElement(elementName: elementName)
+                didEndParsingElement(elementName)
             }
         }
         
@@ -162,7 +162,7 @@ extension AbstractSAXXMLParser: NSXMLParserDelegate {
         }
     }
     
-    public func parser(parser: NSXMLParser, foundCharacters string: String) {
+    public func parser(_ parser: XMLParser, foundCharacters string: String) {
         // The parser object may send the delegate several parser:foundCharacters: messages to report the characters of an element. Because string may be only part of the total character content for the current element, you should append it to the current accumulation of characters until the element changes.
         
         if let elementObservation = elementObservationForElementStack(_elementStack) {

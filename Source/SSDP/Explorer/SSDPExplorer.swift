@@ -26,92 +26,94 @@ import CocoaAsyncSocket
 import AFNetworking
 
 protocol SSDPExplorerDelegate: class {
-    func ssdpExplorer(explorer: SSDPExplorer, didMakeDiscovery discovery: SSDPDiscovery)
+    func ssdpExplorer(_ explorer: SSDPExplorer, didMakeDiscovery discovery: SSDPDiscovery)
     // Removed discoveries will have an invalid desciption URL
-    func ssdpExplorer(explorer: SSDPExplorer, didRemoveDiscovery discovery: SSDPDiscovery)    
+    func ssdpExplorer(_ explorer: SSDPExplorer, didRemoveDiscovery discovery: SSDPDiscovery)    
     /// Assume explorer has stopped after a failure.
-    func ssdpExplorer(explorer: SSDPExplorer, didFailWithError error: NSError)
+    func ssdpExplorer(_ explorer: SSDPExplorer, didFailWithError error: NSError)
 }
 
 class SSDPExplorer {
     enum SSDPMessageType {
-        case SearchResponse
-        case AvailableNotification
-        case UpdateNotification
-        case UnavailableNotification
+        case searchResponse
+        case availableNotification
+        case updateNotification
+        case unavailableNotification
     }
     
     weak var delegate: SSDPExplorerDelegate?
     
     // private
-    private static let _multicastGroupAddress = "239.255.255.250"
-    private static let _multicastUDPPort: UInt16 = 1900
-    private var _multicastSocket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
-    private var _unicastSocket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
-    private var _types = [SSDPType]() // TODO: Should ideally be a Set<SSDPType>, see Github issue #13
+    fileprivate static let _multicastGroupAddress = "239.255.255.250"
+    fileprivate static let _multicastUDPPort: UInt16 = 1900
+    fileprivate var _multicastSocket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
+    fileprivate var _unicastSocket: GCDAsyncUdpSocket? // TODO: Should ideally be a constant, see Github issue #10
+    fileprivate var _types = [SSDPType]() // TODO: Should ideally be a Set<SSDPType>, see Github issue #13
     
     func startExploring(forTypes types: [SSDPType], onInterface interface: String = "en0") -> EmptyResult {
         assert(_multicastSocket == nil, "Socket is already open, stop it first!")
         
         // create sockets
-        guard let multicastSocket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue()),
-            unicastSocket: GCDAsyncUdpSocket! = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatch_get_main_queue()) else {
-                return .Failure(createError("Socket could not be created"))
+        guard let multicastSocket: GCDAsyncUdpSocket? = GCDAsyncUdpSocket(delegate: self, delegateQueue: DispatchQueue.main),
+            let unicastSocket: GCDAsyncUdpSocket? = GCDAsyncUdpSocket(delegate: self, delegateQueue: DispatchQueue.main) else {
+                return .failure(createError("Socket could not be created"))
         }
+        try? multicastSocket?.enableBroadcast(true)
+        try? multicastSocket?.enableReusePort(true)
         _multicastSocket = multicastSocket
         _unicastSocket = unicastSocket
-        multicastSocket.setIPv6Enabled(false)
-        unicastSocket.setIPv6Enabled(false)
+        multicastSocket?.setIPv6Enabled(false)
+        unicastSocket?.setIPv6Enabled(false)
         
         // Configure unicast socket
         // Bind to address on the specified interface to a random port to receive unicast datagrams
         do {
-            try unicastSocket.bindToPort(0, interface: interface)
+            try unicastSocket?.bind(toPort: 0, interface: interface)
         } catch {
             stopExploring()
-            return .Failure(createError("Could not bind socket to port"))
+            return .failure(createError("Could not bind socket to port"))
         }
         
         do {
-            try unicastSocket.beginReceiving()
+            try unicastSocket?.beginReceiving()
         } catch {
             stopExploring()
-            return .Failure(createError("Could not begin receiving error"))
+            return .failure(createError("Could not begin receiving error"))
         }
         
         // Configure multicast socket
         // Bind to port without defining the interface to bind to the address INADDR_ANY (0.0.0.0). This prevents any address filtering which allows datagrams sent to the multicast group to be receives
         do {
-            try multicastSocket.bindToPort(SSDPExplorer._multicastUDPPort)
+            try multicastSocket?.bind(toPort: SSDPExplorer._multicastUDPPort)
         } catch {
             stopExploring()
-            return .Failure(createError("Could not bind socket to multicast port"))
+            return .failure(createError("Could not bind socket to multicast port"))
         }
         
         // Join multicast group to express interest to router of receiving multicast datagrams
         do {
-            try multicastSocket.joinMulticastGroup(SSDPExplorer._multicastGroupAddress)
+            try multicastSocket?.joinMulticastGroup(SSDPExplorer._multicastGroupAddress)
         } catch {
             stopExploring()
-            return .Failure(createError("Could not join multicast group"))
+            return .failure(createError("Could not join multicast group"))
         }
         
         do {
-            try multicastSocket.beginReceiving()
+            try multicastSocket?.beginReceiving()
         } catch {
             stopExploring()
-            return .Failure(createError("Could not begin receiving error"))
+            return .failure(createError("Could not begin receiving error"))
         }
         
         _types = types
         for type in types {
             if let data = searchRequestData(forType: type) {
 //                println(">>>> SENDING SEARCH REQUEST\n\(NSString(data: data, encoding: NSUTF8StringEncoding))")
-                unicastSocket.sendData(data, toHost: SSDPExplorer._multicastGroupAddress, port: SSDPExplorer._multicastUDPPort, withTimeout: -1, tag: type.hashValue)
+                unicastSocket?.send(data, toHost: SSDPExplorer._multicastGroupAddress, port: SSDPExplorer._multicastUDPPort, withTimeout: -1, tag: type.hashValue)
             }
         }
         
-        return .Success
+        return .success
     }
     
     func stopExploring() {
@@ -122,7 +124,7 @@ class SSDPExplorer {
         _types = []
     }
     
-    private func searchRequestData(forType type: SSDPType) -> NSData? {
+    fileprivate func searchRequestData(forType type: SSDPType) -> Data? {
         var requestBody = [
             "M-SEARCH * HTTP/1.1",
             "HOST: \(SSDPExplorer._multicastGroupAddress):\(SSDPExplorer._multicastUDPPort)",
@@ -130,41 +132,41 @@ class SSDPExplorer {
             "ST: \(type.rawValue)",
             "MX: 3"]
         
-        if let userAgent = AFHTTPRequestSerializer().valueForHTTPHeaderField("User-Agent") {
+        if let userAgent = AFHTTPRequestSerializer().value(forHTTPHeaderField: "User-Agent") {
             requestBody += ["USER-AGENT: \(userAgent)\r\n\r\n\r\n"]
         }
         
-        let requestBodyString = requestBody.joinWithSeparator("\r\n")
-        return requestBodyString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+        let requestBodyString = requestBody.joined(separator: "\r\n")
+        return requestBodyString.data(using: String.Encoding.utf8, allowLossyConversion: false)
     }
     
-    private func notifyDelegate(ofFailure error: NSError) {
-        dispatch_async(dispatch_get_main_queue(), { [unowned self] () -> Void in
+    fileprivate func notifyDelegate(ofFailure error: NSError) {
+        DispatchQueue.main.async(execute: { [unowned self] () -> Void in
             self.delegate?.ssdpExplorer(self, didFailWithError: error)
         })
     }
     
-    private func notifyDelegate(discovery: SSDPDiscovery, added: Bool) {
-        dispatch_async(dispatch_get_main_queue(), { [unowned self] () -> Void in
+    fileprivate func notifyDelegate(_ discovery: SSDPDiscovery, added: Bool) {
+        DispatchQueue.main.async(execute: { [unowned self] () -> Void in
             added ? self.delegate?.ssdpExplorer(self, didMakeDiscovery: discovery) : self.delegate?.ssdpExplorer(self, didRemoveDiscovery: discovery)
             })
     }
     
-    private func handleSSDPMessage(messageType: SSDPMessageType, headers: [String: String]) {
+    fileprivate func handleSSDPMessage(_ messageType: SSDPMessageType, headers: [String: String]) {
         if let usnRawValue = headers["usn"],
-            usn = UniqueServiceName(rawValue: usnRawValue),
-            locationString = headers["location"],
-            locationURL = NSURL(string: locationString),
+            let usn = UniqueServiceName(rawValue: usnRawValue),
+            let locationString = headers["location"],
+            let locationURL = URL(string: locationString),
             /// NT = Notification Type - SSDP discovered from device advertisements
             /// ST = Search Target - SSDP discovered as a result of using M-SEARCH requests
-            ssdpTypeRawValue = (headers["st"] != nil ? headers["st"] : headers["nt"]),
-            ssdpType = SSDPType(rawValue: ssdpTypeRawValue) where _types.indexOf(ssdpType) != nil {
+            let ssdpTypeRawValue = (headers["st"] != nil ? headers["st"] : headers["nt"]),
+            let ssdpType = SSDPType(rawValue: ssdpTypeRawValue), _types.index(of: ssdpType) != nil {
                 LogVerbose("SSDP response headers: \(headers)")
                 let discovery = SSDPDiscovery(usn: usn, descriptionURL: locationURL, type: ssdpType)
                 switch messageType {
-                case .SearchResponse, .AvailableNotification, .UpdateNotification:
+                case .searchResponse, .availableNotification, .updateNotification:
                     notifyDelegate(discovery, added: true)
-                case .UnavailableNotification:
+                case .unavailableNotification:
                     notifyDelegate(discovery, added: false)
                 }
         }
@@ -172,36 +174,36 @@ class SSDPExplorer {
 }
 
 extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
-    @objc func udpSocket(sock: GCDAsyncUdpSocket!, didNotSendDataWithTag tag: Int, dueToError error: NSError!) {
+    @objc func udpSocket(_ sock: GCDAsyncUdpSocket!, didNotSendDataWithTag tag: Int, dueToError error: NSError!) {
         stopExploring()
         
         // this case should always have an error
         notifyDelegate(ofFailure: error ?? createError("Did not send SSDP message."))
     }
     
-    @objc func udpSocketDidClose(sock: GCDAsyncUdpSocket!, withError error: NSError!) {
+    @objc func udpSocketDidClose(_ sock: GCDAsyncUdpSocket!, withError error: NSError!) {
         if let error = error {
             notifyDelegate(ofFailure: error)
         }
     }
     
-    @objc func udpSocket(sock: GCDAsyncUdpSocket!, didReceiveData data: NSData!, fromAddress address: NSData!, withFilterContext filterContext: AnyObject!) {
-        if let message = NSString(data: data, encoding: NSUTF8StringEncoding) as? String {
+    @objc func udpSocket(_ sock: GCDAsyncUdpSocket!, didReceive data: Data!, fromAddress address: Data!, withFilterContext filterContext: Any!) {
+        if let message = NSString(data: data, encoding: String.Encoding.utf8.rawValue) as? String {
 //            println({ () -> String in
 //                let socketType = (sock === self._unicastSocket) ? "UNICAST" : "MULTICAST"
 //                return "<<<< RECEIVED ON \(socketType) SOCKET\n\(message)"
 //            }())
             var httpMethodLine: String?
             var headers = [String: String]()
-            let headersRegularExpression = try? NSRegularExpression(pattern: "^([a-z0-9-]+): *(.+)$", options: [.CaseInsensitive, .AnchorsMatchLines])
-            message.enumerateLines({ (line, stop) -> () in
+            let headersRegularExpression = try? NSRegularExpression(pattern: "^([a-z0-9-]+): *(.+)$", options: [.caseInsensitive, .anchorsMatchLines])
+            message.enumerateLines(invoking: { (line, stop) -> () in
                 if httpMethodLine == nil {
                     httpMethodLine = line
                 } else {
-                    headersRegularExpression?.enumerateMatchesInString(line, options: [], range: NSRange(location: 0, length: line.characters.count), usingBlock: { (resultOptional: NSTextCheckingResult?, flags: NSMatchingFlags, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-                        if let result = resultOptional where result.numberOfRanges == 3 {
-                            let key = (line as NSString).substringWithRange(result.rangeAtIndex(1)).lowercaseString
-                            let value = (line as NSString).substringWithRange(result.rangeAtIndex(2))
+                    headersRegularExpression?.enumerateMatches(in: line, options: [], range: NSRange(location: 0, length: line.characters.count), using: { (resultOptional: NSTextCheckingResult?, flags: NSRegularExpression.MatchingFlags, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+                        if let result = resultOptional, result.numberOfRanges == 3 {
+                            let key = (line as NSString).substring(with: result.rangeAt(1)).lowercased()
+                            let value = (line as NSString).substring(with: result.rangeAt(2))
                             headers[key] = value
                         }
                     })
@@ -212,14 +214,14 @@ extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
                 let nts = headers["nts"]
                 switch (httpMethodLine, nts) {
                 case ("HTTP/1.1 200 OK", _):
-                    handleSSDPMessage(.SearchResponse, headers: headers)
-                case ("NOTIFY * HTTP/1.1", .Some(let notificationType)) where notificationType == "ssdp:alive":
-                    handleSSDPMessage(.AvailableNotification, headers: headers)
-                case ("NOTIFY * HTTP/1.1", .Some(let notificationType)) where notificationType == "ssdp:update":
-                    handleSSDPMessage(.UpdateNotification, headers: headers)
-                case ("NOTIFY * HTTP/1.1", .Some(let notificationType)) where notificationType == "ssdp:byebye":
+                    handleSSDPMessage(.searchResponse, headers: headers)
+                case ("NOTIFY * HTTP/1.1", .some(let notificationType)) where notificationType == "ssdp:alive":
+                    handleSSDPMessage(.availableNotification, headers: headers)
+                case ("NOTIFY * HTTP/1.1", .some(let notificationType)) where notificationType == "ssdp:update":
+                    handleSSDPMessage(.updateNotification, headers: headers)
+                case ("NOTIFY * HTTP/1.1", .some(let notificationType)) where notificationType == "ssdp:byebye":
                     headers["location"] = headers["host"] // byebye messages don't have a location
-                    handleSSDPMessage(.UnavailableNotification, headers: headers)
+                    handleSSDPMessage(.unavailableNotification, headers: headers)
                 default:
                     return
                 }

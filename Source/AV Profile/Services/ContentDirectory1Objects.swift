@@ -27,25 +27,25 @@ import Ono
 // MARK: ContentDirectory1Object
 
 /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
-public class ContentDirectory1Object: NSObject {
-    public let objectID: String
-    public let parentID: String
-    public let title: String
-    public let rawType: String
-    public let albumArtURL: NSURL?
+open class ContentDirectory1Object: NSObject {
+    open let objectID: String
+    open let parentID: String
+    open let title: String
+    open let rawType: String
+    open let albumArtURL: URL?
     
     init?(xmlElement: ONOXMLElement) {
-        if let objectID = xmlElement.valueForAttribute("id") as? String,
-            parentID = xmlElement.valueForAttribute("parentID") as? String,
-            title = xmlElement.firstChildWithTag("title").stringValue(),
-            rawType = xmlElement.firstChildWithTag("class").stringValue() {
+        if let objectID = xmlElement.value(forAttribute: "id") as? String,
+            let parentID = xmlElement.value(forAttribute: "parentID") as? String,
+            let title = xmlElement.firstChild(withTag: "title").stringValue(),
+            let rawType = xmlElement.firstChild(withTag: "class").stringValue() {
                 self.objectID = objectID
                 self.parentID = parentID
                 self.title = title
                 self.rawType = rawType
                 
-                if let albumArtURLString = xmlElement.firstChildWithTag("albumArtURI")?.stringValue() {
-                    self.albumArtURL = NSURL(string: albumArtURLString)
+                if let albumArtURLString = xmlElement.firstChild(withTag: "albumArtURI")?.stringValue() {
+                    self.albumArtURL = URL(string: albumArtURLString)
                 } else { albumArtURL = nil }
         } else {
             /// TODO: Remove default initializations to simply return nil, see Github issue #11
@@ -64,11 +64,11 @@ public class ContentDirectory1Object: NSObject {
 
 extension ContentDirectory1Object: ExtendedPrintable {
     #if os(iOS)
-    public var className: String { return "\(self.dynamicType)" }
+    public var className: String { return "\(type(of: self))" }
     #elseif os(OSX) // NSObject.className actually exists on OSX! Who knew.
-    override public var className: String { return "\(self.dynamicType)" }
+    override public var className: String { return "\(type(of: self))" }
     #endif
-    override public var description: String {
+    override open var description: String {
         var properties = PropertyPrinter()
         properties.add("id", property: objectID)
         properties.add("parentID", property: parentID)
@@ -81,11 +81,11 @@ extension ContentDirectory1Object: ExtendedPrintable {
 
 // MARK: - ContentDirectory1Container
 
-public class ContentDirectory1Container: ContentDirectory1Object {
-    public let childCount: Int?
+open class ContentDirectory1Container: ContentDirectory1Object {
+    open let childCount: Int?
     
     override init?(xmlElement: ONOXMLElement) {
-        self.childCount = Int(String(xmlElement.valueForAttribute("childCount")))
+        self.childCount = Int(String(describing: xmlElement.value(forAttribute: "childCount") as? String))
         
         super.init(xmlElement: xmlElement)
     }
@@ -100,8 +100,8 @@ extension ContentDirectory1Object {
 
 /// overrides ExtendedPrintable protocol implementation
 extension ContentDirectory1Container {
-    override public var className: String { return "\(self.dynamicType)" }
-    override public var description: String {
+    override public var className: String { return "\(type(of: self))" }
+    override open var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
         properties.add("childCount", property: "\(childCount)")
@@ -111,13 +111,13 @@ extension ContentDirectory1Container {
 
 // MARK: - ContentDirectory1Item
 
-public class ContentDirectory1Item: ContentDirectory1Object {
-    public let resourceURL: NSURL!
+open class ContentDirectory1Item: ContentDirectory1Object {
+    open let resourceURL: URL!
     
     override init?(xmlElement: ONOXMLElement) {
         /// TODO: Return nil immediately instead of waiting, see Github issue #11
-        if let resourceURLString = xmlElement.firstChildWithTag("res").stringValue() {
-            resourceURL = NSURL(string: resourceURLString)
+        if let resourceURLString = xmlElement.firstChild(withTag: "res").stringValue() {
+            resourceURL = URL(string: resourceURLString)
         } else { resourceURL = nil }
         
         super.init(xmlElement: xmlElement)
@@ -137,8 +137,8 @@ extension ContentDirectory1Object {
 
 /// overrides ExtendedPrintable protocol implementation
 extension ContentDirectory1Item {
-    override public var className: String { return "\(self.dynamicType)" }
-    override public var description: String {
+    override public var className: String { return "\(type(of: self))" }
+    override open var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
         properties.add("resourceURL", property: resourceURL?.absoluteString)
@@ -148,43 +148,43 @@ extension ContentDirectory1Item {
 
 // MARK: - ContentDirectory1VideoItem
 
-public class ContentDirectory1VideoItem: ContentDirectory1Item {
-    public let bitrate: Int?
-    public let duration: NSTimeInterval?
-    public let audioChannelCount: Int?
-    public let protocolInfo: String?
-    public let resolution: CGSize?
-    public let sampleFrequency: Int?
-    public let size: Int?
+open class ContentDirectory1VideoItem: ContentDirectory1Item {
+    open let bitrate: Int?
+    open let duration: TimeInterval?
+    open let audioChannelCount: Int?
+    open let protocolInfo: String?
+    open let resolution: CGSize?
+    open let sampleFrequency: Int?
+    open let size: Int?
     
     override init?(xmlElement: ONOXMLElement) {
-        bitrate = Int(String(xmlElement.firstChildWithTag("res").valueForAttribute("bitrate")))
+        bitrate = Int(String(describing: xmlElement.firstChild(withTag: "res").value(forAttribute: "bitrate") as? String))
         
-        if let durationString = xmlElement.firstChildWithTag("res").valueForAttribute("duration") as? String {
-            let durationComponents = durationString.componentsSeparatedByString(":")
+        if let durationString = xmlElement.firstChild(withTag: "res").value(forAttribute: "duration") as? String {
+            let durationComponents = durationString.components(separatedBy: ":")
             var count: Double = 0
             var duration: Double = 0
-            for durationComponent in durationComponents.reverse() {
+            for durationComponent in durationComponents.reversed() {
                 duration += (durationComponent as NSString).doubleValue * pow(60, count)
-                count++
+                count += 1
             }
             
-            self.duration = NSTimeInterval(duration)
+            self.duration = TimeInterval(duration)
         } else { self.duration = nil }
         
-        audioChannelCount = Int(String(xmlElement.firstChildWithTag("res").valueForAttribute("nrAudioChannels")))
+        audioChannelCount = Int(String(describing: xmlElement.firstChild(withTag: "res").value(forAttribute: "nrAudioChannels") as? String))
         
-        protocolInfo = xmlElement.firstChildWithTag("res").valueForAttribute("protocolInfo") as? String
+        protocolInfo = xmlElement.firstChild(withTag: "res").value(forAttribute: "protocolInfo") as? String
         
-        if let resolutionComponents = (xmlElement.firstChildWithTag("res").valueForAttribute("resolution") as? String)?.componentsSeparatedByString("x"),
-            width = Int(String(resolutionComponents.first)),
-            height = Int(String(resolutionComponents.last)) {
+        if let resolutionComponents = (xmlElement.firstChild(withTag: "res").value(forAttribute: "resolution") as? String)?.components(separatedBy: "x"),
+            let width = Int(String(describing: resolutionComponents.first)),
+            let height = Int(String(describing: resolutionComponents.last)) {
                 resolution = CGSize(width: width, height: height)
         } else { resolution = nil }
         
-        sampleFrequency = Int(String(xmlElement.firstChildWithTag("res").valueForAttribute("sampleFrequency")))
+        sampleFrequency = Int(String(describing: xmlElement.firstChild(withTag: "res").value(forAttribute: "sampleFrequency") as? String))
         
-        size = Int(String(xmlElement.firstChildWithTag("res").valueForAttribute("size")))
+        size = Int(String(describing: xmlElement.firstChild(withTag: "res").value(forAttribute: "size") as? String))
         
         super.init(xmlElement: xmlElement)
     }
@@ -199,8 +199,8 @@ extension ContentDirectory1Object {
 
 /// overrides ExtendedPrintable protocol implementation
 extension ContentDirectory1VideoItem {
-    override public var className: String { return "\(self.dynamicType)" }
-    override public var description: String {
+    override public var className: String { return "\(type(of: self))" }
+    override open var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
         properties.add("bitrate", property: "\(bitrate)")

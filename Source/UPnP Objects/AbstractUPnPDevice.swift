@@ -23,18 +23,18 @@
 
 import Foundation
 
-public class AbstractUPnPDevice: AbstractUPnP {
+open class AbstractUPnPDevice: AbstractUPnP {
     /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
-    public class IconDescription: CustomStringConvertible {
-        public let relativeURL: NSURL
-        public let size: CGSize
-        public let colorDepth: Int
-        public let mimeType: String
-        public var description: String {
+    open class IconDescription: CustomStringConvertible {
+        open let relativeURL: URL
+        open let size: CGSize
+        open let colorDepth: Int
+        open let mimeType: String
+        open var description: String {
             return "\(relativeURL.absoluteString) (\(mimeType):\(size.width)x\(size.height))"
         }
         
-        init(relativeURL: NSURL, size: CGSize, colorDepth: Int, mimeType: String) {
+        init(relativeURL: URL, size: CGSize, colorDepth: Int, mimeType: String) {
             self.relativeURL = relativeURL
             self.size = size
             self.colorDepth = colorDepth
@@ -43,33 +43,33 @@ public class AbstractUPnPDevice: AbstractUPnP {
     }
     
     // public
-    public var deviceType: String {
+    open var deviceType: String {
         return urn
     }
-    public var udn: String {
+    open var udn: String {
         return uuid
     }
-    public private(set) var friendlyName: String! // TODO: Should ideally be a constant, see Github issue #10
-    public private(set) var manufacturer: String! // TODO: Should ideally be a constant, see Github issue #10
-    public private(set) var manufacturerURL: NSURL? // TODO: Should ideally be a constant, see Github issue #10
-    public private(set) var modelDescription: String? // TODO: Should ideally be a constant, see Github issue #10
-    public private(set) var modelName: String! // TODO: Should ideally be a constant, see Github issue #10
-    public private(set) var modelNumber: String? // TODO: Should ideally be a constant, see Github issue #10
-    public private(set) var modelURL: NSURL? // TODO: Should ideally be a constant, see Github issue #10
-    public private(set) var serialNumber: String? // TODO: Should ideally be a constant, see Github issue #10
-    public private(set) var iconDescriptions: [IconDescription]? // TODO: Should ideally be a constant, see Github issue #10
-    public weak var serviceSource: UPnPServiceSource?
-    override public var baseURL: NSURL! {
+    open fileprivate(set) var friendlyName: String! // TODO: Should ideally be a constant, see Github issue #10
+    open fileprivate(set) var manufacturer: String! // TODO: Should ideally be a constant, see Github issue #10
+    open fileprivate(set) var manufacturerURL: URL? // TODO: Should ideally be a constant, see Github issue #10
+    open fileprivate(set) var modelDescription: String? // TODO: Should ideally be a constant, see Github issue #10
+    open fileprivate(set) var modelName: String! // TODO: Should ideally be a constant, see Github issue #10
+    open fileprivate(set) var modelNumber: String? // TODO: Should ideally be a constant, see Github issue #10
+    open fileprivate(set) var modelURL: URL? // TODO: Should ideally be a constant, see Github issue #10
+    open fileprivate(set) var serialNumber: String? // TODO: Should ideally be a constant, see Github issue #10
+    open fileprivate(set) var iconDescriptions: [IconDescription]? // TODO: Should ideally be a constant, see Github issue #10
+    open weak var serviceSource: UPnPServiceSource?
+    override open var baseURL: URL! {
         if let baseURL = _baseURLFromXML {
             return baseURL
         }
-        return super.baseURL
+        return super.baseURL as URL!
     }
     
     // private
-    private var _baseURLFromXML: NSURL? // TODO: Should ideally be a constant, see Github issue #10
+    fileprivate var _baseURLFromXML: URL? // TODO: Should ideally be a constant, see Github issue #10
     
-    required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
+    required public init?(usn: UniqueServiceName, descriptionURL: URL, descriptionXML: Data) {
         super.init(usn: usn, descriptionURL: descriptionURL, descriptionXML: descriptionXML)
         
         let deviceParser = UPnPDeviceParser(upnpDevice: self, descriptionXML: descriptionXML)
@@ -95,8 +95,12 @@ public class AbstractUPnPDevice: AbstractUPnP {
         self.serialNumber = parsedDevice?.serialNumber
         self.iconDescriptions = parsedDevice?.iconDescriptions
     }
+    /* Comment for confliction method swift 3.2 + unusage
+    required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
+        fatalError("init(usn:descriptionURL:descriptionXML:) has not been implemented")
+    } */
     
-    public func service(forURN urn: String) -> AbstractUPnPService? {
+    open func service(forURN urn: String) -> AbstractUPnPService? {
         return serviceSource?.service(forUSN: UniqueServiceName(uuid: uuid, urn: urn)!)
     }
 }
@@ -110,8 +114,8 @@ extension AbstractUPnP {
 
 /// overrides ExtendedPrintable protocol implementation
 extension AbstractUPnPDevice {
-    override public var className: String { return "\(self.dynamicType)" }
-    override public var description: String {
+    override public var className: String { return "\(type(of: self))" }
+    override open var description: String {
         var properties = PropertyPrinter()
         properties.add(super.className, property: super.description)
         properties.add("deviceType", property: deviceType)
@@ -137,22 +141,22 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
     /// Using a class instead of struct since it's much easier and safer to continuously update from references than values from inside another container.
     class ParserUPnPDevice {
         var udn: String?
-        var baseURL: NSURL?
+        var baseURL: URL?
         var friendlyName: String?
         var manufacturer: String?
-        var manufacturerURL: NSURL?
+        var manufacturerURL: URL?
         var modelDescription: String?
         var modelName: String?
         var modelNumber: String?
-        var modelURL: NSURL?
+        var modelURL: URL?
         var serialNumber: String?
         var iconDescriptions: [AbstractUPnPDevice.IconDescription] = []
-        private var _currentIconDescription: ParserIconDescription?
+        fileprivate var _currentIconDescription: ParserIconDescription?
         init() { } // allow intializing with empty temp device
     }
     
     struct ParserIconDescription {
-        var relativeURL: NSURL?
+        var relativeURL: URL?
         var width, height, depth: Int?
         var mimeType: String?
         init() { } // allow intializing with empty temp device
@@ -166,21 +170,21 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         }
     }
     
-    private unowned let _upnpDevice: AbstractUPnPDevice
-    private let _descriptionXML: NSData
-    private var _deviceStack = Stack<ParserUPnPDevice>() // first is root device
-    private var _foundDevice: ParserUPnPDevice?
-    private var _baseURL: NSURL?
-    private lazy var _numberFormatter = NSNumberFormatter()
+    fileprivate unowned let _upnpDevice: AbstractUPnPDevice
+    fileprivate let _descriptionXML: Data
+    fileprivate var _deviceStack = Stack<ParserUPnPDevice>() // first is root device
+    fileprivate var _foundDevice: ParserUPnPDevice?
+    fileprivate var _baseURL: URL?
+    fileprivate lazy var _numberFormatter = NumberFormatter()
     
-    init(supportNamespaces: Bool, upnpDevice: AbstractUPnPDevice, descriptionXML: NSData) {
+    init(supportNamespaces: Bool, upnpDevice: AbstractUPnPDevice, descriptionXML: Data) {
         self._upnpDevice = upnpDevice
         self._descriptionXML = descriptionXML
         super.init(supportNamespaces: supportNamespaces)
         
         /// NOTE: URLBase is deprecated in UPnP v2.0, baseURL should be derived from the SSDP discovery description URL
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "URLBase"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            self._baseURL = NSURL(string: text)
+            self._baseURL = URL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["root", "device"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
@@ -222,7 +226,7 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "modelURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             let currentDevice = self._deviceStack.peek()
-            currentDevice?.modelURL = NSURL(string: text)
+            currentDevice?.modelURL = URL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "serialNumber"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
@@ -237,7 +241,7 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "device", "manufacturerURL"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             let currentDevice = self._deviceStack.peek()
-            currentDevice?.manufacturerURL = NSURL(string: text)
+            currentDevice?.manufacturerURL = URL(string: text)
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon"], didStartParsingElement: { [unowned self] (elementName, attributeDict) -> Void in
@@ -257,55 +261,55 @@ class UPnPDeviceParser: AbstractSAXXMLParser {
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "width"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            if let textNumber = self._numberFormatter.numberFromString(text) {
+            if let textNumber = self._numberFormatter.number(from: text) {
                 let currentDevice = self._deviceStack.peek()
-                currentDevice?._currentIconDescription?.width = Int(textNumber.intValue)
+                currentDevice?._currentIconDescription?.width = Int(textNumber.int32Value)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "height"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            if let textNumber = self._numberFormatter.numberFromString(text) {
+            if let textNumber = self._numberFormatter.number(from: text) {
                 let currentDevice = self._deviceStack.peek()
-                currentDevice?._currentIconDescription?.height = Int(textNumber.intValue)
+                currentDevice?._currentIconDescription?.height = Int(textNumber.int32Value)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "depth"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
-            if let textNumber = self._numberFormatter.numberFromString(text) {
+            if let textNumber = self._numberFormatter.number(from: text) {
                 let currentDevice = self._deviceStack.peek()
-                currentDevice?._currentIconDescription?.depth = Int(textNumber.intValue)
+                currentDevice?._currentIconDescription?.depth = Int(textNumber.int32Value)
             }
         }))
         
         self.addElementObservation(SAXXMLParserElementObservation(elementPath: ["*", "icon", "url"], didStartParsingElement: nil, didEndParsingElement: nil, foundInnerText: { [unowned self] (elementName, text) -> Void in
             let currentDevice = self._deviceStack.peek()
-            currentDevice?._currentIconDescription?.relativeURL = NSURL(string: text)
+            currentDevice?._currentIconDescription?.relativeURL = URL(string: text)
         }))
     }
     
-    convenience init(upnpDevice: AbstractUPnPDevice, descriptionXML: NSData) {
+    convenience init(upnpDevice: AbstractUPnPDevice, descriptionXML: Data) {
         self.init(supportNamespaces: false, upnpDevice: upnpDevice, descriptionXML: descriptionXML)
     }
     
     func parse() -> Result<ParserUPnPDevice> {
         switch super.parse(data: _descriptionXML) {
-        case .Success:
+        case .success:
             if let foundDevice = _foundDevice {
                 foundDevice.baseURL = _baseURL
-                return .Success(foundDevice)
+                return .success(foundDevice)
             } else {
-                return .Failure(createError("Parser error"))
+                return .failure(createError("Parser error"))
             }
-        case .Failure(let error):
-            return .Failure(error)
+        case .failure(let error):
+            return .failure(error)
         }
     }
     
-    private func didStartParsingDeviceElement() {
+    fileprivate func didStartParsingDeviceElement() {
         self._deviceStack.push(ParserUPnPDevice())
     }
     
-    private func didEndParsingDeviceElement() {
+    fileprivate func didEndParsingDeviceElement() {
         let poppedDevice = self._deviceStack.pop()
         
         if self._upnpDevice.uuid == poppedDevice.udn {
