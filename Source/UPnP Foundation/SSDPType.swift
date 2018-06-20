@@ -94,7 +94,7 @@ extension SSDPType: Hashable {
 
 func ==(lhs: SSDPType, rhs: SSDPType) -> Bool {
     switch (lhs, rhs) {
-    case (.all, .all):
+    case (.all, .all), (.all, _):// Fixed if left side .all (all types) --> don't need to check right side if SSDPType (example: .all == .device)
         return true
     case (.rootDevice, .rootDevice):
         return true

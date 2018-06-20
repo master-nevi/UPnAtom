@@ -131,9 +131,9 @@ open class UPnPRegistry: NSObject {
         
         if let registeredClass = _upnpClasses[urn] {
             upnpClass = registeredClass
-        } else if urn.range(of: "urn:schemas-upnp-org:device") != nil {
+        } else if urn.range(of: "urn:") != nil && urn.range(of: ":device:") != nil {
             upnpClass = AbstractUPnPDevice.self
-        } else if urn.range(of: "urn:schemas-upnp-org:service") != nil {
+        } else if urn.range(of: "urn:") != nil &&  urn.range(of: ":service:") != nil {
             upnpClass = AbstractUPnPService.self
         } else {
             upnpClass = AbstractUPnP.self
