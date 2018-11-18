@@ -8,6 +8,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => 'https://github.com/master-nevi/UPnAtom.git', :tag => s.version.to_s }
   s.requires_arc = true
   s.ios.deployment_target = '8.0'
+  s.tvos.deployment_target = '9.0'
   s.osx.deployment_target = '10.9'
 
   s.source_files = 'Source/**/*.swift'
@@ -17,7 +18,7 @@ Pod::Spec.new do |s|
   s.dependency 'Ono', '~> 1.2.0' # XML parsing
   s.dependency 'GCDWebServer', '~> 3.3' # UPnP event notification handling
 
-  
+
   # NOTE: I really did try to be a good pod architect and modularize the library into subspecs, however there are still bugs in the Swift compiler which cause it to crash when building release/archive versions of UPnAtom. Because the problem areas may consistantly or inconsistanly cause the compiler crash, the fewer subspecs or no subspecs the better when it comes to tracking them down (i.e. less hair being pulled out). I look forward to doing it in the future however. Here's a sneak peek:
 
   # s.default_subspecs = 'Default'
@@ -36,7 +37,7 @@ Pod::Spec.new do |s|
   #   ss.dependency 'UPnAtom/UPnP Foundation'
   #   ss.dependency 'CocoaAsyncSocket', '~> 7.4.1' # UPnP object discovery using SSDP
   #   ss.dependency 'AFNetworking', '~> 2.5.0' # HTTP Client
-  # end  
+  # end
 
   # s.subspec 'Core' do |ss|
   #   ss.source_files = 'Source/{HTTP Client Session Managers and Serializers,Logging,Management,Parsers,UPnP Objects}/*.swift', 'Source/SSDP/Discovery Adapter/*.swift'
