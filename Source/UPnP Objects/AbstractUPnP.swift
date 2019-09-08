@@ -54,19 +54,12 @@ public func ==(lhs: AbstractUPnP, rhs: AbstractUPnP) -> Bool {
 }
 
 extension AbstractUPnP {
-    override open var hashValue: Int {
-        return usn.hashValue
-    }
     
     /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
-    override open var hash: Int {
-        return hashValue
-    }
-    
-    /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
+    /// NSObject already conform Equatable, XCode 10.3 upgraded
     override open func isEqual(_ object: Any?) -> Bool {
         if let other = object as? AbstractUPnP {
-            return self == other
+            return self.usn == other.usn
         }
         return false
     }
