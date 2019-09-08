@@ -202,8 +202,8 @@ extension SSDPExplorer: GCDAsyncUdpSocketDelegate {
                 } else {
                     headersRegularExpression?.enumerateMatches(in: line, options: [], range: NSRange(location: 0, length: line.characters.count), using: { (resultOptional: NSTextCheckingResult?, flags: NSRegularExpression.MatchingFlags, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
                         if let result = resultOptional, result.numberOfRanges == 3 {
-                            let key = (line as NSString).substring(with: result.rangeAt(1)).lowercased()
-                            let value = (line as NSString).substring(with: result.rangeAt(2))
+                            let key = (line as NSString).substring(with: result.range(at: 1)).lowercased()
+                            let value = (line as NSString).substring(with: result.range(at: 2))
                             headers[key] = value
                         }
                     })
