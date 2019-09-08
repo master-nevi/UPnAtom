@@ -28,11 +28,11 @@ import Ono
 
 /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
 open class ContentDirectory1Object: NSObject {
-    open let objectID: String
-    open let parentID: String
-    open let title: String
-    open let rawType: String
-    open let albumArtURL: URL?
+    public let objectID: String
+    public let parentID: String
+    public let title: String
+    public let rawType: String
+    public let albumArtURL: URL?
     
     init?(xmlElement: ONOXMLElement) {
         if let objectID = xmlElement.value(forAttribute: "id") as? String,
@@ -82,7 +82,7 @@ extension ContentDirectory1Object: ExtendedPrintable {
 // MARK: - ContentDirectory1Container
 
 open class ContentDirectory1Container: ContentDirectory1Object {
-    open let childCount: Int?
+    public let childCount: Int?
     
     override init?(xmlElement: ONOXMLElement) {
         self.childCount = Int(String(describing: xmlElement.value(forAttribute: "childCount") as? String))
@@ -112,7 +112,7 @@ extension ContentDirectory1Container {
 // MARK: - ContentDirectory1Item
 
 open class ContentDirectory1Item: ContentDirectory1Object {
-    open let resourceURL: URL!
+    public let resourceURL: URL!
     
     override init?(xmlElement: ONOXMLElement) {
         /// TODO: Return nil immediately instead of waiting, see Github issue #11
@@ -149,13 +149,13 @@ extension ContentDirectory1Item {
 // MARK: - ContentDirectory1VideoItem
 
 open class ContentDirectory1VideoItem: ContentDirectory1Item {
-    open let bitrate: Int?
-    open let duration: TimeInterval?
-    open let audioChannelCount: Int?
-    open let protocolInfo: String?
-    open let resolution: CGSize?
-    open let sampleFrequency: Int?
-    open let size: Int?
+    public let bitrate: Int?
+    public let duration: TimeInterval?
+    public let audioChannelCount: Int?
+    public let protocolInfo: String?
+    public let resolution: CGSize?
+    public let sampleFrequency: Int?
+    public let size: Int?
     
     override init?(xmlElement: ONOXMLElement) {
         bitrate = Int(String(describing: xmlElement.firstChild(withTag: "res").value(forAttribute: "bitrate") as? String))

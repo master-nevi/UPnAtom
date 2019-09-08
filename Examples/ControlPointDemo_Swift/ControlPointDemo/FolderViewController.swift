@@ -60,7 +60,7 @@ extension FolderViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell") as UITableViewCell!
+        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell")!
         let item = _playlist[indexPath.row]
         cell.textLabel?.text = item.title
         cell.accessoryType = item is ContentDirectory1Container ? .disclosureIndicator : .none

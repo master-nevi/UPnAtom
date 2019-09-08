@@ -26,10 +26,10 @@ import Foundation
 open class AbstractUPnPDevice: AbstractUPnP {
     /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
     open class IconDescription: CustomStringConvertible {
-        open let relativeURL: URL
-        open let size: CGSize
-        open let colorDepth: Int
-        open let mimeType: String
+        public let relativeURL: URL
+        public let size: CGSize
+        public let colorDepth: Int
+        public let mimeType: String
         open var description: String {
             return "\(relativeURL.absoluteString) (\(mimeType):\(size.width)x\(size.height))"
         }
@@ -63,7 +63,7 @@ open class AbstractUPnPDevice: AbstractUPnP {
         if let baseURL = _baseURLFromXML {
             return baseURL
         }
-        return super.baseURL as URL!
+        return super.baseURL as URL?
     }
     
     // private

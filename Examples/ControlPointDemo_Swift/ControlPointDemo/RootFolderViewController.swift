@@ -98,7 +98,7 @@ class RootFolderViewController: UIViewController {
 
     @objc fileprivate func deviceWasAdded(_ notification: Notification) {
         if let upnpDevice = notification.userInfo?[UPnPRegistry.UPnPDeviceKey()] as? AbstractUPnPDevice {
-            print("Added device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
+            print("Added device: \(upnpDevice.className) - \(String(describing: upnpDevice.friendlyName))")
             
             _discoveredUPnPObjectCache[upnpDevice.usn] = upnpDevice
             insertDevice(deviceUSN: upnpDevice.usn, deviceUSNs: &_discoveredDeviceUSNs, inSection: 1)
@@ -107,7 +107,7 @@ class RootFolderViewController: UIViewController {
     
     @objc fileprivate func deviceWasRemoved(_ notification: Notification) {
         if let upnpDevice = notification.userInfo?[UPnPRegistry.UPnPDeviceKey()] as? AbstractUPnPDevice {
-            print("Removed device: \(upnpDevice.className) - \(upnpDevice.friendlyName)")
+            print("Removed device: \(upnpDevice.className) - \(String(describing: upnpDevice.friendlyName))")
             
             _discoveredUPnPObjectCache.removeValue(forKey: upnpDevice.usn)
             deleteDevice(deviceUSN: upnpDevice.usn, deviceUSNs: &_discoveredDeviceUSNs, inSection: 1)
@@ -150,7 +150,7 @@ class RootFolderViewController: UIViewController {
     }
     
     fileprivate func deleteDevice(deviceUSN: UniqueServiceName, deviceUSNs: inout [UniqueServiceName], inSection section: Int) {
-        if let index = deviceUSNs.index(of: deviceUSN) {
+        if let index = deviceUSNs.firstIndex(of: deviceUSN) {
             deviceUSNs.remove(at: index)
             let indexPath = IndexPath(row: index, section: section)
             self._tableView.deleteRows(at: [indexPath], with: .automatic)
@@ -265,7 +265,7 @@ extension RootFolderViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell") as UITableViewCell!
+        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell")!
         let device = deviceForIndexPath(indexPath as NSIndexPath)
         cell.textLabel?.text = device.friendlyName
         cell.accessoryType = device is MediaServer1Device ? .disclosureIndicator : .none
@@ -280,7 +280,7 @@ extension RootFolderViewController: UITableViewDelegate {
 
         if let mediaServer = device as? MediaServer1Device {
             if mediaServer.contentDirectoryService == nil {
-                print("\(mediaServer.friendlyName) - has no content directory service")
+                print("\(String(describing: mediaServer.friendlyName)) - has no content directory service")
                 return
             }
             
@@ -292,7 +292,7 @@ extension RootFolderViewController: UITableViewDelegate {
         }
         else if let mediaRenderer = device as? MediaRenderer1Device {
             if mediaRenderer.avTransportService == nil {
-                print("\(mediaRenderer.friendlyName) - has no AV transport service")
+                print("\(String(describing: mediaRenderer.friendlyName)) - has no AV transport service")
                 return
             }
             

@@ -111,7 +111,7 @@ class SOAPResponseParser: AbstractDOMXMLParser {
         var result: EmptyResult = .success
         document.enumerateElements(withXPath: "/s:Envelope/s:Body/*/*", using: { (element, index, stop) -> Void in
             if let element = element, let elementTag = element.tag, let elementValue = element.stringValue(),
-                elementTag.characters.count > 0 && elementValue.characters.count > 0 && elementValue != "NOT_IMPLEMENTED" {
+                elementTag.count > 0 && elementValue.count > 0 && elementValue != "NOT_IMPLEMENTED" {
                 self._responseParameters[elementTag] = elementValue
             }
             

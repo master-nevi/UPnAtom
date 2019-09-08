@@ -31,8 +31,8 @@ open class AbstractUPnP: NSObject {
     open var urn: String {
         return usn.urn! // checked for nil during init
     }
-    open let usn: UniqueServiceName
-    open let descriptionURL: URL
+    public let usn: UniqueServiceName
+    public let descriptionURL: URL
     open var baseURL: URL! {
         return URL(string: "/", relativeTo: descriptionURL)?.absoluteURL
     }

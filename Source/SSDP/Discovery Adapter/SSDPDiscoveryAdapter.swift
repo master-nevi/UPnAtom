@@ -30,7 +30,7 @@ protocol SSDPDiscoveryAdapterDelegate: class {
 /// Provides an interface to allow any SSDP library to be used an adapted into UPnAtom for SSDP discovery.
 protocol SSDPDiscoveryAdapter: class {
     var rawSSDPTypes: Set<String> { get set }
-    weak var delegate: SSDPDiscoveryAdapterDelegate? { get set }
+    var delegate: SSDPDiscoveryAdapterDelegate? { get set }
     var running: Bool { get }
     func start()
     func stop()

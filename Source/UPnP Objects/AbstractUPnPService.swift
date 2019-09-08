@@ -40,11 +40,11 @@ open class AbstractUPnPService: AbstractUPnP {
     open var eventURL: URL {
         return (URL(string: _relativeEventURL.absoluteString, relativeTo: baseURL)?.absoluteURL)!
     }
-    override open var baseURL: URL! {
+    override open var baseURL: URL {
         if let baseURL = _baseURLFromXML {
             return baseURL
         }
-        return super.baseURL as URL!
+        return super.baseURL as URL
     }
     open weak var deviceSource: UPnPDeviceSource?
     open var device: AbstractUPnPDevice? {
@@ -137,7 +137,7 @@ open class AbstractUPnPService: AbstractUPnP {
                     }
                     
                     do {
-                        let serviceDescriptionDocument = try ONOXMLDocument(data: xmlData as Data!)
+                        let serviceDescriptionDocument = try ONOXMLDocument(data: xmlData as Data?)
                         LogVerbose("Parsing service description XML:\nSTART\n\(NSString(data: xmlData as Data, encoding: String.Encoding.utf8.rawValue))\nEND")
                         
                         serviceDescriptionDocument.definePrefix(AbstractUPnPService._serviceDescriptionDefaultPrefix, forDefaultNamespace: "urn:schemas-upnp-org:service-1-0")

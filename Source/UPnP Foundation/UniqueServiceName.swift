@@ -25,10 +25,10 @@ import Foundation
 
 /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
 open class UniqueServiceName: NSObject, RawRepresentable {
-    open let rawValue: RawValue
-    open let uuid: String
-    open let urn: String?
-    open let rootDevice: Bool
+    public let rawValue: RawValue
+    public let uuid: String
+    public let urn: String?
+    public let rootDevice: Bool
     
     public typealias RawValue = String
     

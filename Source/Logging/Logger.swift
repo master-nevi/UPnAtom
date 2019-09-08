@@ -59,21 +59,21 @@ func Log(_ isAsynchronous: Bool, level: LogFlag, flag: LogFlag, file: StaticStri
 }
 
 func LogDebug(_ logText: @autoclosure () -> String, level: LogFlag = logLevel, file: StaticString = #file, function: StaticString = #function, line: UInt = #line, asynchronous async: Bool = true) {
-    Log(async, level: level, flag: .Debug, file: file, function: function, line: line, string: logText)
+    Log(async, level: level, flag: .Debug, file: file, function: function, line: line, string: logText())
 }
 
 func LogInfo(_ logText: @autoclosure () -> String, level: LogFlag = logLevel, file: StaticString = #file, function: StaticString = #function, line: UInt = #line, asynchronous async: Bool = true) {
-    Log(async, level: level, flag: .Info, file: file, function: function, line: line, string: logText)
+    Log(async, level: level, flag: .Info, file: file, function: function, line: line, string: logText())
 }
 
 func LogWarn(_ logText: @autoclosure () -> String, level: LogFlag = logLevel, file: StaticString = #file, function: StaticString = #function, line: UInt = #line, asynchronous async: Bool = true) {
-    Log(async, level: level, flag: .Warning, file: file, function: function, line: line, string: logText)
+    Log(async, level: level, flag: .Warning, file: file, function: function, line: line, string: logText())
 }
 
 func LogVerbose(_ logText: @autoclosure () -> String, level: LogFlag = logLevel, file: StaticString = #file, function: StaticString = #function, line: UInt = #line, asynchronous async: Bool = true) {
-    Log(async, level: level, flag: .Verbose, file: file, function: function, line: line, string: logText)
+    Log(async, level: level, flag: .Verbose, file: file, function: function, line: line, string: logText())
 }
 
 func LogError(_ logText: @autoclosure () -> String, level: LogFlag = logLevel, file: StaticString = #file, function: StaticString = #function, line: UInt = #line, asynchronous async: Bool = false) {
-    Log(async, level: level, flag: .Error, file: file, function: function, line: line, string: logText)
+    Log(async, level: level, flag: .Error, file: file, function: function, line: line, string: logText())
 }

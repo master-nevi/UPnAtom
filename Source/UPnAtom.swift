@@ -26,8 +26,8 @@ import Foundation
 /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
 open class UPnAtom: NSObject {
     // public
-    open static let sharedInstance = UPnAtom()
-    open let upnpRegistry: UPnPRegistry
+    public static let sharedInstance = UPnAtom()
+    public let upnpRegistry: UPnPRegistry
     open var ssdpTypes: Set<String> {
         get { return ssdpDiscoveryAdapter.rawSSDPTypes }
         set { ssdpDiscoveryAdapter.rawSSDPTypes = newValue }
